@@ -1,85 +1,40 @@
-import discord
+from discord.ext import commands
 from Game import *
 
-commandChar = ''
-client = discord.Client()
-gameList: list[Game] = []
+global commandList
+global gameList
+bot = None
 
 
 def start_connection(used_command_character, bot_token):
-    global commandChar
-    global client
-    commandChar = used_command_character
+    global bot
+    bot = commands.Bot(used_command_character)
 
-    @client.event
+    @bot.event
     async def on_ready():
-        print('We have logged in as {0.user}'.format(client))
+        print('We have logged in as {0.user}'.format(bot))
 
-    @client.event
-    async def on_message(message):
-        try:
-            await interpret_message(message)
-        except Exception as e:
-            await message.channel.send(e)
+    @bot.event
+    async def on_message(msg):
+        if msg.author == bot.user:
+            return
+        print(msg)
+        await msg.channel.send("test")
 
-    client.run(bot_token)
-
-
-async def interpret_message(message):
-    global client
-    return_message = ""
-    if message.author == client.user:
-        return
-
-    if check_for_command(message, 'hello'):
-        return_message = "hi"
-
-    elif check_for_command(message, 'gametest add'):
-        return_message = add_game("test game_name", message.author)
-
-    elif check_for_command(message, 'playertest add'):
-        return_message = add_player("test game_name", message.author, "benji2")
-
-    elif check_for_command(message, 'playertest rem'):
-        return_message = rem_player("test game_name", message.author, "benji2")
-
-    elif check_for_command(message, 'chartest add'):
-        return_message = add_char("test game_name", message.author, "Benjamin", "Fezim")
-
-    elif check_for_command(message, 'chartest rem'):
-        return_message = rem_char("test game_name", message.author, "Fezim")
-
-    elif check_for_command(message, 'chartest altadd'):
-        return_message = add_char("test game_name", "benji2", "Benjamin", "Vartha")
-
-    elif check_for_command(message, 'chartest altrem'):
-        return_message = rem_char("test game_name", "benji2", "Vartha")
-
-    elif check_for_command(message, 'gameprint'):
-        if len(gameList) != 0:
-            for game in gameList:
-                return_message += str(game)
-        else:
-            return_message += "there are no games to print"
-
-    if return_message != "":
-        await message.channel.send(return_message)
-
-
-def check_for_command(message, command):
-    global commandChar
-    return message.content.startswith(commandChar + command)
+    bot.run(bot_token)
 
 
 def check_for_game_name(name) -> bool:
     for game in gameList:
-        if game.game_name == name: return True
+        if game.game_name == name:
+            return True
     return False
 
 
 def get_game_index(name):
     for i in range(0, len(gameList)):
-        if gameList[i].game_name == name: return i
+        if gameList[i].game_name == name:
+            return i
     raise Exception("game of this name does not exist: " + name)
 
 
