@@ -6,7 +6,7 @@ from os.path import exists
 import json
 from Game import *
 
-gameList: list[Game] = []
+game_list = {}
 
 
 def load_save_file():  # read in save.json in case the bot shut down

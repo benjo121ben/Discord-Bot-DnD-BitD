@@ -1,0 +1,3 @@
+COM_ADD_GAME = "addG"
+COM_ADD_PLAYER = "addP"
+COM_REM_PLAYER = "remP"

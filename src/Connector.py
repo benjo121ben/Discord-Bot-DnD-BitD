@@ -1,8 +1,8 @@
 from discord.ext import commands
 from Game import *
+import Commands
 
-global commandList
-global gameList
+global game_list
 bot = None
 
 
