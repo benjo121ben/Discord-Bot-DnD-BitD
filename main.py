@@ -1,19 +1,18 @@
 import discord
 import os
 from dotenv import load_dotenv
-from Connector import start_connection
+from src.Connector import start_connection
 from os.path import exists
-import json
-from Game import *
+from src.Game import *
 
 game_list = {}
-
+save = None
 
 def load_save_file():  # read in save.json in case the bot shut down
-    if not exists('saveFiles/gamesave.json'):
-        if not exists('saveFiles'):
-            os.mkdir("saveFiles")
-        with open('saveFiles/gamesave.json', 'w') as newfile:
+    if not exists('saves/gamesave.json'):
+        if not exists('saves'):
+            os.mkdir("saves")
+        with open('saves/gamesave.json', 'w') as newfile:
             blank_json = {
                 'gameList': []
             }
@@ -23,7 +22,7 @@ def load_save_file():  # read in save.json in case the bot shut down
         return
 
     print("Savefile exists")
-    save = json.load(open('saveFiles/gamesave.json'))
+    save = json.load(open('saves/gamesave.json'))
 
 
 def main():

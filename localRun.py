@@ -1,4 +1,4 @@
-from Character import *
+from src.Character import *
 from os.path import exists
 import json
 import os
@@ -95,22 +95,23 @@ def execute_command(*args):
     else:
         print("invalid command change")
 
+
 def load():
     global charDic
-    if exists('saveFiles/gamesave.json'):
+    if exists('saves/gamesave.json'):
         print("Savefile exists")
-        imported_dic = json.load(open('saveFiles/gamesave.json'))
+        imported_dic = json.load(open('saves/gamesave.json'))
         for char_name, char_data in imported_dic.items():
             charDic[char_name] = char_from_data(char_data)
 
 
-
 def save():
-    if not exists('saveFiles/gamesave.json'):
-        if not exists('saveFiles'):
-            os.mkdir("saveFiles")
+    
+    if not exists('saves/gamesave.json'):
+        if not exists('saves'):
+            os.mkdir("saves")
         print("created savefile")
-    with open('saveFiles/gamesave.json', 'w') as newfile:
+    with open('saves/gamesave.json', 'w') as newfile:
         output = {}
         for char in charDic.values():
             temp = toJSON(char)
@@ -133,29 +134,36 @@ currentComm = None
 comm_name = None
 
 
-load()
-print("---setup-complete---")
-while True:
-    print("current characters:")
-    names = ''
-    for name, char in charDic.items():
-        names += ' ' + name
-    print(names)
-    #if comm_name:
-    #    print("current command:", comm_name)
-    #else:
-        #print("no command chosen")
-    print("input command: log, addC, cause, take, heal, healm")
-    passed_args = input().split(' ')
-    print()
-    execute_command(*passed_args)
-    save()
-    print()
-    print("-----------------------------")
-    #if passed_args[0] == 'c':
-    #    print("changing command")
-    #    change_command(*passed_args[1:])
-    #if currentComm:
-    #currentComm(*passed_args)
-    #else:
-    #    print("no command assigned yet")
+
+
+def main():
+    load()
+    print("---setup-complete---")
+    while True:
+        print("current characters:")
+        names = ''
+        for name, char in charDic.items():
+            names += ' ' + name
+        print(names)
+        # if comm_name:
+        #    print("current command:", comm_name)
+        # else:
+        # print("no command chosen")
+        print("input command: log, addC, cause, take, heal, healm")
+        passed_args = input().split(' ')
+        print()
+        if passed_args[0] == 'q':
+            exit()
+        execute_command(*passed_args)
+        save()
+        print()
+        print("-----------------------------")
+        # if passed_args[0] == 'c':
+        #    print("changing command")
+        #    change_command(*passed_args[1:])
+        # if currentComm:
+        # currentComm(*passed_args)
+        # else:
+        #    print("no command assigned yet")
+
+main()
