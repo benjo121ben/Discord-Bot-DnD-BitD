@@ -1,4 +1,4 @@
-from Character import *
+from .Character import *
 from os import linesep as endl
 
 
