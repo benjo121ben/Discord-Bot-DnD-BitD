@@ -1,27 +1,38 @@
 from discord.ext import commands
+from discord import File
 from .Game import *
 import src.Commands
+from random import seed
+from datetime import datetime
+from random import random
 
 global game_list
 bot = None
+seed(datetime.now().timestamp())
 
 
-def start_connection(used_command_character, bot_token):
+def start_connection(_command_prefix, _bot_token):
     global bot
-    bot = commands.Bot(used_command_character)
+    bot = commands.Bot(_command_prefix)
 
     @bot.event
     async def on_ready():
         print('We have logged in as {0.user}'.format(bot))
 
-    @bot.event
-    async def on_message(msg):
-        if msg.author == bot.user:
+    @bot.command(name="db")
+    async def devils_bargain(ctx, *args):
+        if ctx.author == bot.user:
             return
-        print(msg)
-        await msg.channel.send("test")
+        elif len(args) == 1 and args[0].isnumeric():
+            amount = min(10, int(args[0]))
+            file_list: list[File] = []
+            for i in range(0, amount):
+                file_list.append(get_devils_bargain())
+            await ctx.send(files=file_list)
+        else:
+            await ctx.send(file=get_devils_bargain())
 
-    bot.run(bot_token)
+    bot.run(_bot_token)
 
 
 def check_for_game_name(name) -> bool:
@@ -63,3 +74,10 @@ def add_char(game_name: str, command_user, player_name, char_name) -> str:
 def rem_char(game_name: str, command_user, char_name) -> str:
     index = get_game_index(game_name)
     return game_list[index].remove_character(command_user, char_name)
+
+
+def get_devils_bargain():
+    rand = 1 + int(random() * (50 - 1))
+    if rand < 10:
+        rand = "0" + str(rand)
+    return File("Assets/DevilsBargain-" + str(rand) + ".png")

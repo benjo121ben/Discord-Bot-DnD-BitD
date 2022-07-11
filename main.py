@@ -35,7 +35,7 @@ def main():
     print("Input savefile used")
     load_dotenv('.env')
     load(input() + "_save.json")
-    print("token",os.environ.get("DISCORD_TOKEN"))
+    print("token:", os.environ.get("DISCORD_TOKEN"))
     start_connection(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
 
 
