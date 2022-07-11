@@ -1,5 +1,4 @@
-set "PATH=C:\Git_Projects\DND_Stats_Discord_Bot\venv\Scripts;%PATH%"
-cd C:\Git_Projects\DND_Stats_Discord_Bot
+set "PATH=%~dp0\venv\Scripts;%PATH%"
 python main.py
 
 PAUSE
