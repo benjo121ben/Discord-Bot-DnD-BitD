@@ -42,7 +42,7 @@ def input_loop(_save_name, _available_commands):
 
 
 def main():
-    print("Input savefile Name")
+    print("Input savefile name")
     _save_name = input() + "_save.json"
     load(_save_name)
     _available_commands = ", ".join(Commands.localCommDic.keys())

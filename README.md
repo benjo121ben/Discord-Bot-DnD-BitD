@@ -9,7 +9,10 @@ A discord bot for tracking stats in a game of "Dungeons and Dragons" as well as 
 * [Using the Bot](#using-the-bot)
   * [Bot Key and Command Character](#bot-key-and-command-character)
   * [Permissions](#permissions)
+  * [Local Campaign Tracking](#local-campaign-tracking)
 * [Commands](#commands)
+  * [Bot Commands](#bot-commands)
+  * [Local Commands](#local-commands)
 
 ## Goal
 The bot was generally designed for two purposes:
@@ -17,7 +20,7 @@ The bot was generally designed for two purposes:
 * [Devils Bargains and Entanglements](#devils-bargains-and-entanglements) 
 
 ### Campaign Stats
-The bot is designed to track multiple Player characters and their stats in multiple games of DnD at the same time. Stats referring not to the stats on a character sheet, but overarching campaign stats, such as "Enemies killed, damage done, damage taken". The bot should keep track of these stats. <strong>This feature is not yet fully implemented</strong>
+The bot is designed to track multiple Player characters and their stats in multiple games of DnD at the same time. Stats referring not to the stats on a character sheet, but overarching campaign stats, such as "Enemies killed, damage done, damage taken". The bot should keep track of these stats. <strong>This feature is not yet fully implemented</strong>. It only works locally by running localRun.py
 
 ### Devils Bargains and Entanglements
 On request, the bot sends a random Devil's Bargain Card, containing two devils bargains to get the GM thinking. These are for when you don't have an Idea or you just like the input.
@@ -64,11 +67,31 @@ to use the 'db' command, you will have to write '$db' into the chat.
 ### Permissions
 To work properly the bot just needs to be able to have access to a chat on a server where it can send pictures, embeds and messages 
 
+###Local Campaign Tracking
+The campaign tracking has not yet been integrated with the bot itself and doesn't yet include all stats I would like, but can already be used via command line if you wish to try it out for yourself.
+Just run localRun.py and insert a name for your savefile. If that name already exists, it loads in the existing save file for you to continue.
 
 ## Commands
 These are all commands implemented so far.
 parameters with a '*' are optional
+
+all command parameters are separated by a space (" ") on input. f.e:
+<em>'ent 2 7'</em>
+to get an entanglement, having rolled a two, and with seven heat on the crew.
+
+###Bot Commands
 <ul>
   <li><strong>db</strong> : [*nr] The bot will send a devils bargain card. nr specifies the amount of cards, up to a maximum of 10. Defaults to one card.  </li>
-  <li><strong>ent</strong> : [number_rolled, crew_heat] The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.
+  <li><strong>ent</strong> : [number_rolled, crew_heat] The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.</li>
+</ul>
+
+###Local Commands
+<ul>
+  <li><strong>addC</strong> : [player_name, char_name, max_health] The bot adds a new PC to the current savefile.</li>
+  <li><strong>log</strong> : shows a log of current characters in the savefile.</li>
+  <li><strong>cause</strong> : [char_name, damage] Adds the amount of damage to the "damage caused" stat.</li>
+  <li><strong>take</strong> : [char_name, damage] Adds the amount of damage to the "damage taken" stat and reduces a characters health.</li>
+  <li><strong>heal</strong> : [char_name, amount] Adds the amount to the "damage healed" stat and heals a characters health up to their max health.</li>
+  <li><strong>healm</strong> : [char_name] fully heals a character, increasing their health to the max and increasing their "damage healed" stat by the difference. This is used for long rests in DnD</li>
+  <li><strong>inc</strong> : [char_name, amount] Adds the amount to a characters maximum health and health. permanently increasing their maximum health.</li>
 </ul>
