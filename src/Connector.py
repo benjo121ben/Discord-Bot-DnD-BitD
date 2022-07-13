@@ -67,7 +67,6 @@ def start_connection(_command_prefix, _bot_token):
         embed = discord.Embed(title="Entanglements", description="choose one!")
         for entanglement in ent_list:
             embed.add_field(name=entanglement, value=globalVars.imported_expanded_entanglements[entanglement], inline=True)
-        print(globalVars.imported_expanded_entanglements["Cooperation"])
         await ctx.send(embed=embed)
 
     bot.run(_bot_token)

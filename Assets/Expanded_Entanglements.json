@@ -3,17 +3,17 @@
 
 	"Ambitious Lackey": "An influential member of a Cohort (or a friend/contact, patron, or vice purveyor) successfully undermines your authority: they want to be the one leading the Crew, or at least one of your Cohorts! You must choose: either permanently lose the Cohort(s) involved, or harshly punish and re-organize them (forfeit 2 rep, 2 coin, mark level 2 harm on the Cohort, and tick 1 on a 4-Clock \"The Cohort Rebels\").Why did the lackey betray you? What have you done against them?",
 
-	"Arrest": "An Inspector presents a case file of evidence to a magistrate, to begin prosecution of your crew. They send a detail to arrest you (a gang at least equal in scale to your wanted level). Pay them off with coin equal to your wanted level +3, hand someone over for arrest (this clears your heat), or try to evade capture.\n A truncheon bangs on the shutters of the window. \"Alright then! Come on out and let’s go quietly now!\" It sounds like the bald Sergeant. When you peek out, you see a detail of about twenty constables, all geared up for a fight. The Sergeant mumbles under his breath, so only you inside can hear: \"Or perhaps I have the wrong address?\" He clears his throat and waits for some coins to appear.",
+	"Arrest": "An Inspector presents a case file of evidence to a magistrate, to begin prosecution of your crew. They send a detail to arrest you (a gang at least equal in scale to your wanted level). Pay them off with coin equal to your wanted level +3, hand someone over for arrest (this clears your heat), or try to evade capture.\n A truncheon bangs on the shutters of the window. \"Alright then! Come on out and let's go quietly now!\" It sounds like the bald Sergeant. When you peek out, you see a detail of about twenty constables, all geared up for a fight. The Sergeant mumbles under his breath, so only you inside can hear: \"Or perhaps I have the wrong address?\" He clears his throat and waits for some coins to appear.",
 
 	"Arrested Cohort": "Exactly like \"Arrest\", but the cops try to arrest one of your Cohorts, rather than a PC.",
 
-	"Casual Racism": "You lose 1 rep for each PC you have in the crew who do not belong to the setting’s dominant heritage. Players whose character is of mixed heritage can choose whether they \"pass\" as belonging to the dominant heritage, or not.",
+	"Casual Racism": "You lose 1 rep for each PC you have in the crew who do not belong to the setting's dominant heritage. Players whose character is of mixed heritage can choose whether they \"pass\" as belonging to the dominant heritage, or not.",
 
 	"Civil War": "A member of one of your Cohorts murders another member, or another one of your Cohorts, or a contact/friend or vice purveyor. Remove from play the NPC that has been attacked (or, if they are a member of a Gang, mark level 2 harm on the Gang) and forfeit 1 rep. You can then choose whether to stand with the culprit, or with the victim's friend. In both cases, the \"other\" party will harbor resentment towards the Crew (mark 3 ticks on a 4-Clock).",
 
 	"Cohort Tension": "A member of one of your Cohorts has a fight with another member, or another one of your Cohorts, or a contact/friend or vice purveyor. You lose 1 rep due to how divided is your crew, and you mark level 1 harm on the Cohort or NPC that has been attacked. You can then choose whether to stand with the culprit or with the victim (i.e., punish the culprit); in both cases, the \"other\" party will start to harbor resentment towards the Crew (mark 1 tick on a 4-Clock).",
 	
-	"Cooperation": "A +3 status faction asks you for a favor. Agree to do it, or forfeit 1 rep per Tier of the friendly faction, or lose 1 status with them. If you don’t have a +3 status faction, you avoid entanglements right now.",
+	"Cooperation": "A +3 status faction asks you for a favor. Agree to do it, or forfeit 1 rep per Tier of the friendly faction, or lose 1 status with them. If you don't have a +3 status faction, you avoid entanglements right now.",
 
 	"Crew Trouble": "One of the PCs create trouble due to their Trauma(s). You can lose face (forfeit rep equal to your Tier +1), make an example of your fellow PC (mark level 2 harm, you may not resist it), or face reprisals from the wronged party (and lower your status with them by 1). If no PC has Trauma, you avoid entanglements right now.",
 
@@ -27,7 +27,7 @@
 
 	"Enraged Citizenry": "Either forfeit 2 rep, or take -1 status with the Citizenry of a District where you own an \"annoying\" Claim (or a District where you recently made a conspicuous Score). Who are the individual(s) leading the Citizenry's protests? Did you do something to enrage them personally?",
 
-	"Flipped": "One of the PCs’ rivals arranges for one of your contacts, patrons, clients, or a group of your customers to switch allegiances due to the heat on you. They’re loyal to another faction now.",
+	"Flipped": "One of the PCs' rivals arranges for one of your contacts, patrons, clients, or a group of your customers to switch allegiances due to the heat on you. They're loyal to another faction now.",
 
 	"Gang Trouble": "One of your gangs (or other cohorts) causes trouble due to their flaw(s). You can lose face (forfeit rep equal to your Tier +1), make an example of one of the gang members, or face reprisals from the wronged party.",
 
@@ -39,7 +39,7 @@
 
 	"Incarcerated Cohort": "One of your Cohorts (or a close friend, or your patron) gets sent to prison. Choose: you either pay coin equal to 1 + double your wanted level, or your Cohort is completely unavailable for a number of Scores equal to 1d + wanted level. In both cases, you clear just 3 heat (you do not clear all the heat and reduce your wanted level by 1 as usual)",
 
-	"Interrogation": "The officers round up one of the PCs to question them about the crew’s crimes. How did they manage to capture you? Either pay them off with 3 coin, or they beat you up (level 2 harm) and you tell them what they want to know (+3 heat). You can resist each of those consequences separately. Some players really hate it when their character gets captured! Just tell them that this is completely normal for a scoundrel of the underworld. You spend time in and out of jail, getting questioned and harassed by the law. It’s not the end of the world. But now that you’re here in the interrogation room, what kind of person are you? Do you talk? Do you stand up to them? Do you make a deal?",
+	"Interrogation": "The officers round up one of the PCs to question them about the crew's crimes. How did they manage to capture you? Either pay them off with 3 coin, or they beat you up (level 2 harm) and you tell them what they want to know (+3 heat). You can resist each of those consequences separately. Some players really hate it when their character gets captured! Just tell them that this is completely normal for a scoundrel of the underworld. You spend time in and out of jail, getting questioned and harassed by the law. It's not the end of the world. But now that you're here in the interrogation room, what kind of person are you? Do you talk? Do you stand up to them? Do you make a deal?",
 	
 	"Mayhem": "Roll again, twice. You suffer two entanglements.",
 
@@ -47,9 +47,9 @@
 
 	"Pushy Friends": "A +2 or +3 status faction asks you to hide a \"hot\" person, gear or merchandise, until things cool down and the cops stop looking for the thing. Either accept their request (and take +2 heat), or refuse (and take -1 status with them, or lose rep equal to their Tier, your choice)",
 
-	"Questioning": "The cops grab an NPC member of your crew or one of the crew’s contacts, to question them about your crimes. Who do they think is most vulnerable? Make a fortune roll to see how much they talk (1-3: +2 heat, 4/5: +1 heat), or pay the constables off with 2 coin.\nRoll 2d for a normal person to see how well they keep quiet. If they’re an experienced underworld type or some kind of tough, give them 3d or 4d instead. If they’re soft or if they have some loyalty to the law, give them 1d or 0d.",
+	"Questioning": "The cops grab an NPC member of your crew or one of the crew's contacts, to question them about your crimes. Who do they think is most vulnerable? Make a fortune roll to see how much they talk (1-3: +2 heat, 4/5: +1 heat), or pay the constables off with 2 coin.\nRoll 2d for a normal person to see how well they keep quiet. If they're an experienced underworld type or some kind of tough, give them 3d or 4d instead. If they're soft or if they have some loyalty to the law, give them 1d or 0d.",
 
-	"Reprisals": "An enemy faction makes a move against you (or a friend, contact, or vice purveyor). Pay them (1 rep and 1 coin) per Tier of the enemy as an apology, allow them to mess with you or yours, or fight back and show them who’s boss.",
+	"Reprisals": "An enemy faction makes a move against you (or a friend, contact, or vice purveyor). Pay them (1 rep and 1 coin) per Tier of the enemy as an apology, allow them to mess with you or yours, or fight back and show them who's boss.",
 
 	"Rivals": "A neutral faction throws their weight around. They threaten you, a friend, a contact, or one of your vice purveyors. Forfeit (1 rep or 1 coin) per Tier of the rival, or stand up to them and lose 1 status with them.",
 
@@ -73,7 +73,7 @@
 
 	"Unfair Competition": "A neutral or enemy faction is selling the same services you are selling, with a discount. Choose one of your claims that generate coin. The chosen claim will not work for this downtime. Moreover, you can either hold your ground and kick out the competing faction (-1 status with them) or allow them do to as they please (-2 rep), or deal with the issue some other way (e.g., play it out in detail, diplomatically or not).",
 
-	"Unquiet Dead": "A rogue spirit is drawn to you—perhaps it’s a past victim? Acquire the services of an occultist to attempt to destroy or banish it, or deal with it yourself. They can hire an NPC by using the acquire asset downtime activity. Roll the NPC’s quality level as a fortune roll to see how well they deal with the spirit.",
+	"Unquiet Dead": "A rogue spirit is drawn to you—perhaps it's a past victim? Acquire the services of an occultist to attempt to destroy or banish it, or deal with it yourself. They can hire an NPC by using the acquire asset downtime activity. Roll the NPC's quality level as a fortune roll to see how well they deal with the spirit.",
 
 	"War": "Pick a faction whose status with you is -2. Choose: either forfeit 2 rep per Tier of the faction, or take -1 status with them (and go to war!), due to some offense or some conflicting interests. What is the nature of the conflict? What did you do to enrage them?"
 }
