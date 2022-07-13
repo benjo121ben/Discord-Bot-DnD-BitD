@@ -1,8 +1,7 @@
 *.env
 .idea/
 venv/
-*/__pycache__/*
+__pycache__/
 saves/
 run_main.txt
-*/old/*
 deprecated/
