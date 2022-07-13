@@ -2,10 +2,10 @@ import os
 from dotenv import load_dotenv
 from src.Connector import start_connection
 from src.GlobalVariables import charDic
+import src.GlobalVariables as globalVars
 from os.path import exists
 from src.Game import *
 
-game_list = {}
 save = None
 
 
@@ -15,6 +15,12 @@ def load(_save_name):
         imported_dic = json.load(open('saves/' + _save_name))
         for char_name, char_data in imported_dic.items():
             charDic[char_name] = char_from_data(char_data)
+
+
+def load_entanglements():
+    if exists('Assets/Expanded_Entanglements.json'):
+        globalVars.imported_expanded_entanglements = json.load(open('Assets/Expanded_Entanglements.json'))
+        globalVars.entanglements_exist = True
 
 
 def save(_save_name):
@@ -32,6 +38,7 @@ def save(_save_name):
 
 def main():
     print("Discord_BOT startup")
+    load_entanglements()
     print("Input savefile used")
     load_dotenv('.env')
     load(input() + "_save.json")

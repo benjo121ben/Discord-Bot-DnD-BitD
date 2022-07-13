@@ -1,0 +1,42 @@
+{
+    "del": {
+        "damage_caused": 118,
+        "damage_healed": 26,
+        "damage_taken": 60,
+        "health": 34,
+        "max_damage": 57,
+        "max_health": 34,
+        "name": "del",
+        "player": "Luke"
+    },
+    "fez": {
+        "damage_caused": 65,
+        "damage_healed": 58,
+        "damage_taken": 58,
+        "health": 51,
+        "max_damage": 24,
+        "max_health": 51,
+        "name": "fez",
+        "player": "Benji"
+    },
+    "olaf": {
+        "damage_caused": 224,
+        "damage_healed": 153,
+        "damage_taken": 170,
+        "health": 68,
+        "max_damage": 58,
+        "max_health": 85,
+        "name": "olaf",
+        "player": "Joseph"
+    },
+    "var": {
+        "damage_caused": 61,
+        "damage_healed": 21,
+        "damage_taken": 0,
+        "health": 51,
+        "max_damage": 34,
+        "max_health": 51,
+        "name": "var",
+        "player": "Andi"
+    }
+}
