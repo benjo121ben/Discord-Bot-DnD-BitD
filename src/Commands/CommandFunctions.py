@@ -62,6 +62,3 @@ def increase_health(*args):
         _health_inc = int(args[1])
         charDic[_char_name].inc_max_health(_health_inc)
         return "character " + _char_name + " health increased by " + str(_health_inc)
-
-
-
