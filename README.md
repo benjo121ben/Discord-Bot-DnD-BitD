@@ -67,7 +67,7 @@ to use the 'db' command, you will have to write '$db' into the chat.
 ### Permissions
 To work properly the bot just needs to be able to have access to a chat on a server where it can send pictures, embeds and messages 
 
-###Local Campaign Tracking
+### Local Campaign Tracking
 The campaign tracking has not yet been integrated with the bot itself and doesn't yet include all stats I would like, but can already be used via command line if you wish to try it out for yourself.
 Just run localRun.py and insert a name for your savefile. If that name already exists, it loads in the existing save file for you to continue.
 
@@ -79,13 +79,14 @@ all command parameters are separated by a space (" ") on input. f.e:
 <em>'ent 2 7'</em>
 to get an entanglement, having rolled a two, and with seven heat on the crew.
 
-###Bot Commands
+### Bot Commands
 <ul>
   <li><strong>db</strong> : [*nr] The bot will send a devils bargain card. nr specifies the amount of cards, up to a maximum of 10. Defaults to one card.  </li>
   <li><strong>ent</strong> : [number_rolled, crew_heat] The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.</li>
 </ul>
 
-###Local Commands
+
+### Local Commands
 <ul>
   <li><strong>addC</strong> : [player_name, char_name, max_health] The bot adds a new PC to the current savefile.</li>
   <li><strong>log</strong> : shows a log of current characters in the savefile.</li>
