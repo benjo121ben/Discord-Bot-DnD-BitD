@@ -89,7 +89,7 @@ def get_game_index(name):
 def add_game(game_name: str, user_name: str) -> str:
     if check_for_game_name(game_name):
         return "Game by this name already exists."
-    game_list.append(Game(game_name, user_name))
+    game_list[game_name] = Game(game_name, user_name)
     return "created Game " + game_name
 
 
