@@ -41,9 +41,8 @@ def main():
     load_entanglements()
     print("Input savefile used")
     load_dotenv('.env')
-    load(input() + "_save.json")
+    #load(input() + "_save.json") #removed json loading, not yet implemented
     print("token:", os.environ.get("DISCORD_TOKEN"))
-    print(globalVars.imported_expanded_entanglements["Cooperation"])
     start_connection(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
 
 

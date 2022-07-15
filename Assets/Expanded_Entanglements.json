@@ -73,7 +73,7 @@
 
 	"Unfair Competition": "A neutral or enemy faction is selling the same services you are selling, with a discount. Choose one of your claims that generate coin. The chosen claim will not work for this downtime. Moreover, you can either hold your ground and kick out the competing faction (-1 status with them) or allow them do to as they please (-2 rep), or deal with the issue some other way (e.g., play it out in detail, diplomatically or not).",
 
-	"Unquiet Dead": "A rogue spirit is drawn to you—perhaps it's a past victim? Acquire the services of an occultist to attempt to destroy or banish it, or deal with it yourself. They can hire an NPC by using the acquire asset downtime activity. Roll the NPC's quality level as a fortune roll to see how well they deal with the spirit.",
+	"Unquiet Dead": "A rogue spirit is drawn to you perhaps it's a past victim? Acquire the services of an occultist to attempt to destroy or banish it, or deal with it yourself. They can hire an NPC by using the acquire asset downtime activity. Roll the NPC's quality level as a fortune roll to see how well they deal with the spirit.",
 
 	"War": "Pick a faction whose status with you is -2. Choose: either forfeit 2 rep per Tier of the faction, or take -1 status with them (and go to war!), due to some offense or some conflicting interests. What is the nature of the conflict? What did you do to enrage them?"
 }
