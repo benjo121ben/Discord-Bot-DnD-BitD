@@ -1,6 +1,5 @@
-import discord
 from discord.ext import commands
-from discord import File
+from discord import File, Embed
 from .Game import *
 import src.Commands
 import src.GlobalVariables as globalVars
@@ -9,28 +8,27 @@ from random import seed
 from random import random
 from datetime import datetime
 
-game_list ={}
 bot = None
+game_list = {}
 seed(datetime.now().timestamp())
 
 
 def start_connection(_command_prefix, _bot_token):
     global bot
     bot = commands.Bot(_command_prefix)
+    bot.load_extension("src.Clocks.clock_commands")
+    print("extensions loaded")
+    check_entanglements()
 
     @bot.event
     async def on_ready():
-        print("looking for entanglements")
-        for col in range(0, 3):
-            for i in range(0, 6):
-                ent_list = Entanglement_sorting_table[col][i]
-                for entanglement in ent_list:
-                    if not globalVars.imported_expanded_entanglements.__contains__(entanglement):
-                        globalVars.entanglements_exist = False
-                        print("missing", entanglement)
-        if not globalVars.entanglements_exist:
-            print("Entanglements disabled, due to missing entanglements.")
+
         print('We have logged in as {0.user}'.format(bot))
+
+    @bot.command(name="r")
+    async def reload(ctx):
+        bot.reload_extension("src.Clocks.clock_commands")
+        await ctx.send("reloaded")
 
     @bot.command(name="db")
     async def devils_bargain(ctx, *args):
@@ -51,7 +49,7 @@ def start_connection(_command_prefix, _bot_token):
             return
         if not globalVars.entanglements_exist:
             ctx.send("Entanglements are missing, therefore this command was automatically deactivated.")
-        column = -1
+        column = None
         if heat <= 3:
             column = 0
         elif heat <= 5:
@@ -64,12 +62,25 @@ def start_connection(_command_prefix, _bot_token):
             return
         rolled -= 1
         ent_list = Entanglement_sorting_table[column][rolled]
-        embed = discord.Embed(title="Entanglements", description="choose one!")
+        embed = Embed(title="Entanglements", description="choose one!")
         for entanglement in ent_list:
             embed.add_field(name=entanglement, value=globalVars.imported_expanded_entanglements[entanglement], inline=True)
         await ctx.send(embed=embed)
 
     bot.run(_bot_token)
+
+
+def check_entanglements():
+    print("looking for entanglements")
+    for col in range(0, 3):
+        for i in range(0, 6):
+            ent_list = Entanglement_sorting_table[col][i]
+            for entanglement in ent_list:
+                if not globalVars.imported_expanded_entanglements.__contains__(entanglement):
+                    globalVars.entanglements_exist = False
+                    print("missing", entanglement)
+    if not globalVars.entanglements_exist:
+        print("Entanglements disabled, due to missing entanglements.")
 
 
 def check_for_game_name(name) -> bool:
@@ -117,4 +128,4 @@ def get_devils_bargain():
     rand = 1 + int(random() * (50 - 1))
     if rand < 10:
         rand = "0" + str(rand)
-    return File("Assets/DevilsBargain-" + str(rand) + ".png")
+    return File("Assets/DB/DevilsBargain-" + str(rand) + ".png")

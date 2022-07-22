@@ -6,8 +6,6 @@ import src.GlobalVariables as globalVars
 from os.path import exists
 from src.Game import *
 
-save = None
-
 
 def load(_save_name):
     if exists('saves/' + _save_name):

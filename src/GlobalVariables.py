@@ -3,6 +3,8 @@ charDic = {}
 currentComm = None
 comm_name = None
 entanglements_exist = False
+test_str = None
+
 
 
 
