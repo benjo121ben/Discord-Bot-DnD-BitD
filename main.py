@@ -39,8 +39,11 @@ def main():
     load_entanglements()
     print("Input savefile used")
     load_dotenv('.env')
-    #load(input() + "_save.json") #removed json loading, not yet implemented
-    print("token:", os.environ.get("DISCORD_TOKEN"))
+    load(input() + "_save.json")
+    if os.environ.get("DISCORD_TOKEN") is None:
+        print("TOKEN IS EMPTY.")
+        print("restart the bot after inserting another token")
+        return
     start_connection(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
 
 

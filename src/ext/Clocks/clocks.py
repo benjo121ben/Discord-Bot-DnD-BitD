@@ -88,11 +88,11 @@ def load_single_clock_files(clock_folder : str):
             clock_sub_files_dic[tick] = \
                 file_path
         else:
-            print("Clock " + str(clock_size) + " is missing files and has been deactivated.")
+            print("Clock " + str(clock_size) + " is missing files and has been deactivated")
             break
     if len(clock_sub_files_dic) == clock_size + 1:
         clock_files_dic[clock_size] = clock_sub_files_dic
-        print("clock " + str(clock_size) + " loaded.")
+        print("clock " + str(clock_size) + " loaded")
 
 
 

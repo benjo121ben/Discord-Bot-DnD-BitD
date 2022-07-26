@@ -1,6 +1,7 @@
 from src.Character import *
 from os.path import exists
-from src import Commands, GlobalVariables
+from src import GlobalVariables
+from src.ext import Commands
 import json
 import os
 

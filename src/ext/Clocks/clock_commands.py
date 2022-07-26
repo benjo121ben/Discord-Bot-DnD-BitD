@@ -1,5 +1,4 @@
 from discord.ext import commands
-from discord import Embed
 from .clocks import *
 
 
@@ -67,3 +66,6 @@ def setup(bot: commands.bot.Bot):
     bot.add_command(show_clocks)
     bot.add_command(tick_clock)
     bot.add_command(remove_clock)
+
+    print("clock extension loaded")
+    print()
