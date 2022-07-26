@@ -3,8 +3,10 @@ from .HelperFunctions import *
 
 
 def log(*_):
+    ret_string = ""
     for char in charDic.values():
-        print(char)
+        ret_string += str(char) + "\n"
+    return ret_string
 
 
 # adds new character to the roster, binding them to a player
@@ -23,7 +25,7 @@ def cause_damage(*args):
         _char_name = args[0]
         _dam = int(args[1])
         charDic[_char_name].cause_dam(_dam)
-        return "character " +  _char_name, " caused " + str(_dam) + " damage "
+        return "character " + _char_name + " caused " + str(_dam) + " damage"
 
 
 # adds Damage taken to a character

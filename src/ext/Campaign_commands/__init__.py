@@ -1,14 +1,17 @@
-from src.GlobalVariables import charDic
 from .CommandFunctions import *
 
 
 # the command used in order to execute all other commands
-def execute_command(*args):
+def execute_command(*args) -> str:
     _command_name = args[0]
     if _command_name in localCommDic.keys():
-        localCommDic[_command_name](*args[1:])
+        try:
+            return localCommDic[_command_name](*args[1:])
+        except CommandException as err:
+            return str(err)
+
     else:
-        print("Command does not exist")
+        return "Command does not exist"
 
 
 # all used commands need to be added to the dictionary in order

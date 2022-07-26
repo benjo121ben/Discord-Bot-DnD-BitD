@@ -1,7 +1,7 @@
 from src.Character import *
 from os.path import exists
 from src import GlobalVariables
-from src.ext import Commands
+from src.ext import Campaign_commands as comm
 import json
 import os
 
@@ -36,7 +36,7 @@ def input_loop(_save_name, _available_commands):
     print()
     if _passed_args[0] == 'q':
         exit()
-    Commands.execute_command(*_passed_args)
+    print(comm.execute_command(*_passed_args))
     save(_save_name)
     print()
     print("-----------------------------")
@@ -46,7 +46,7 @@ def main():
     print("Input savefile name")
     _save_name = input() + "_save.json"
     load(_save_name)
-    _available_commands = ", ".join(Commands.localCommDic.keys())
+    _available_commands = ", ".join(comm.localCommDic.keys())
     print("---setup-complete---")
     while True:
         input_loop(_save_name, _available_commands)
