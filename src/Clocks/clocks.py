@@ -8,6 +8,10 @@ clock_files_dic = {}
 clock_save_path = "saves/clock_saves.json"
 
 
+class NoClockImageException(Exception):
+    pass
+
+
 class Clock:
     def __init__(self, _name: str, _size: int, _ticks: int = 0):
         self.name: str = _name
@@ -24,11 +28,11 @@ class Clock:
         return self
 
     def __str__(self):
-        return "Clock:{" + self.name + "," + str(self.existing_ticks) + "/" + str(self.size) + "}"
+        return self.name + " Clock:{" + str(self.existing_ticks) + "/" + str(self.size) + "}"
 
     def get_embed_info(self) -> (str, File):
         if not self.size in clock_files_dic:
-            raise Exception("clocks of this size cannot be printed, missing files")
+            raise NoClockImageException("clocks of this size cannot be printed, missing files")
         return self.name, File(clock_files_dic[self.size][self.existing_ticks])
 
 

@@ -6,9 +6,14 @@ from .clocks import *
 async def print_clock(ctx, clock):
     try:
         await ctx.send("**" + clock.name + "**", file=clock.get_embed_info()[1])
-    except Exception as err:
-        await ctx.send("*an error has occured, please contact your admin or the developer of this bot.*")
-        print("error in clock print:", err)
+    except NoClockImageException as err:
+        await ctx.send("Clocks of this size have missing output images\n**"
+                       + str(clock) + "**")
+        print(
+            "clock of size ",
+            str(clock.size),
+            "was printed without image, make sure images are included for all clocks needed."
+        )
 
 
 @commands.command(name="addClock")
@@ -34,9 +39,16 @@ async def remove_clock(ctx, clock_name: str):
 
 
 @commands.command(name="show")
-async def show_clocks(ctx):
-    for name, clock in clocks_save_dic.items():
-        await print_clock(ctx, clock)
+async def show_clocks(ctx, *args):
+    await ctx.send("printing clocks")
+
+    if len(args) > 0:
+        for name in args:
+            if clocks_save_dic.__contains__(name):
+                await print_clock(ctx, clocks_save_dic[name])
+    else:
+        for _, clock in clocks_save_dic.items():
+            await print_clock(ctx, clock)
 
 
 @commands.command(name="tick")

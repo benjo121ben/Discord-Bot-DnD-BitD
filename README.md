@@ -60,8 +60,6 @@ Open the .env_example file inside the Bot's root folder. It will look something 
 In order to get the bot running, you will have to paste that TOKEN in between the "" and rename the '.env_example' file into '.env'.
 You can also set the command character to be the desired character you wish to use for this bot's commands. All messages starting with that character will be interpreted as commands
 
-To then run the bot you need to run main.py. If you use a venv inside the root folder, you can also just use the batch file to run the bot
-
 f.e. if you set COMMAND_CHAR = "$"
 to use the 'db' command, you will have to write '$db' into the chat.
 
