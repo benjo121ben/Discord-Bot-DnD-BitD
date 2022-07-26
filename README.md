@@ -24,32 +24,32 @@ The bot was generally designed for two purposes:
 The bot is designed to track multiple Player characters and their stats in multiple games of DnD at the same time. Stats referring not to the stats on a character sheet, but overarching campaign stats, such as "Enemies killed, damage done, damage taken". The bot should keep track of these stats. <strong>This feature is not yet fully implemented</strong>. There are still some commands I wish to add, and stats I wish to track that will be added soon
 
 ### Devils Bargains and Entanglements
-On request, the bot sends a random Devil's Bargain Card, containing two devils bargains to get the GM thinking. These are for when you don't have an Idea or you just like the input.
+On request, the bot sends a random Devil's Bargain Card, containing two devils bargains to get the GM thinking. These are for when you don't have an Idea or you just like the input.  
 It can also show you the appropriate entanglements, depending on the amount of heat you have and what you rolled.
 
 ### Progress Clocks
-After a request from someone on the BitD discord, I included the option to create clocks, tick them and output them.
+After a request from someone on the BitD discord, I included the option to create clocks, tick them and output them.  
 Though it is possible to create clocks of greater sizes and tick them, at the moment it is only possible to output images of clocks of size 4, 6 and 8, since the images are not created dynamically. All other clocks are only output via text.
 
 ## Technologies
-Project is created with:
-Python: 3.10
-discord.py 1.7.3
-with python-dotenv 0.20
+Project is created with:  
+Python: 3.10  
+discord.py 1.7.3  
+with python-dotenv 0.20  
 
-The amazing Devil's Bargains - Card Deck was posted for free by the awesome reddit user u/Consistent-Tie-4394.
-You can look at his reddit post on the BitD reddit:
+The amazing Devil's Bargains - Card Deck was posted for free by the awesome reddit user u/Consistent-Tie-4394.  
+You can look at his reddit post on the BitD reddit:  
 https://www.reddit.com/r/bladesinthedark/comments/qh43y6/devils_bargains_card_deck/
 
-Or directly download it from his google drive:
+Or directly download it from his google drive:  
 https://drive.google.com/drive/folders/14vCEjWrja7fE4dtpP89vS6RZpcdGjmpH?usp=sharing
 
 
-The expanded Entanglements Table was created by the reddit user u/Lupo_1982.
-You can look at his reddit post on the BitD reddit:
+The expanded Entanglements Table was created by the reddit user u/Lupo_1982.  
+You can look at his reddit post on the BitD reddit:  
 https://www.reddit.com/r/bladesinthedark/comments/mrzj9x/just_created_an_expanded_entanglements_table/
 
-Or directly download it from his google drive:
+Or directly download it from his google drive:  
 https://drive.google.com/file/d/1mUHHYdV0VU8Ey69oUzMxeLc1lMavFohC/view?usp=sharing
 
 The Clock Images were <strong>NOT</strong> created by me, I still need to find the source and will include it once I find it.
@@ -58,39 +58,40 @@ The Clock Images were <strong>NOT</strong> created by me, I still need to find t
 ## Using the Bot
 
 ### Bot Key and Command Character
-All discord bots require a unique BOT-Token, which you get when you create a Discord bot on the Discord Developer Website.
-Open the .env_example file inside the Bot's root folder. It will look something like this:
+All discord bots require a unique BOT-Token, which you get when you create a Discord bot on the Discord Developer Website.  
+Open the .env_example file inside the Bot's root folder. It will look something like this:  
 
-<em>DISCORD_TOKEN=""</em>
+<em>DISCORD_TOKEN=""</em>  
 <em>COMMAND_CHAR=""</em>
 
-In order to get the bot running, you will have to paste that TOKEN in between the "" and rename the '.env_example' file into '.env'.
+In order to get the bot running, you will have to paste that TOKEN in between the "" and rename the '.env_example' file into '.env'.  
 You can also set the command character to be the desired character you wish to use for this bot's commands. All messages starting with that character will be interpreted as commands
 
 
-f.e. if you set COMMAND_CHAR = "$"
+f.e. if you set COMMAND_CHAR = "$"  
 to use the 'db' command, you will have to write '$db' into the chat.
 
 ### Permissions
-To work properly, the bot needs to be able to send and read messages as well as attach files and send embeds on the server.
+To work properly, the bot needs to be able to send and read messages as well as attach files and send embeds on the server.  
 If you message it privately, everything should work out of the gate.
 
 ### Running the Bot
-To run the bot you need to run main.py. If you use a venv inside the root folder for all of the packages, you can also just use the batch file to run the bot.
+To run the bot you need to run main.py. If you use a venv inside the root folder for all of the packages, you can also just use the batch file to run the bot.  
 The bot will ask you to input a savefile name and will then try to load that savefile. If no savefile of that name is found, it creates a new one. 
 
 ### Local Campaign Tracking
-All the campaign tracking functions can also be run locally, without the need of a Discord Bot.
+All the campaign tracking functions can also be run locally, without the need of a Discord Bot.  
 Just run localRun.py and insert a name for your savefile. If that name already exists, it loads in the existing save file for you to continue.
 
 ## Commands
-These are all commands implemented so far.
-parameters with a '*' are optional
-paramteres with ... can have multiple identical parameters
+These are all commands implemented so far.  
 
-all command parameters are separated by a space (" ") on input. f.e:
-<em>'ent 2 7'</em>
+all command parameters are separated by a space (" ") on input. f.e:  
+<em>'ent 2 7'</em>  
 to get an entanglement, having rolled a two, and with seven heat on the crew.
+
+* parameters with a star (*) are optional  
+* parameters with ... can have multiple identical parameters
 
 ### Bot Commands
 <strong>Devils Bargains and Entanglements</strong>
@@ -118,5 +119,3 @@ to get an entanglement, having rolled a two, and with seven heat on the crew.
   <li><strong>healm</strong> : [char_name] fully heals a character, increasing their health to the max and increasing their "damage healed" stat by the difference. This is used for long rests in DnD</li>
   <li><strong>inc</strong> : [char_name, amount] Adds the amount to a characters maximum health and health. permanently increasing their maximum health.</li>
 </ul>
-
-
