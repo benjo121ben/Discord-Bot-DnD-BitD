@@ -1,7 +1,7 @@
 from src.Character import *
 from os.path import exists
 from src import GlobalVariables
-from src.ext import Campaign_commands as comm
+from src.ext import Campaign as comm
 import json
 import os
 

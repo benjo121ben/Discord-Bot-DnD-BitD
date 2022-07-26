@@ -1,4 +1,9 @@
-from .CommandFunctions import *
+from .CommandFunctions import setup_commands
+from .packg_variables import localCommDic
+from ..command_exceptions import CommandException
+
+
+setup_commands()
 
 
 # the command used in order to execute all other commands
@@ -14,14 +19,6 @@ def execute_command(*args) -> str:
         return "Command does not exist"
 
 
-# all used commands need to be added to the dictionary in order
-# to work
-localCommDic = {
-    'addC': add_char,
-    'cause': cause_damage,
-    'take': take_damage,
-    'inc': increase_health,
-    'heal': heal,
-    'healm': heal_max,
-    'log': log
-}
+
+
+

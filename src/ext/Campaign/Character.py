@@ -1,6 +1,3 @@
-from os import linesep as endl
-import json
-
 
 class Character:
 
@@ -13,6 +10,19 @@ class Character:
         self.damage_caused = damage_caused
         self.damage_healed = damage_healed
         self.max_damage = max_damage
+
+    def to_json(self):
+        test = {
+            'player': self.player,
+            'name': self.name,
+            "health": self.health,
+            "max_health": self.max_health,
+            "damage_taken": self.damage_taken,
+            "damage_caused": self.damage_caused,
+            "damage_healed": self.damage_healed,
+            "max_damage": self.max_damage
+        }
+        return self.__dict__
 
     def cause_dam(self, dam: int):
         self.damage_caused += dam
@@ -44,26 +54,9 @@ class Character:
             "healed: " + str(self.damage_healed)
 
 
-def toJSON(character):
-    return {
-        'player': character.player,
-        'name': character.name,
-        "health": character.health,
-        "max_health": character.max_health,
-        "max_damage": character.max_damage,
-        "damage_taken": character.damage_taken,
-        "damage_caused": character.damage_caused,
-        "damage_healed": character.damage_healed
-    }
-
-
 def char_from_data(data):
     char = Character(data['player'], data['name'], data['max_health'])
-    char.health = data['health']
-    char.max_damage = data['max_damage']
-    char.damage_taken = data['damage_taken']
-    char.damage_caused = data['damage_caused']
-    char.damage_healed = data['damage_healed']
+    char.__dict__ = data
     return char
 
 

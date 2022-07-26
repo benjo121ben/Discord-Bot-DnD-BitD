@@ -1,14 +1,11 @@
 from discord.ext import commands
-from .Game import *
-from random import seed
-from datetime import datetime
+
 
 bot = None
 ext_base_path = "src.ext."
-seed(datetime.now().timestamp())
 
 
-def start_connection(_command_prefix, _bot_token):
+def start_bot(_command_prefix, _bot_token):
     global bot
     bot = commands.Bot(_command_prefix)
     load_extensions(bot)
@@ -34,10 +31,10 @@ def load_extensions(_bot, reload=False):
         else:
             _bot.load_extension(ext_base_path + extension)
 
-    print("\nloading extensions\n")
+    print("\n---------------------LOADING EXTENSIONS---------------------\n")
+    load_ext("Campaign.campaign_commands")
     load_ext("Clocks.clock_commands")
-    load_ext("Entangle_DevilsBargains.Entanglements_commands")
-    load_ext("Entangle_DevilsBargains.DevilsB_commands")
-    print("extensions loaded")
+    load_ext("Entangle_DevilsBargains.Ent_DB_commands")
+    print("---------------------EXTENSIONS LOADED---------------------")
     print()
 
