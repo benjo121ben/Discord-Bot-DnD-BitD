@@ -2,7 +2,7 @@ from src.Character import Character
 from .HelperFunctions import *
 
 
-def log(*_):
+def log(*_) -> str:
     ret_string = ""
     for char in charDic.values():
         ret_string += str(char) + "\n"
@@ -11,7 +11,7 @@ def log(*_):
 
 # adds new character to the roster, binding them to a player
 # command usage: addC player_name char_name max_health
-def add_char(*args):
+def add_char(*args) -> str:
     if check_command_arg_len(3, *args):
         _player_name, _char_name, _max_health = args
         _max_health = int(args[2])
@@ -20,7 +20,7 @@ def add_char(*args):
 
 
 # command usage: cause char_name damage
-def cause_damage(*args):
+def cause_damage(*args) -> str:
     if check_command_arg_len(2, *args) and check_char_name(args[0]):
         _char_name = args[0]
         _dam = int(args[1])
@@ -30,7 +30,7 @@ def cause_damage(*args):
 
 # adds Damage taken to a character
 # command usage: take char_name damage
-def take_damage(*args):
+def take_damage(*args) -> str:
     if check_command_arg_len(2, *args) and check_char_name(args[0]):
         _char_name = args[0]
         _dam = int(args[1])
@@ -40,16 +40,21 @@ def take_damage(*args):
 
 # heals character to their health maximum, corresponds to a long rest in D&D
 # command usage: healm char_name
-def heal_max(*args):
+def heal_max(*args) -> str:
     if check_command_arg_len(1, *args) and check_char_name(args[0]):
         _char_name = args[0]
-        charDic[_char_name].heal_max()
-        return "character " + _char_name + " healed to their maximum"
+        if _char_name == "all":
+            for char in charDic.values():
+                char.heal_max()
+            return "all characters were healed"
+        else:
+            charDic[_char_name].heal_max()
+            return "character " + _char_name + " healed to their maximum"
 
 
 # heals by a certain amount
 # command usage: heal char_name amount
-def heal(*args):
+def heal(*args) -> str:
     if check_command_arg_len(2, *args) and check_char_name(args[0]):
         _char_name = args[0]
         _healed = int(args[1])
@@ -58,7 +63,7 @@ def heal(*args):
 
 
 # command usage: inc char_name amount
-def increase_health(*args):
+def increase_health(*args) -> str:
     if check_command_arg_len(2, *args) and check_char_name(args[0]):
         _char_name = args[0]
         _health_inc = int(args[1])

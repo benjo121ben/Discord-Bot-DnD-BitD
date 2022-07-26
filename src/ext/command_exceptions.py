@@ -2,12 +2,18 @@ class CommandException(Exception):
     pass
 
 
-class InvalidArgumentAmountException(CommandException):
-    def __init__(self, nr_expected: int, infinite=False):
+class NotEnoughArgumentsException(CommandException):
+    def __init__(self, min_args: int, infinite=False):
         message = "Missing command Arguments, expected "
         if not infinite:
-            message = "Missing command Arguments, expected at least"
-        super(InvalidArgumentAmountException, self).__init__(message + str(nr_expected))
+            message = "Missing command Arguments, expected at least "
+        super(NotEnoughArgumentsException, self).__init__(message + str(min_args))
+
+
+class TooManyArgumentsException(CommandException):
+    def __init__(self, max_args: int):
+        message = "Too many command Arguments, expected "
+        super(TooManyArgumentsException, self).__init__(message + str(max_args))
 
 
 class InvalidArgumentException(CommandException):
