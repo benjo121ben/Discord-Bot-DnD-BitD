@@ -26,6 +26,14 @@ async def take(ctx, char_name: str, amount: int):
         await ctx.send(err)
 
 
+@commands.command(name="takeR")
+async def takeR(ctx, char_name: str, amount: int):
+    try:
+        await ctx.send(take_damage_res(char_name, amount))
+    except CommandException as err:
+        await ctx.send(err)
+
+
 @commands.command(name="inc")
 async def increase(ctx, char_name: str, amount: int):
     try:
@@ -62,6 +70,7 @@ def setup(bot: commands.bot.Bot):
     bot.add_command(add_c)
     bot.add_command(cause)
     bot.add_command(take)
+    bot.add_command(takeR)
     bot.add_command(heal_single)
     bot.add_command(full_h)
     bot.add_command(increase)

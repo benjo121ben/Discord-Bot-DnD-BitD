@@ -47,6 +47,17 @@ def take_damage(*args) -> str:
         return "character " + _char_name + " takes " + str(_dam) + " damage"
 
 
+# adds Damage taken to a character
+# command usage: take char_name damage
+def take_damage_res(*args) -> str:
+    if check_min_command_arg_len(2, *args) and check_char_name(args[0]):
+        _char_name = args[0]
+        _dam = int(args[1])
+        charDic[_char_name].take_dam_res(_dam)
+        save()
+        return "character " + _char_name + " takes " + str(_dam/2) + " damage"
+
+
 # heals character to their health maximum, corresponds to a long rest in D&D
 # command usage: healm char_name
 def heal_max(*args) -> str:
