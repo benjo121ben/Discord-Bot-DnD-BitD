@@ -55,7 +55,7 @@ def take_damage_res(*args) -> str:
         _dam = int(args[1])
         charDic[_char_name].take_dam_res(_dam)
         save()
-        return "character " + _char_name + " takes " + str(_dam/2) + " damage"
+        return "character " + _char_name + " takes " + str(int(_dam/2)) + " damage"
 
 
 # heals character to their health maximum, corresponds to a long rest in D&D

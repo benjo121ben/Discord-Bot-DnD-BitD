@@ -35,7 +35,7 @@ class Character:
 
     def take_dam_res(self, dam: int):
         self.damage_taken += dam
-        self.health = max(self.health - dam/2, 0)
+        self.health = max(self.health - int(dam/2), 0)
 
     def heal_dam(self, health: int):
         self.damage_healed += health
