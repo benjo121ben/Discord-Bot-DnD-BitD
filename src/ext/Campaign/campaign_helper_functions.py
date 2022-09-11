@@ -4,14 +4,23 @@ from os.path import exists
 from os import mkdir
 from .Character import char_from_data
 import json
+from discord import File
 
 save_file_name = ""
 
 
-def get_save_file():
+def get_file():
+    if not exists('saves/' + save_file_name):
+        return None
+    return File('saves/' + save_file_name)
+
+
+def get_setup_file_name():
     global save_file_name
-    print("Input savefile used")
-    load(input() + "_save.json")
+    if save_file_name == "":
+        print("Input savefile used")
+        save_file_name = input() + "_save.json"
+    load(save_file_name)
 
 
 def load(_save_name):
@@ -19,6 +28,7 @@ def load(_save_name):
     save_file_name = _save_name
     if exists('saves/' + _save_name):
         print("Savefile exists")
+        print("Loaded " + _save_name)
         imported_dic = json.load(open('saves/' + _save_name))
         for char_name, char_data in imported_dic.items():
             charDic[char_name] = char_from_data(char_data)
@@ -38,20 +48,6 @@ def save():
             temp = char.to_json()
             output[temp['name']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
-
-
-def check_min_command_arg_len(min: int, *args, throw_error=True):
-    return check_contained_command_arg_len(min, -1, *args, throw_error)
-
-
-# This checks in case of missing parameters or invalid amounts. does not cover multiple versions of same Command
-def check_contained_command_arg_len(min: int, max: int, *args, throw_error=True):
-    if max != -1 and len(args) > max:
-        if throw_error:
-            raise TooManyArgumentsException(max)
-    elif len(args) < min:
-            return False
-    return True
 
 
 # is there to avoid functions being called on a character that doesn't exist

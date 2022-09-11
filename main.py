@@ -1,4 +1,5 @@
 import os
+from src import GlobalVariables
 from dotenv import load_dotenv
 from src.Bot_Setup import start_bot
 
@@ -6,6 +7,8 @@ from src.Bot_Setup import start_bot
 def main():
     print("Discord_BOT startup")
     load_dotenv('.env')
+    GlobalVariables.cache_folder = int(os.environ.get("CLOUD_SAVE_CHANNEL"))
+    GlobalVariables.admin_id = int(os.environ.get("ADMIN_ID"))
     if os.environ.get("DISCORD_TOKEN") is None:
         print("TOKEN IS EMPTY.")
         print("restart the bot after inserting another token")

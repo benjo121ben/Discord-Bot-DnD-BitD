@@ -1,27 +1,29 @@
 from discord.ext import commands
+from src import GlobalVariables, command_helper_functions as hlp_f
 
 
-bot = None
 ext_base_path = "src.ext."
 
 
 def start_bot(_command_prefix, _bot_token):
-    global bot
-    bot = commands.Bot(_command_prefix)
-    load_extensions(bot)
+    GlobalVariables.bot = commands.Bot(_command_prefix)
+    load_extensions(GlobalVariables.bot)
 
-    @bot.event
+    @GlobalVariables.bot.event
     async def on_ready():
         print("Bot startup completed")
-        print('We have logged in as {0.user}'.format(bot))
+        print('We have logged in as {0.user}'.format(GlobalVariables.bot))
 
-    @bot.command(name="r")
+    @GlobalVariables.bot.command(name="r")
     async def reload(ctx):
-        load_extensions(bot, reload=True)
+        if not hlp_f.check_admin(ctx):
+            await ctx.send("you are not authorized to use this command")
+            return
+        load_extensions(GlobalVariables.bot, reload=True)
         await ctx.send("reloaded")
 
     print("starting up bot")
-    bot.run(_bot_token)
+    GlobalVariables.bot.run(_bot_token)
 
 
 def load_extensions(_bot, reload=False):

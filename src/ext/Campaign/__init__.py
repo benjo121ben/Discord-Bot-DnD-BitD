@@ -3,9 +3,6 @@ from .packg_variables import localCommDic
 from ..command_exceptions import CommandException
 
 
-setup_commands()
-
-
 # the command used in order to execute all other commands
 def execute_command(*args) -> str:
     _command_name = args[0]

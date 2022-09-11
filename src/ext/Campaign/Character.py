@@ -1,7 +1,6 @@
-
 class Character:
 
-    def __init__(self, player_name, name, max_health, damage_taken=0, damage_caused=0, damage_healed=0,max_damage=0):
+    def __init__(self, player_name, name, max_health, damage_taken=0, damage_caused=0, damage_healed=0, max_damage=0):
         self.player = player_name
         self.name = name
         self.health = max_health
@@ -15,12 +14,12 @@ class Character:
         test = {
             'player': self.player,
             'name': self.name,
-            "health": self.health,
-            "max_health": self.max_health,
-            "damage_taken": self.damage_taken,
-            "damage_caused": self.damage_caused,
-            "damage_healed": self.damage_healed,
-            "max_damage": self.max_damage
+            'health': self.health,
+            'max_health': self.max_health,
+            'damage_taken': self.damage_taken,
+            'damage_caused': self.damage_caused,
+            'damage_healed': self.damage_healed,
+            'max_damage': self.max_damage
         }
         return self.__dict__
 
@@ -52,10 +51,10 @@ class Character:
 
     def __str__(self):
         return "------------------\n" +\
-            self.name + "/" + self.player + "    " + \
+            self.name + " " + \
             "health: " + str(self.health) + "/" + str(self.max_health) + "    " + \
-            "damage c/t: " + str(self.damage_caused) + "/" + str(self.damage_taken) + "    " + \
-            "healed: " + str(self.damage_healed)
+            "damage caused/taken/maxDam: " + str(self.damage_caused) + "/" + str(self.damage_taken) + "/" + \
+               str(self.max_damage) + "    healed: " + str(self.damage_healed)
 
 
 def char_from_data(data):
