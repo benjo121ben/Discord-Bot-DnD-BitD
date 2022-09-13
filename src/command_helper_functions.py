@@ -1,9 +1,9 @@
 from src.ext.command_exceptions import *
-from discord.ext.commands import Context
+from discord.ext.bridge import BridgeExtContext
 from src import GlobalVariables
 
 
-def check_admin(ctx: Context) -> bool:
+def check_admin(ctx: BridgeExtContext) -> bool:
     if GlobalVariables.admin_id is None:
         return True
     else:

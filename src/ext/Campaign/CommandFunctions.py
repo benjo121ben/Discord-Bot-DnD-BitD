@@ -18,11 +18,11 @@ def log(*_) -> str:
 # adds new character to the roster, binding them to a player
 # command usage: addC player_name char_name max_health
 def add_char(*args) -> str:
-    check_min_command_arg_len(3, *args)
+    check_min_command_arg_len(2, *args)
 
-    _player_name, _char_name, _max_health = args
-    _max_health = int(args[2])
-    charDic[_char_name] = Character(_player_name, _char_name,_max_health)
+    _char_name, _ = args
+    _max_health = int(args[1])
+    charDic[_char_name] = Character("", _char_name, _max_health)
     save()
     return "character " + _char_name + " added"
 

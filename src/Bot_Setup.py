@@ -37,9 +37,9 @@ def load_extensions(_bot, reload=False):
             _bot.load_extension(ext_base_path + extension)
 
     print("\n---------------------LOADING EXTENSIONS---------------------\n")
-    load_ext("Campaign.campaign_commands")
-    load_ext("Clocks.clock_commands")
-    load_ext("Entangle_DevilsBargains.Ent_DB_commands")
+    load_ext("Campaign.CampaignCog")
+    load_ext("Clocks.ClockCog")
+    load_ext("Entangle_DevilsBargains.BladesUtilityCog")
     print("---------------------EXTENSIONS LOADED---------------------")
     print()
 
