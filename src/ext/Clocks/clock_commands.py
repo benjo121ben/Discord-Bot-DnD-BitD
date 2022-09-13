@@ -6,9 +6,9 @@ from .clocks import *
 
 async def print_clock(ctx, clock):
     try:
-        await ctx.send("**" + clock.name + "**", file=clock.get_embed_info()[1])
+        await ctx.respond("**" + clock.name + "**", file=clock.get_embed_info()[1])
     except NoClockImageException as err:
-        await ctx.send("Clocks of this size have missing output images\n**"
+        await ctx.respond("Clocks of this size have missing output images\n**"
                        + str(clock) + "**")
         print(
             "clock of size ",
@@ -20,12 +20,12 @@ async def print_clock(ctx, clock):
 @commands.slash_command(name="add_clock")
 async def add_clock(ctx, clock_name: str, clock_size: int, clock_ticks: int = 0):
     if clock_name in clocks_save_dic:
-        await ctx.send( content="This clock already exists!\n")
+        await ctx.respond( content="This clock already exists!\n")
         await print_clock(ctx, clocks_save_dic[clock_name])
     else:
         clocks_save_dic[clock_name] = Clock(clock_name, clock_size, clock_ticks)
         save_clocks()
-        await ctx.send("Clock created")
+        await ctx.respond("Clock created")
         await print_clock(ctx, clocks_save_dic[clock_name])
 
 
@@ -34,14 +34,14 @@ async def remove_clock(ctx, clock_name: str):
     if clock_name in clocks_save_dic:
         del clocks_save_dic[clock_name]
         save_clocks()
-        await ctx.send( content="The clock has been deleted!\n")
+        await ctx.respond( content="The clock has been deleted!\n")
     else:
-        await ctx.send("Clock does not exist: " + clock_name)
+        await ctx.respond("Clock does not exist: " + clock_name)
 
 
 @commands.slash_command(name="show_clocks")
 async def show_clocks(ctx, *args):
-    await ctx.send("printing clocks")
+    await ctx.respond("printing clocks")
 
     if len(args) > 0:
         for name in args:

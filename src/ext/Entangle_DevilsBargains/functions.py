@@ -19,7 +19,7 @@ devils_bargains_enabled = False
 
 async def db_functionality(ctx, amount: int = 1):
     if not devils_bargains_enabled:
-        await ctx.send("Devils Bargains are missing, therefore this command was automatically deactivated.")
+        await ctx.respond("Devils Bargains are missing, therefore this command was automatically deactivated.")
         return
 
     if amount > 1:
@@ -27,25 +27,25 @@ async def db_functionality(ctx, amount: int = 1):
         file_list: list[File] = []
         for i in range(0, amount):
             file_list.append(get_devils_bargain())
-        await ctx.send(files=file_list)
+        await ctx.respond(files=file_list)
     else:
-        await ctx.send(file=get_devils_bargain())
+        await ctx.respond(file=get_devils_bargain())
 
 
 async def db_single_functionality(ctx, nr: int):
     if not devils_bargains_enabled:
-        await ctx.send("Devils Bargains are missing, therefore this command was automatically deactivated.")
+        await ctx.respond("Devils Bargains are missing, therefore this command was automatically deactivated.")
         return
 
     if 0 < nr < 51:
-        await ctx.send(file=File(devils_bargain_images_path + "DevilsBargain-" + str(nr) + ".png"))
+        await ctx.respond(file=File(devils_bargain_images_path + "DevilsBargain-" + str(nr) + ".png"))
     else:
-        ctx.send("A card with this number does not exist.")
+        ctx.respond("A card with this number does not exist.")
 
 
 async def entanglement_functionality(ctx, rolled: int, heat: int):
     if not entanglements_enabled:
-        await ctx.send("Entanglements are missing, therefore this command was automatically deactivated.")
+        await ctx.respond("Entanglements are missing, therefore this command was automatically deactivated.")
         return
 
     column = None
@@ -57,14 +57,14 @@ async def entanglement_functionality(ctx, rolled: int, heat: int):
         column = 2
 
     if rolled < 1 or rolled > 6:
-        await ctx.send("The number rolled has to be between 1 and 6")
+        await ctx.respond("The number rolled has to be between 1 and 6")
         return
     rolled -= 1
     ent_list = Entanglement_sorting_table[column][rolled]
     embed = Embed(title="Entanglements", description="choose one!")
     for entanglement in ent_list:
         embed.add_field(name=entanglement, value=imported_expanded_entanglements[entanglement], inline=True)
-    await ctx.send(embed=embed)
+    await ctx.respond(embed=embed)
 
 
 def get_devils_bargain(nr: int = -1):
