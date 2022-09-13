@@ -45,9 +45,17 @@ class Character:
         self.damage_healed += diff
         self.health = self.max_health
 
-    def inc_max_health(self, health: int):
-        self.max_health += health
-        self.health += health
+    def set_max_health(self, new_max: int):
+        old_max = self.max_health
+        self.max_health = new_max
+        self.health = \
+            max(
+                min(
+                    self.health + (new_max - old_max),
+                    old_max
+                ),
+                0
+            )
 
     def __str__(self):
         return "------------------\n" +\

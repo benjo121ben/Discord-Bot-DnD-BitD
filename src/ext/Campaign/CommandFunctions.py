@@ -93,13 +93,13 @@ def heal(*args) -> str:
     return "character " + _char_name + " healed " + str(_healed)
 
 
-# command usage: inc char_name amount
-def increase_health(*args) -> str:
+# command usage: set_max char_name amount
+def set_max_health(*args) -> str:
     check_min_command_arg_len(2, *args)
     check_char_name(args[0])
     _char_name = args[0]
     _health_inc = int(args[1])
-    charDic[_char_name].inc_max_health(_health_inc)
+    charDic[_char_name].set_max_health(_health_inc)
     save()
     return "character " + _char_name + " health increased by " + str(_health_inc)
 
@@ -115,7 +115,7 @@ def setup_commands():
     add_to_commands('cause', cause_damage)
     add_to_commands('take', take_damage)
     add_to_commands('takeR', take_damage_res)
-    add_to_commands('inc', increase_health)
+    add_to_commands('inc', set_max_health)
     add_to_commands('heal', heal)
     add_to_commands('healm', heal_max)
     add_to_commands('log', log)

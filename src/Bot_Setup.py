@@ -1,4 +1,5 @@
-from discord.ext import commands
+from discord.ext import bridge
+import discord
 from src import GlobalVariables, command_helper_functions as hlp_f
 
 
@@ -6,7 +7,9 @@ ext_base_path = "src.ext."
 
 
 def start_bot(_command_prefix, _bot_token):
-    GlobalVariables.bot = commands.Bot(_command_prefix)
+    intents = discord.Intents.default()
+    intents.message_content = True
+    GlobalVariables.bot = bridge.Bot(command_prefix="!", intents=intents)
     load_extensions(GlobalVariables.bot)
 
     @GlobalVariables.bot.event

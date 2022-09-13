@@ -1,4 +1,6 @@
 from discord.ext import commands
+from discord.ext import bridge
+from discord import slash_command
 from .clocks import *
 
 
@@ -15,7 +17,7 @@ async def print_clock(ctx, clock):
         )
 
 
-@commands.command(name="addClock")
+@commands.slash_command(name="add_clock")
 async def add_clock(ctx, clock_name: str, clock_size: int, clock_ticks: int = 0):
     if clock_name in clocks_save_dic:
         await ctx.send( content="This clock already exists!\n")
@@ -27,7 +29,7 @@ async def add_clock(ctx, clock_name: str, clock_size: int, clock_ticks: int = 0)
         await print_clock(ctx, clocks_save_dic[clock_name])
 
 
-@commands.command(name="remClock")
+@commands.slash_command(name="remove_clock")
 async def remove_clock(ctx, clock_name: str):
     if clock_name in clocks_save_dic:
         del clocks_save_dic[clock_name]
@@ -37,7 +39,7 @@ async def remove_clock(ctx, clock_name: str):
         await ctx.send("Clock does not exist: " + clock_name)
 
 
-@commands.command(name="show")
+@commands.slash_command(name="show_clocks")
 async def show_clocks(ctx, *args):
     await ctx.send("printing clocks")
 
@@ -50,7 +52,7 @@ async def show_clocks(ctx, *args):
             await print_clock(ctx, clock)
 
 
-@commands.command(name="tick")
+@commands.slash_command(name="tick")
 async def tick_clock(ctx, clock_name: str, ticks: int = 1):
     clock = clocks_save_dic.get(clock_name)
     if clock:
@@ -59,13 +61,13 @@ async def tick_clock(ctx, clock_name: str, ticks: int = 1):
         await print_clock(ctx, clock)
 
 
-def setup(bot: commands.bot.Bot):
+def setup(bot: bridge.Bot):
     # Every extension should have this function
     load_clocks()
-    bot.add_command(add_clock)
-    bot.add_command(show_clocks)
-    bot.add_command(tick_clock)
-    bot.add_command(remove_clock)
+    bot.add_application_command(add_clock)
+    bot.add_application_command(show_clocks)
+    bot.add_application_command(tick_clock)
+    bot.add_application_command(remove_clock)
 
     print("clock extension loaded")
     print()
