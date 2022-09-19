@@ -148,7 +148,7 @@ class CampaignCog(commands.Cog):
                 if chat_id is None:
                     raise CommandException("No cloud save channel id assigned or provided")
 
-            await GlobalVariables.bot.get_channel(GlobalVariables.cache_folder).send("cache", file=get_file())
+            await GlobalVariables.bot.get_channel(chat_id).send("cache", file=get_file())
         except Exception as err:
             await ctx.send(str(err))
 
