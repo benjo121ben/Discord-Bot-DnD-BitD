@@ -79,7 +79,7 @@ def check_devils_bargain():
     if not exists(devils_bargain_images_path):
         return
     devils_bargains_enabled = True
-    for i in range(1,50):
+    for i in range(1, 50):
         nr = str(i)
         if i < 10:
             nr = "0" + str(i)

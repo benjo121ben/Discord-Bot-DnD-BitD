@@ -10,12 +10,6 @@ class NotEnoughArgumentsException(CommandException):
         super(NotEnoughArgumentsException, self).__init__(message + str(min_args))
 
 
-class TooManyArgumentsException(CommandException):
-    def __init__(self, max_args: int):
-        message = "Too many command Arguments, expected "
-        super(TooManyArgumentsException, self).__init__(message + str(max_args))
-
-
 class InvalidArgumentException(CommandException):
     def __init__(self, argument_name: str):
         super(InvalidArgumentException, self).__init__("Argument " + argument_name + " has an invalid value")

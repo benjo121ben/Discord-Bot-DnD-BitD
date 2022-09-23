@@ -1,5 +1,5 @@
 from .Character import Character
-from .campaign_helper_functions import *
+from .campaign_helper import *
 from src.command_helper_functions import check_min_command_arg_len
 
 from .packg_variables import localCommDic, charDic
@@ -20,7 +20,10 @@ def log(*_) -> str:
 def add_char(*args) -> str:
     check_min_command_arg_len(2, *args)
 
-    _char_name, _ = args
+    _char_name = args[0]
+    if charDic.__contains__(_char_name):
+        return "a character with this name already exists"
+
     _max_health = int(args[1])
     charDic[_char_name] = Character("", _char_name, _max_health)
     save()
@@ -30,7 +33,7 @@ def add_char(*args) -> str:
 # command usage: cause char_name damage
 def cause_damage(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name(args[0])
+    check_char_name_error_raise(args[0])
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -43,7 +46,7 @@ def cause_damage(*args) -> str:
 # command usage: take char_name damage
 def take_damage(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name(args[0])
+    check_char_name_error_raise(args[0])
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -56,7 +59,7 @@ def take_damage(*args) -> str:
 # command usage: take char_name damage
 def take_damage_res(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name(args[0])
+    check_char_name_error_raise(args[0])
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -75,7 +78,7 @@ def heal_max(*args) -> str:
             char.heal_max()
         save()
         return "all characters were healed"
-    elif check_char_name(args[0]):
+    elif check_char_name_error_raise(args[0]):
         charDic[_char_name].heal_max()
         save()
         return "character " + _char_name + " healed to their maximum"
@@ -85,7 +88,7 @@ def heal_max(*args) -> str:
 # command usage: heal char_name amount
 def heal(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name(args[0])
+    check_char_name_error_raise(args[0])
     _char_name = args[0]
     _healed = int(args[1])
     charDic[_char_name].heal_dam(_healed)
@@ -96,7 +99,7 @@ def heal(*args) -> str:
 # command usage: set_max char_name amount
 def set_max_health(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name(args[0])
+    check_char_name_error_raise(args[0])
     _char_name = args[0]
     _health_inc = int(args[1])
     charDic[_char_name].set_max_health(_health_inc)
@@ -108,14 +111,12 @@ def setup_commands():
     def add_to_commands(com_name: str, command):
         localCommDic[com_name] = command
 
-    get_setup_file_name()  # make user insert a savefile
-
     # all used commands need to be added in order to work
     add_to_commands('addC', add_char)
     add_to_commands('cause', cause_damage)
     add_to_commands('take', take_damage)
     add_to_commands('takeR', take_damage_res)
-    add_to_commands('inc', set_max_health)
+    add_to_commands('set_health', set_max_health)
     add_to_commands('heal', heal)
     add_to_commands('healm', heal_max)
     add_to_commands('log', log)
