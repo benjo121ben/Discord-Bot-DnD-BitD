@@ -33,7 +33,7 @@ def add_char(*args) -> str:
 # command usage: cause char_name damage
 def cause_damage(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name_error_raise(args[0])
+    check_char_name(args[0], raise_error=True)
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -46,7 +46,7 @@ def cause_damage(*args) -> str:
 # command usage: take char_name damage
 def take_damage(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name_error_raise(args[0])
+    check_char_name(args[0], raise_error=True)
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -59,7 +59,7 @@ def take_damage(*args) -> str:
 # command usage: take char_name damage
 def take_damage_res(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name_error_raise(args[0])
+    check_char_name(args[0], raise_error=True)
 
     _char_name = args[0]
     _dam = int(args[1])
@@ -78,7 +78,7 @@ def heal_max(*args) -> str:
             char.heal_max()
         save()
         return "all characters were healed"
-    elif check_char_name_error_raise(args[0]):
+    elif check_char_name(args[0], raise_error=True):
         charDic[_char_name].heal_max()
         save()
         return "character " + _char_name + " healed to their maximum"
@@ -88,7 +88,7 @@ def heal_max(*args) -> str:
 # command usage: heal char_name amount
 def heal(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name_error_raise(args[0])
+    check_char_name(args[0], raise_error=True)
     _char_name = args[0]
     _healed = int(args[1])
     charDic[_char_name].heal_dam(_healed)
@@ -99,7 +99,7 @@ def heal(*args) -> str:
 # command usage: set_max char_name amount
 def set_max_health(*args) -> str:
     check_min_command_arg_len(2, *args)
-    check_char_name_error_raise(args[0])
+    check_char_name(args[0], raise_error=True)
     _char_name = args[0]
     _health_inc = int(args[1])
     charDic[_char_name].set_max_health(_health_inc)

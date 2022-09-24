@@ -10,9 +10,9 @@ def check_admin(ctx: BridgeExtContext) -> bool:
         return ctx.author.id == GlobalVariables.admin_id
 
 
-def check_min_command_arg_len(min: int, *args, throw_error=True):
+def check_min_command_arg_len(min: int, *args, raise_error=True):
     if len(args) < min:
-        if throw_error:
+        if raise_error:
             raise NotEnoughArgumentsException(min)
         else:
             return False

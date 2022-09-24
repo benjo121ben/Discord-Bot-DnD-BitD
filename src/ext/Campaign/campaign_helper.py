@@ -7,7 +7,6 @@ from discord.ext.bridge import BridgeExtContext
 
 from .Character import char_from_data
 from .packg_variables import charDic
-import src.ext.Campaign.packg_variables as pkg_var
 from ..command_exceptions import *
 
 save_file_name = ""
@@ -36,6 +35,10 @@ def get_char_name_if_none(char_name: str, ctx: BridgeExtContext):
         if char.player == str(ctx.author.id):
             return char.name
     raise CommandException("No character is assigned to you. Either claim a character or add the char_name as a parameter")
+
+
+def get_save_file_name():
+    return save_file_name
 
 
 def get_file():
