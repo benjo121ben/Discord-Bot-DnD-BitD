@@ -15,7 +15,9 @@ class CampaignCog(commands.Cog):
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
+            check_char_name(char_name, raise_error=True)
             charDic[char_name].rolled_crit()
+            save()
             await ctx.respond(f"Crit of {char_name} increased by 1")
         except CommandException as err:
             await ctx.respond(err)
@@ -197,6 +199,15 @@ class CampaignCog(commands.Cog):
         try:
             check_file_loaded(raise_error=True)
             await ctx.respond("save file:", file=get_file())
+        except Exception as err:
+            await ctx.respond(str(err))
+
+    @commands.command(name="save")
+    async def save_test(self, ctx: BridgeExtContext):
+        try:
+            check_file_loaded(raise_error=True)
+            save()
+            await ctx.respond("saved")
         except Exception as err:
             await ctx.respond(str(err))
 

@@ -26,16 +26,22 @@ class Character:
             self.max_damage = dam
 
     def take_dam(self, dam: int):
+        fainted = False
+        if dam >= self.health > 0:
+            self.faints += 1
+            fainted = True
         self.damage_taken += dam
         self.health = max(self.health - dam, 0)
-        if self.health == 0:
-            self.faints += 1
+        return fainted
 
     def take_dam_res(self, dam: int):
+        fainted = False
+        if int(dam/2) >= self.health > 0:
+            self.faints += 1
+            fainted = True
         self.damage_taken += dam
         self.health = max(self.health - int(dam/2), 0)
-        if self.health == 0:
-            self.faints += 1
+        return fainted
 
     def heal_dam(self, health: int):
         self.damage_healed += health
@@ -59,16 +65,19 @@ class Character:
             )
 
     def __str__(self):
-        return "------------------\n" +\
-            self.name + " " + \
-            "health: " + str(self.health) + "/" + str(self.max_health) + "    " + \
-            "damage caused/taken/maxDam: " + str(self.damage_caused) + "/" + str(self.damage_taken) + "/" + \
-               str(self.max_damage) + "    healed: " + str(self.damage_healed)
+        return f"------------------\n" \
+               f"{self.name} health: {self.health}/{self.max_health}    damage caused/taken/maxDam: " \
+               f"{self.damage_caused}/{self.damage_taken}/{self.max_damage}    healed: {self.damage_healed}\n" \
+               f"kills {self.kills}    crits: {self.crits}   fainted: {self.faints}"
 
 
 def char_from_data(data):
     char = Character(data['player'], data['name'], data['max_health'])
     char.__dict__ = data
+    if not char.__dict__.__contains__('crits'):
+        char.__dict__['crits'] = 0
+        char.__dict__['faints'] = 0
+        char.__dict__['kills'] = 0
     return char
 
 

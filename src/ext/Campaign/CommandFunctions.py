@@ -40,7 +40,9 @@ def cause_damage(*args) -> str:
     _kills = int(args[2])
     charDic[_char_name].cause_dam(_dam, _kills)
     save()
-    return "character " + _char_name + " caused " + str(_dam) + " damage"
+    if _kills > 0:
+        return f"character {_char_name} caused {_dam} damage and kills {_kills} enemies"
+    return f"character {_char_name} caused {_dam} damage"
 
 
 # adds Damage taken to a character
@@ -51,9 +53,12 @@ def take_damage(*args) -> str:
 
     _char_name = args[0]
     _dam = int(args[1])
-    charDic[_char_name].take_dam(_dam)
+    fainted = charDic[_char_name].take_dam(_dam)
     save()
-    return "character " + _char_name + " takes " + str(_dam) + " damage"
+    if fainted:
+        return f"character {_char_name} takes {_dam} damage and faints"
+    else:
+        return f"character {_char_name} takes {_dam} damage"
 
 
 # adds Damage taken to a character
@@ -64,9 +69,12 @@ def take_damage_res(*args) -> str:
 
     _char_name = args[0]
     _dam = int(args[1])
-    charDic[_char_name].take_dam_res(_dam)
+    fainted = charDic[_char_name].take_dam_res(_dam)
     save()
-    return "character " + _char_name + " takes " + str(int(_dam/2)) + " damage"
+    if fainted:
+        return f"character {_char_name} takes {int(_dam/2)} damage and faints"
+    else:
+        return f"character {_char_name} takes {int(_dam/2)} damage"
 
 
 # heals character to their health maximum, corresponds to a long rest in D&D
