@@ -3,6 +3,7 @@ from discord import slash_command
 from discord.ext import commands
 from discord.ext import bridge
 from discord.ext.bridge import BridgeExtContext
+import src.ext.Campaign.Undo as Undo
 
 from .CommandFunctions import *
 from src import GlobalVariables, command_helper_functions as hlp_f
