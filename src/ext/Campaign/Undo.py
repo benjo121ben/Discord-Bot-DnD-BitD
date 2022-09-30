@@ -1,5 +1,5 @@
-import campaign_helper as cmp_hlp
-import packg_variables as pkg_var
+import src.ext.Campaign.campaign_helper as cmp_hlp
+import src.ext.Campaign.packg_variables as pkg_var
 from collections import deque
 
 
