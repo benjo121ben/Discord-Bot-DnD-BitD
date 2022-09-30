@@ -22,6 +22,18 @@ class CampaignCog(commands.Cog):
         except CommandException as err:
             await ctx.respond(err)
 
+    @slash_command(name="dodged", description="Character dodged an attack")
+    async def dodged(self, ctx: BridgeExtContext, char_name: str = None):
+        try:
+            check_file_loaded(raise_error=True)
+            char_name = get_char_name_if_none(char_name, ctx)
+            check_char_name(char_name, raise_error=True)
+            charDic[char_name].dodge()
+            save()
+            await ctx.respond(f"Character {char_name}, dodged an attack")
+        except CommandException as err:
+            await ctx.respond(err)
+
     @slash_command(name="cause", description="Character causes damage to enemy")
     async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_name: str = None):
         try:
@@ -130,7 +142,7 @@ class CampaignCog(commands.Cog):
         name="file",
         description="Load an existing campaign save file or create a new one"
     )
-    async def file(self, ctx: BridgeExtContext, file_name):
+    async def file(self, ctx: BridgeExtContext, file_name: str):
         await ctx.respond(load(file_name))
 
     @slash_command(
@@ -207,6 +219,7 @@ class CampaignCog(commands.Cog):
         try:
             check_file_loaded(raise_error=True)
             save()
+            print("ausgeführt")
             await ctx.respond("saved")
         except Exception as err:
             await ctx.respond(str(err))

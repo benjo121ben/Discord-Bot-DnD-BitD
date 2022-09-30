@@ -1,6 +1,7 @@
 class Character:
 
-    def __init__(self, player_name, name, max_health, damage_taken=0, damage_caused=0, damage_healed=0, max_damage=0, kills=0, crits=0, faints=0):
+    def __init__(self, player_name, name, max_health, damage_taken=0,
+                 damage_caused=0, damage_healed=0, max_damage=0, kills=0, crits=0, faints=0, dodged=0):
         self.player = player_name
         self.name = name
         self.health = max_health
@@ -12,12 +13,16 @@ class Character:
         self.kills = kills
         self.crits = crits
         self.faints = faints
+        self.dodged = dodged
 
     def to_json(self):
         return self.__dict__
 
     def rolled_crit(self):
         self.crits += 1
+
+    def dodge(self):
+        self.dodged += 1
 
     def cause_dam(self, dam: int, kills: int = 0):
         self.damage_caused += dam
@@ -68,7 +73,8 @@ class Character:
         return f"------------------\n" \
                f"{self.name} health: {self.health}/{self.max_health}    damage caused/taken/maxDam: " \
                f"{self.damage_caused}/{self.damage_taken}/{self.max_damage}    healed: {self.damage_healed}\n" \
-               f"kills {self.kills}    crits: {self.crits}   fainted: {self.faints}"
+               f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
+               f"dodges: {self.dodged}"
 
 
 def char_from_data(data):
@@ -78,6 +84,8 @@ def char_from_data(data):
         char.__dict__['crits'] = 0
         char.__dict__['faints'] = 0
         char.__dict__['kills'] = 0
+    if not char.__dict__.__contains__('dodged'):
+        char.__dict__['dodged'] = 0
     return char
 
 
