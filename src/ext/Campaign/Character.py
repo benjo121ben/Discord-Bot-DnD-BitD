@@ -1,6 +1,6 @@
 class Character:
 
-    def __init__(self, player_name, name, max_health, damage_taken=0, damage_caused=0, damage_healed=0, max_damage=0):
+    def __init__(self, player_name, name, max_health, damage_taken=0, damage_caused=0, damage_healed=0, max_damage=0, kills=0, crits=0, faints=0):
         self.player = player_name
         self.name = name
         self.health = max_health
@@ -9,32 +9,33 @@ class Character:
         self.damage_caused = damage_caused
         self.damage_healed = damage_healed
         self.max_damage = max_damage
+        self.kills = kills
+        self.crits = crits
+        self.faints = faints
 
     def to_json(self):
-        test = {
-            'player': self.player,
-            'name': self.name,
-            'health': self.health,
-            'max_health': self.max_health,
-            'damage_taken': self.damage_taken,
-            'damage_caused': self.damage_caused,
-            'damage_healed': self.damage_healed,
-            'max_damage': self.max_damage
-        }
         return self.__dict__
 
-    def cause_dam(self, dam: int):
+    def rolled_crit(self):
+        self.crits += 1
+
+    def cause_dam(self, dam: int, kills: int = 0):
         self.damage_caused += dam
+        self.kills += kills
         if dam > self.max_damage:
             self.max_damage = dam
 
     def take_dam(self, dam: int):
         self.damage_taken += dam
         self.health = max(self.health - dam, 0)
+        if self.health == 0:
+            self.faints += 1
 
     def take_dam_res(self, dam: int):
         self.damage_taken += dam
         self.health = max(self.health - int(dam/2), 0)
+        if self.health == 0:
+            self.faints += 1
 
     def heal_dam(self, health: int):
         self.damage_healed += health

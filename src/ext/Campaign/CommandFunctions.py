@@ -37,7 +37,8 @@ def cause_damage(*args) -> str:
 
     _char_name = args[0]
     _dam = int(args[1])
-    charDic[_char_name].cause_dam(_dam)
+    _kills = int(args[2])
+    charDic[_char_name].cause_dam(_dam, _kills)
     save()
     return "character " + _char_name + " caused " + str(_dam) + " damage"
 

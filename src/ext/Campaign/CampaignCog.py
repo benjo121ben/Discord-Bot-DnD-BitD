@@ -10,15 +10,22 @@ from .campaign_helper import check_file_loaded
 
 
 class CampaignCog(commands.Cog):
-
-    # stat commands
-
-    @slash_command(name="cause", description="Character causes damage to enemy")
-    async def cause(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+    @slash_command(name="crit", description="Character has rollet a nat20")
+    async def crit(self, ctx: BridgeExtContext, char_name: str = None):
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
-            await ctx.respond(cause_damage(char_name, amount))
+            charDic[char_name].rolled_crit()
+            await ctx.respond(f"Crit of {char_name} increased by 1")
+        except CommandException as err:
+            await ctx.respond(err)
+
+    @slash_command(name="cause", description="Character causes damage to enemy")
+    async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_name: str = None):
+        try:
+            check_file_loaded(raise_error=True)
+            char_name = get_char_name_if_none(char_name, ctx)
+            await ctx.respond(cause_damage(char_name, amount, kills))
         except CommandException as err:
             await ctx.respond(err)
 
