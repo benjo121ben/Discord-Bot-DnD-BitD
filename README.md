@@ -1,6 +1,8 @@
 # Benji's RPG/BitD utility Discord BOT
 A discord bot for tracking stats in a game of "Dungeons and Dragons" as well as helping to GM a game of "Blades in the Dark", an RPG designed by John Harper
 
+## WARNING THIS BOT IS STILL UNDER CONSTRUCTION AND THE README MAY NOT BE ACCURATE ATM
+
 ## Table of Contents
 * [Goal](#goal)
   * [Campaign Stats](#campaign-stats)
