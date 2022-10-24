@@ -9,7 +9,7 @@ from .Character import char_from_data
 from .packg_variables import charDic
 from ..command_exceptions import *
 
-save_file_name = ""
+save_file_no_suff = ""
 saves_location_relative_to_base = 'saves'
 save_files_suffix = '_save.json'
 
@@ -20,9 +20,9 @@ class NoSaveFileException(CommandException):
         super(CommandException, self).__init__(message)
 
 
-def check_if_user_has_char(user_id: str) -> bool:
+def check_if_user_has_char(user_id) -> bool:
     for char in charDic.values():
-        if char.player == user_id:
+        if char.player == str(user_id):
             return True
     return False
 
@@ -37,14 +37,19 @@ def get_char_name_if_none(char_name: str, ctx: BridgeExtContext):
     raise CommandException("No character is assigned to you. Either claim a character or add the char_name as a parameter")
 
 
+def get_save_file_name_no_suff():
+    return save_file_no_suff
+
+
 def get_save_file_name():
-    return save_file_name
+    global save_file_no_suff, save_files_suffix
+    return save_file_no_suff + save_files_suffix
 
 
 def get_file():
-    if not exists(saves_location_relative_to_base + '/' + save_file_name):
+    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
         return None
-    return File(saves_location_relative_to_base + '/' + save_file_name)
+    return File(saves_location_relative_to_base + '/' + get_save_file_name())
 
 
 def check_file_loaded(raise_error: bool = False):
@@ -53,8 +58,7 @@ def check_file_loaded(raise_error: bool = False):
     :param raise_error: If true, the function will throw a NoSaveFileException if there is no currently selected file
     :return: True if character was found, False otherwise
     """
-    global save_file_name
-    if save_file_name != "":
+    if get_save_file_name_no_suff() != "":
         return True
     elif raise_error:
         raise NoSaveFileException()
@@ -77,12 +81,24 @@ def check_char_name(char_name: str, raise_error: bool = False):
         return False
 
 
+def rename_char(char_name_old: str, char_name_new: str):
+    check_file_loaded(raise_error=True)
+    check_char_name(char_name_old, raise_error=True)
+    if check_char_name(char_name_new):
+        raise CommandException("A Character of this name already exists")
+
+    charDic[char_name_new] = charDic[char_name_old]
+    charDic[char_name_new].name = char_name_new
+    del charDic[char_name_old]
+    save()
+
+
 def load(_save_name):
-    global save_file_name
-    save_file_name = _save_name + save_files_suffix
+    global save_file_no_suff
+    save_file_no_suff = _save_name
     charDic.clear()
-    if exists(saves_location_relative_to_base + '/' + save_file_name):
-        imported_dic = json.load(open(saves_location_relative_to_base + '/' + save_file_name))
+    if exists(saves_location_relative_to_base + '/' + get_save_file_name()):
+        imported_dic = json.load(open(saves_location_relative_to_base + '/' + get_save_file_name()))
         for char_name, char_data in imported_dic.items():
             charDic[char_name] = char_from_data(char_data)
         return "Savefile exists.\nLoaded " + _save_name + "."
@@ -92,14 +108,13 @@ def load(_save_name):
 
 
 def save():
-    global save_file_name
-    if save_file_name == "":
+    if get_save_file_name_no_suff() == "":
         raise Exception("trying to save Characters without a given save_file_name")
-    if not exists(saves_location_relative_to_base + '/' + save_file_name):
+    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
         if not exists(saves_location_relative_to_base):
             mkdir(saves_location_relative_to_base)
-        print("created savefile" + save_file_name)
-    with open(saves_location_relative_to_base + '/' + save_file_name, 'w') as newfile:
+        print("created savefile " + get_save_file_name())
+    with open(saves_location_relative_to_base + '/' + get_save_file_name(), 'w') as newfile:
         output = {}
         for char in charDic.values():
             temp = char.to_json()

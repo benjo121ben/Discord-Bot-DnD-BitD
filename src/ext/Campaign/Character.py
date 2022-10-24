@@ -30,23 +30,18 @@ class Character:
         if dam > self.max_damage:
             self.max_damage = dam
 
-    def take_dam(self, dam: int):
+    def take_dam(self, dam: int, resisted: bool = False):
+        dam_after_res = int(dam / 2) if resisted else dam
         fainted = False
-        if dam >= self.health > 0:
+        if dam_after_res >= self.health > 0:
             self.faints += 1
             fainted = True
         self.damage_taken += dam
-        self.health = max(self.health - dam, 0)
-        return fainted
+        self.health = max(self.health - dam_after_res, 0)
+        return fainted, dam_after_res
 
-    def take_dam_res(self, dam: int):
-        fainted = False
-        if int(dam/2) >= self.health > 0:
-            self.faints += 1
-            fainted = True
+    def tank(self, dam):
         self.damage_taken += dam
-        self.health = max(self.health - int(dam/2), 0)
-        return fainted
 
     def heal_dam(self, health: int):
         self.damage_healed += health
@@ -64,15 +59,15 @@ class Character:
             max(
                 min(
                     self.health + (new_max - old_max),
-                    old_max
+                    new_max
                 ),
                 0
             )
 
     def __str__(self):
         return f"------------------\n" \
-               f"{self.name} health: {self.health}/{self.max_health}    damage caused/taken/maxDam: " \
-               f"{self.damage_caused}/{self.damage_taken}/{self.max_damage}    healed: {self.damage_healed}\n" \
+               f"{self.name} health: {self.health}/{self.max_health}    damage taken/caused/maxDam: " \
+               f"{self.damage_taken}/{self.damage_caused}/{self.max_damage}    healed: {self.damage_healed}\n" \
                f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
                f"dodges: {self.dodged}"
 
@@ -87,5 +82,3 @@ def char_from_data(data):
     if not char.__dict__.__contains__('dodged'):
         char.__dict__['dodged'] = 0
     return char
-
-
