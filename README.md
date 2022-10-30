@@ -67,6 +67,7 @@ It can also show you the appropriate entanglements, depending on the amount of h
 ### Progress Clocks
 After a request from someone on the BitD discord, I included the option to create clocks, tick them and output them.  
 Though it is possible to create clocks of greater sizes and tick them, at the moment it is only possible to output images of clocks of size 4, 6 and 8, since the images are not created dynamically. All other clocks are only output via text.
+
 ---
 
 ## Technologies
@@ -88,6 +89,7 @@ or directly download the table from his [google drive][exp_ent_drive].
 ### Clock images
 The Clock Images were **NOT** created by me, though I have been unable to find the source.  
 If you are the creator, or find the page I got them from, please contact me, and I will include a link.
+
 ---
 
 ## How it works
@@ -160,6 +162,7 @@ The bot will then load up all of the Extensions and will work once it has logged
 Local Run is not working at the moment and is disabled for now.
 
 ---
+
 ## Commands
 These are all the commands implemented so far, ordered by the Cogs they are assigned to.  
 
