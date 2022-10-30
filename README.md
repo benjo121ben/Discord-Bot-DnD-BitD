@@ -4,7 +4,6 @@ as well as helping to run a game of "Blades in the Dark"
 
 ---
 
-## WARNING THIS BOT IS STILL UNDER CONSTRUCTION AND THE README MAY NOT BE ACCURATE ATM
 
 ## Table of Contents
 * [Goal](#goal)
