@@ -9,9 +9,10 @@ def main():
     load_dotenv('.env')
     GlobalVariables.cache_folder = check_env_var_int("CLOUD_SAVE_CHANNEL")
     GlobalVariables.admin_id = check_env_var_int("ADMIN_ID")
+    if GlobalVariables.admin_id is None:
+        input("No admin assigned\nRestart the bot after assigning an administrator")
     if os.environ.get("DISCORD_TOKEN") == "":
-        print("TOKEN IS EMPTY.")
-        print("restart the bot after inserting another token")
+        input("TOKEN IS EMPTY.\nrestart the bot after inserting another token")
         return
     start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
 
@@ -32,4 +33,5 @@ def check_env_var_int(environment_tag: str) -> int:
         return int(os.environ.get(environment_tag))
 
 
-main()
+if __name__ == "__main__":
+    main()

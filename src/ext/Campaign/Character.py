@@ -44,8 +44,9 @@ class Character:
         self.damage_taken += dam
 
     def heal_dam(self, health: int):
-        self.damage_healed += health
-        self.health = min(self.max_health, self.health + health)
+        healing_amount = min(self.max_health - self.health, health)
+        self.damage_healed += healing_amount
+        self.health = min(self.max_health, self.health + healing_amount)
 
     def heal_max(self):
         diff = self.max_health - self.health

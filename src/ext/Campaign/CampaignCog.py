@@ -41,6 +41,7 @@ class CampaignCog(commands.Cog):
 
     @slash_command(name="cause", description="Character causes damage to enemy")
     async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_name: str = None):
+        amount = abs(amount)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
@@ -48,8 +49,9 @@ class CampaignCog(commands.Cog):
         except CommandException as err:
             await ctx.respond(err)
 
-    @slash_command(name="take", description="Character takes damage")
+    @slash_command(name="take", description="Character takes damage, reducing their health and maybe causing them to faint")
     async def take(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+        amount = abs(amount)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
@@ -57,8 +59,9 @@ class CampaignCog(commands.Cog):
         except CommandException as err:
             await ctx.respond(err)
 
-    @slash_command(name="tank", description="Character tanks damage")
+    @slash_command(name="tank", description="Character tanks damage, not reducing their health")
     async def tank(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+        amount = abs(amount)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
@@ -71,8 +74,9 @@ class CampaignCog(commands.Cog):
         except CommandException as err:
             await ctx.respond(err)
 
-    @slash_command(name="taker", description="Character takes reduced damage")
+    @slash_command(name="taker", description="Character takes reduced damage, reducing health and maybe causing a faint")
     async def take_reduced(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+        amount = abs(amount)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
@@ -84,11 +88,12 @@ class CampaignCog(commands.Cog):
         name="set_max",
         description="Sets Characters maximum health to the given amount, adjusting the current health by the difference"
     )
-    async def set_max(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+    async def set_max(self, ctx: BridgeExtContext, new_max_health: int, char_name: str = None):
+        new_max_health = abs(new_max_health)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
-            await ctx.respond(set_max_health(char_name, amount))
+            await ctx.respond(set_max_health(char_name, new_max_health))
         except CommandException as err:
             await ctx.respond(err)
 
@@ -97,6 +102,7 @@ class CampaignCog(commands.Cog):
         description="Heals a character. If char_name is set to \"all\" then this will apply to all Characters"
     )
     async def heal_single(self, ctx: BridgeExtContext, amount: int, char_name: str = None):
+        amount = abs(amount)
         try:
             check_file_loaded(raise_error=True)
             char_name = get_char_name_if_none(char_name, ctx)
@@ -262,7 +268,6 @@ class CampaignCog(commands.Cog):
             await ctx.respond(ret_val)
         except Exception as err:
             await ctx.respond(str(err))
-
 
 
 def setup(bot: bridge.Bot):
