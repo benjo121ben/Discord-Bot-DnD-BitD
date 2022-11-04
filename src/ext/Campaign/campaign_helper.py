@@ -121,6 +121,7 @@ def load(_save_name):
     save_file_no_suff = _save_name
     charDic.clear()
     imported_dic.clear()
+    imported_dic[session_tag] = 1
     if exists(saves_location_relative_to_base + '/' + get_save_file_name()):
         file_dic = json.load(open(saves_location_relative_to_base + '/' + get_save_file_name()))
         if version_tag not in file_dic:

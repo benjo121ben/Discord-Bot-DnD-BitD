@@ -1,11 +1,17 @@
 import os
+import time
+
+from aiohttp.client_exceptions import ClientConnectorError
+
 from src import GlobalVariables
 from dotenv import load_dotenv
-from src.Bot_Setup import start_bot
+from src.Bot_Setup import start_bot, MyInternetException, close_bot
 
 
 def main():
     print("Discord_BOT startup")
+    execute = True
+    tries = 10
     load_dotenv('.env')
     GlobalVariables.cache_folder = check_env_var_int("CLOUD_SAVE_CHANNEL")
     GlobalVariables.admin_id = check_env_var_int("ADMIN_ID")
@@ -14,7 +20,17 @@ def main():
     if os.environ.get("DISCORD_TOKEN") == "":
         input("TOKEN IS EMPTY.\nrestart the bot after inserting another token")
         return
-    start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
+    while execute and tries > 0:
+        execute = False
+        try:
+            start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
+        except MyInternetException:
+            print("could not establish connection, retry in 5 seconds")
+            time.sleep(5.0)
+            execute = True
+            tries -= 1
+        finally:
+            close_bot()
 
 
 def check_env_var_int(environment_tag: str) -> int:

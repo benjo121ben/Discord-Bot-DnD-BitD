@@ -220,6 +220,18 @@ class CampaignCog(commands.Cog):
         except CommandException as err:
             await ctx.respond(str(err))
 
+    @slash_command(name="session", description="increase session")
+    async def session(self, ctx: BridgeExtContext):
+        try:
+            check_file_loaded(raise_error=True)
+            if not hlp_f.check_admin(ctx):
+                raise CommandException("You are not authorized to use this command")
+            imported_dic[session_tag] += 1
+            save()
+            await ctx.respond("finished session, increased by one")
+        except Exception as err:
+            await ctx.respond(str(err))
+
     @slash_command(name="cache", description="Admin command: caches the last save file into the provided server chat")
     async def cache(self, ctx: BridgeExtContext):
         try:
