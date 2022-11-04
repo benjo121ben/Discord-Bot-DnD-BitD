@@ -1,9 +1,12 @@
+import os
+
 import discord.errors
 from discord import slash_command
 from discord.ext import commands
 from discord.ext import bridge
 from discord.ext.bridge import BridgeExtContext
 import src.ext.Campaign.Undo as Undo
+from os.path import getmtime
 
 from .CommandFunctions import *
 from src import GlobalVariables, command_helper_functions as hlp_f
@@ -226,10 +229,43 @@ class CampaignCog(commands.Cog):
 
             chat_id = GlobalVariables.cache_folder
             if chat_id is None:
-                raise CommandException("No cloud save channel id assigned or provided")
+                raise CommandException("No cloud save channel id assigned")
 
             await GlobalVariables.bot.get_channel(chat_id).send("cache", file=get_file())
             await ctx.respond("cached")
+        except Exception as err:
+            await ctx.respond(str(err))
+
+    @slash_command(name="get_cache", description="try to download latest save from cache server chat")
+    async def get_cache(self, ctx: BridgeExtContext):
+        try:
+            if not hlp_f.check_admin(ctx):
+                raise CommandException("You are not authorized to use this command")
+
+            chat_id = GlobalVariables.cache_folder
+            if chat_id is None:
+                raise CommandException("No cloud save channel id assigned")
+
+            message = await GlobalVariables.bot.get_channel(chat_id).history(limit=1).next()
+            filename = message.attachments[0].filename
+            await message.attachments[0].save(fp=cache_location_relative_to_base + '/' + filename)
+
+            if not exists(saves_location_relative_to_base + '/' + filename):
+                os.rename(cache_location_relative_to_base + '/' + filename, saves_location_relative_to_base + '/' + filename)
+                await ctx.respond(f"No local version found. Savefile {filename} has been imported.")
+                return
+
+            cache_time = getmtime(cache_location_relative_to_base + '/' + filename)
+            local_time = getmtime(saves_location_relative_to_base + '/' + filename)
+            print(local_time)
+            print(cache_time)
+            if local_time < cache_time:
+                os.remove(saves_location_relative_to_base + '/' + filename)
+                os.rename(cache_location_relative_to_base + '/' + filename, saves_location_relative_to_base + '/' + filename)
+                await ctx.respond("replaced")
+            else:
+                os.remove(cache_location_relative_to_base + '/' + filename)
+                await ctx.respond("already up to date")
         except Exception as err:
             await ctx.respond(str(err))
 
@@ -269,8 +305,17 @@ class CampaignCog(commands.Cog):
         except Exception as err:
             await ctx.respond(str(err))
 
+    @commands.command(name="save")
+    async def save(self, ctx: BridgeExtContext):
+        try:
+            check_file_loaded(raise_error=True)
+            save()
+            await ctx.respond("saved")
+        except Exception as err:
+            await ctx.respond(str(err))
 
 def setup(bot: bridge.Bot):
+    check_base_save_folder_setup()
     bot.add_cog(CampaignCog())
 
     print("campaign extension loaded\n")

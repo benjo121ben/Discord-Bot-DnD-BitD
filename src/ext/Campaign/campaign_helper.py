@@ -1,17 +1,26 @@
 import json
 from os import mkdir
 from os.path import exists
+from datetime import datetime
 
 from discord import File
 from discord.ext.bridge import BridgeExtContext
 
 from .Character import char_from_data
-from .packg_variables import charDic
+from .packg_variables import charDic, imported_dic
 from ..command_exceptions import *
 
 save_file_no_suff = ""
 saves_location_relative_to_base = 'saves'
+cache_location_relative_to_base = 'saves/cache'
 save_files_suffix = '_save.json'
+save_type_version = '1.0'
+date_time_save_format = "%Y-%m-%d %H:%M:%S"
+
+character_tag = 'characters'
+last_changed_tag = 'last_change'
+version_tag = 'v'
+session_tag = 'session'
 
 
 class NoSaveFileException(CommandException):
@@ -34,7 +43,8 @@ def get_char_name_if_none(char_name: str, ctx: BridgeExtContext):
     for char in charDic.values():
         if char.player == str(ctx.author.id):
             return char.name
-    raise CommandException("No character is assigned to you. Either claim a character or add the char_name as a parameter")
+    raise CommandException(
+        "No character is assigned to you. Either claim a character or add the char_name as a parameter")
 
 
 def get_save_file_name_no_suff():
@@ -50,6 +60,19 @@ def get_file():
     if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
         return None
     return File(saves_location_relative_to_base + '/' + get_save_file_name())
+
+
+def get_save_filepath():
+    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
+        return None
+    return saves_location_relative_to_base + '/' + get_save_file_name()
+
+
+def check_base_save_folder_setup():
+    if not exists(saves_location_relative_to_base):
+        mkdir(saves_location_relative_to_base)
+    if not exists(cache_location_relative_to_base):
+        mkdir(cache_location_relative_to_base)
 
 
 def check_file_loaded(raise_error: bool = False):
@@ -97,12 +120,18 @@ def load(_save_name):
     global save_file_no_suff
     save_file_no_suff = _save_name
     charDic.clear()
+    imported_dic.clear()
     if exists(saves_location_relative_to_base + '/' + get_save_file_name()):
-        imported_dic = json.load(open(saves_location_relative_to_base + '/' + get_save_file_name()))
-        for char_name, char_data in imported_dic.items():
-            charDic[char_name] = char_from_data(char_data)
+        file_dic = json.load(open(saves_location_relative_to_base + '/' + get_save_file_name()))
+        if version_tag not in file_dic:
+            for char_name, char_data in file_dic.items():
+                charDic[char_name] = char_from_data(char_data)
+        else:
+            imported_dic[last_changed_tag] = datetime.strptime(file_dic[last_changed_tag], date_time_save_format)
+            imported_dic[session_tag] = file_dic[session_tag]
+            for char_name, char_data in file_dic[character_tag].items():
+                charDic[char_name] = char_from_data(char_data)
         return "Savefile exists.\nLoaded " + _save_name + "."
-
     else:
         return "SaveFile " + _save_name + " does not exist. SaveFile will be created when a character is added"
 
@@ -111,15 +140,15 @@ def save():
     if get_save_file_name_no_suff() == "":
         raise Exception("trying to save Characters without a given save_file_name")
     if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
-        if not exists(saves_location_relative_to_base):
-            mkdir(saves_location_relative_to_base)
         print("created savefile " + get_save_file_name())
     with open(saves_location_relative_to_base + '/' + get_save_file_name(), 'w') as newfile:
-        output = {}
+        output = {
+            session_tag: imported_dic[session_tag],
+            last_changed_tag: datetime.now().strftime(date_time_save_format),
+            version_tag: save_type_version,
+            character_tag: {}
+        }
         for char in charDic.values():
             temp = char.to_json()
-            output[temp['name']] = temp
+            output[character_tag][temp['name']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
-
-
-
