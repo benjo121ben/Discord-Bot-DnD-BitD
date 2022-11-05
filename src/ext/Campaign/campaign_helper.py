@@ -166,7 +166,7 @@ def check_base_setup():
         else:
             return int(os.environ.get(environment_tag))
 
-    load_dotenv(p_vars.campaign_dotenv_filename)
+    load_dotenv(p_vars.campaign_dotenv_filepath)
     p_vars.cache_folder = check_env_var_int("CLOUD_SAVE_CHANNEL")
     p_vars.bot_admin_id = check_env_var_int("ADMIN_ID")
     if p_vars.bot_admin_id is None:
