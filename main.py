@@ -28,9 +28,10 @@ def main():
     print("Discord_BOT startup")
     execute = True
     tries = 10
-    load_dotenv('./.env')
+    load_dotenv('.env')
     GlobalVariables.admin_id = check_env_var_int("ADMIN_ID")
-    if os.environ.get("DISCORD_TOKEN") == "":
+    token = os.environ.get("DISCORD_TOKEN")
+    if token is None or token == "":
         input(
             "\nERROR:DISCORD_TOKEN IS EMPTY.\nrestart the bot after inserting a token into the .env file\npress ENTER")
         return
