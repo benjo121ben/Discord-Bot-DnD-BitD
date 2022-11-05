@@ -138,6 +138,9 @@ class CampaignCog(commands.Cog):
     )
     async def add_c(self, ctx: BridgeExtContext, char_name: str, max_health: int, user_id: str = None):
         try:
+            if char_name == "all":
+                await ctx.respond("You are not allowed to call your character all, due to special commands using it a keyword. Please call them something else")
+                return
             cmp_hlp.check_file_loaded(raise_error=True)
             await ctx.respond(cfuncs.add_char(char_name, max_health))
             if user_id is not None:

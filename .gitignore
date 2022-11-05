@@ -6,5 +6,6 @@ saves/
 run_main.txt
 deprecated/
 *.spec
+*.out
 dist/
 build/
