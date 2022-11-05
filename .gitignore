@@ -5,3 +5,6 @@ __pycache__/
 saves/
 run_main.txt
 deprecated/
+*.spec
+dist/
+build/

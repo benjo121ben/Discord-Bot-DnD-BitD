@@ -1,4 +1,6 @@
+from dotenv import load_dotenv
 import json
+import os
 from os import mkdir
 from os.path import exists
 from datetime import datetime
@@ -6,9 +8,12 @@ from datetime import datetime
 from discord import File
 from discord.ext.bridge import BridgeExtContext
 
+from . import packg_variables as p_vars
 from .Character import char_from_data
 from .packg_variables import charDic, imported_dic
-from ..command_exceptions import *
+from .campaign_exceptions import CommandException
+
+from src import GlobalVariables
 
 save_file_no_suff = ""
 saves_location_relative_to_base = 'saves'
@@ -25,8 +30,30 @@ session_tag = 'session'
 
 class NoSaveFileException(CommandException):
     def __init__(self):
-        message = "No savefile has been loaded. Use the file command to load an existing file or create a new one"
-        super(CommandException, self).__init__(message)
+        super(CommandException, self).__init__(
+            "No savefile has been loaded. Use the file command to load an existing file or create a new one"
+        )
+
+
+def check_file_admin(ctx: BridgeExtContext) -> bool:
+    if p_vars.bot_admin_id is None:
+        return True
+    else:
+        return ctx.author.id == p_vars.bot_admin_id
+
+
+def check_bot_admin(ctx: BridgeExtContext) -> bool:
+    if p_vars.bot_admin_id is None:
+        return True
+    else:
+        return ctx.author.id == p_vars.bot_admin_id
+
+
+def get_bot():
+    if GlobalVariables.bot is not None:
+        return GlobalVariables.bot
+    else:
+        raise CommandException("get_bot tries to get an empty bot")
 
 
 def check_if_user_has_char(user_id) -> bool:
@@ -36,7 +63,15 @@ def check_if_user_has_char(user_id) -> bool:
     return False
 
 
-def get_char_name_if_none(char_name: str, ctx: BridgeExtContext):
+def get_char_name_by_id(user_id: int):
+    if not check_if_user_has_char(user_id):
+        raise CommandException("get_char_name_by_id: attempted to get the character of an unassigned user")
+    for char in charDic.values():
+        if char.player == str(user_id):
+            return char.name
+
+
+def get_char_name_if_none(ctx: BridgeExtContext, char_name: str = None):
     if char_name is not None:
         return char_name
 
@@ -68,11 +103,6 @@ def get_save_filepath():
     return saves_location_relative_to_base + '/' + get_save_file_name()
 
 
-def check_base_save_folder_setup():
-    if not exists(saves_location_relative_to_base):
-        mkdir(saves_location_relative_to_base)
-    if not exists(cache_location_relative_to_base):
-        mkdir(cache_location_relative_to_base)
 
 
 def check_file_loaded(raise_error: bool = False):
@@ -116,6 +146,53 @@ def rename_char(char_name_old: str, char_name_new: str):
     save()
 
 
+def parse_date_time(time_string: str) -> datetime:
+    return datetime.strptime(time_string, date_time_save_format)
+
+
+def check_base_setup():
+    def check_env_var_int(environment_tag: str) -> int:
+        """
+        This is a wrapper for environ.get, that returns an int with None instead of ""
+        if the tag was written down but not assigned.
+
+        :param environment_tag: the tag used in the environment file
+        :return: returns the value if assigned, otherwise None
+        """
+        if os.environ.get(environment_tag) == "":
+            return None
+        elif os.environ.get(environment_tag) is None:
+            return None
+        else:
+            return int(os.environ.get(environment_tag))
+
+    load_dotenv(p_vars.campaign_dotenv_filename)
+    p_vars.cache_folder = check_env_var_int("CLOUD_SAVE_CHANNEL")
+    p_vars.bot_admin_id = check_env_var_int("ADMIN_ID")
+    if p_vars.bot_admin_id is None:
+        input(
+            "\nERROR:CAMPAIGN_EXTENSION: No admin assigned\n"
+            "Restart the bot after assigning an administrator in the .env file\npress ENTER"
+        )
+        return
+
+    if not exists(saves_location_relative_to_base):
+        mkdir(saves_location_relative_to_base)
+    if not exists(cache_location_relative_to_base):
+        mkdir(cache_location_relative_to_base)
+
+
+def compare_savefile_date(path1, path2):
+    first_time = parse_date_time(json.load(open(path1))[last_changed_tag])
+    second_time = parse_date_time(json.load(open(path2))[last_changed_tag])
+    if first_time < second_time:
+        return -1
+    elif first_time == second_time:
+        return 0
+    else:
+        return 1
+
+
 def load(_save_name):
     global save_file_no_suff
     save_file_no_suff = _save_name
@@ -128,7 +205,7 @@ def load(_save_name):
             for char_name, char_data in file_dic.items():
                 charDic[char_name] = char_from_data(char_data)
         else:
-            imported_dic[last_changed_tag] = datetime.strptime(file_dic[last_changed_tag], date_time_save_format)
+            imported_dic[last_changed_tag] = parse_date_time(file_dic[last_changed_tag])
             imported_dic[session_tag] = file_dic[session_tag]
             for char_name, char_data in file_dic[character_tag].items():
                 charDic[char_name] = char_from_data(char_data)

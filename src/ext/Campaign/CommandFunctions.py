@@ -3,7 +3,7 @@ from .campaign_helper import *
 from src.command_helper_functions import check_min_command_arg_len
 
 from .packg_variables import localCommDic, charDic
-import src.ext.Campaign.Undo as Undo
+from . import Undo
 
 
 def log(*args) -> str:
@@ -90,8 +90,6 @@ def heal_max(*args) -> str:
             undo_action.update(char)
             Undo.queue_undo_action(undo_action)
         save()
-        print(charDic)
-        print(charDic["a"])
         return "all characters were healed"
     check_char_name(_char_name, raise_error=True)
     undo_action = Undo.MultipleBaseAction(charDic[_char_name], ["health", "damage_healed"])
