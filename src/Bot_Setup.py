@@ -38,6 +38,7 @@ def start_bot(_command_prefix, _bot_token):
     try:
         loop.run_until_complete(GlobalVariables.bot.start(_bot_token))
     except ClientConnectorError:
+        print("ERROR RAISED_BOT_SETUP CLIENT ERROR")
         raise MyInternetException("could not connect to the servers")
     finally:
         loop.close()

@@ -1,10 +1,8 @@
-from array import array
-from typing import Optional
 
 from discord.ext import commands
 from discord.ext import bridge
 from discord import slash_command
-from .clocks import *
+from .clocks import NoClockImageException, clocks_save_dic, save_clocks, Clock, load_clocks
 
 
 async def print_clock(ctx, clock):

@@ -3,6 +3,7 @@ import json
 import os
 from os import mkdir
 from os.path import exists
+import pathlib
 from datetime import datetime
 
 from discord import File
@@ -16,8 +17,6 @@ from .campaign_exceptions import CommandException
 from src import GlobalVariables
 
 save_file_no_suff = ""
-saves_location_relative_to_base = 'saves'
-cache_location_relative_to_base = 'saves/cache'
 save_files_suffix = '_save.json'
 save_type_version = '1.0'
 date_time_save_format = "%Y-%m-%d %H:%M:%S"
@@ -91,18 +90,31 @@ def get_save_file_name():
     return save_file_no_suff + save_files_suffix
 
 
-def get_file():
-    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
+def get_current_savefile_as_discord_file():
+    if not exists(get_current_savefile_path()):
         return None
-    return File(saves_location_relative_to_base + '/' + get_save_file_name())
+    return File(get_current_savefile_path())
 
 
-def get_save_filepath():
-    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
+def get_save_folder_filepath():
+    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
+    return os.path.join(this_file_folder_path, p_vars.saves_location_relative_to_module)
+
+
+def get_cache_folder_filepath():
+    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
+    return os.path.join(this_file_folder_path, p_vars.cache_location_relative_to_module)
+
+
+def get_module_env_filepath():
+    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
+    return os.path.join(this_file_folder_path, p_vars.campaign_env_file_rel_path)
+
+
+def get_current_savefile_path():
+    if not exists(get_save_folder_filepath() + '/' + get_save_file_name()):
         return None
-    return saves_location_relative_to_base + '/' + get_save_file_name()
-
-
+    return get_save_folder_filepath() + '/' + get_save_file_name()
 
 
 def check_file_loaded(raise_error: bool = False):
@@ -166,7 +178,7 @@ def check_base_setup():
         else:
             return int(os.environ.get(environment_tag))
 
-    load_dotenv(p_vars.campaign_dotenv_filepath)
+    load_dotenv(get_module_env_filepath())
     p_vars.cache_folder = check_env_var_int("CLOUD_SAVE_CHANNEL")
     p_vars.bot_admin_id = check_env_var_int("ADMIN_ID")
     if p_vars.bot_admin_id is None:
@@ -176,10 +188,12 @@ def check_base_setup():
         )
         return
 
-    if not exists(saves_location_relative_to_base):
-        mkdir(saves_location_relative_to_base)
-    if not exists(cache_location_relative_to_base):
-        mkdir(cache_location_relative_to_base)
+    if not exists(get_save_folder_filepath()):
+        print("SAVE_FILEPATH_CREATED")
+        mkdir(get_save_folder_filepath())
+    if not exists(get_cache_folder_filepath()):
+        print("CACHE_FILEPATH_CREATED")
+        mkdir(get_cache_folder_filepath())
 
 
 def compare_savefile_date(path1, path2):
@@ -199,8 +213,8 @@ def load(_save_name):
     charDic.clear()
     imported_dic.clear()
     imported_dic[session_tag] = 1
-    if exists(saves_location_relative_to_base + '/' + get_save_file_name()):
-        file_dic = json.load(open(saves_location_relative_to_base + '/' + get_save_file_name()))
+    if exists(get_current_savefile_path()):
+        file_dic = json.load(open(get_current_savefile_path()))
         if version_tag not in file_dic:
             for char_name, char_data in file_dic.items():
                 charDic[char_name] = char_from_data(char_data)
@@ -217,9 +231,9 @@ def load(_save_name):
 def save():
     if get_save_file_name_no_suff() == "":
         raise Exception("trying to save Characters without a given save_file_name")
-    if not exists(saves_location_relative_to_base + '/' + get_save_file_name()):
+    if not exists(get_current_savefile_path()):
         print("created savefile " + get_save_file_name())
-    with open(saves_location_relative_to_base + '/' + get_save_file_name(), 'w') as newfile:
+    with open(get_current_savefile_path(), 'w') as newfile:
         output = {
             session_tag: imported_dic[session_tag],
             last_changed_tag: datetime.now().strftime(date_time_save_format),

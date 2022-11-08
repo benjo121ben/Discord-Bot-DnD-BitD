@@ -2,10 +2,12 @@ from os.path import exists
 from discord import File
 import os
 import json
+import pathlib
 
 
 clock_files_dic = {}
-clock_save_path = "saves/clock_saves.json"
+clocks_rel_asset_folder_path = '..\\..\\..\\Assets\\Clocks\\'
+clocks_rel_save_path = "..\\..\\..\\saves\\clock_saves.json"
 
 
 class NoClockImageException(Exception):
@@ -43,10 +45,20 @@ def clock_from_json(clock_data):
     return Clock("TEMP", 4).assign_dic(clock_data)
 
 
+def get_clock_save_filepath():
+    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
+    return os.path.join(this_file_folder_path, clocks_rel_save_path)
+
+
+def get_clock_asset_folder_path():
+    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
+    return os.path.join(this_file_folder_path, clocks_rel_asset_folder_path)
+
+
 def load_clocks():
-    if exists(clock_save_path):
+    if exists(get_clock_save_filepath()):
         print("Clocks savefile exists")
-        imported_dic = json.load(open(clock_save_path))
+        imported_dic = json.load(open(get_clock_save_filepath()))
         for clock_data in imported_dic.values():
             clocks_save_dic[clock_data["name"]] = clock_from_json(clock_data)
     else:
@@ -55,14 +67,14 @@ def load_clocks():
 
 
 def save_clocks():
-    if not exists(clock_save_path):
+    if not exists(get_clock_save_filepath()):
         path = ""
-        for path_part in clock_save_path.split("/"):
+        for path_part in get_clock_save_filepath().split("/"):
             path += path_part + "/"
             if not exists(path) and not ".json" in path:
                 os.mkdir(path)
         print("created savefile")
-    with open(clock_save_path, 'w') as newfile:
+    with open(get_clock_save_filepath(), 'w') as newfile:
         output = {}
         for clock in clocks_save_dic.values():
             output[clock.name] = clock.__dict__
@@ -70,10 +82,10 @@ def save_clocks():
 
 
 def load_clock_files():
-    if not exists('Assets/Clocks'):
+    if not exists(get_clock_asset_folder_path()):
         print("No clock file directory")
         return
-    clock_folders_list = os.listdir('Assets/Clocks')
+    clock_folders_list = os.listdir(get_clock_asset_folder_path())
     for clock_folder in clock_folders_list:
         load_single_clock_files(clock_folder)
 
@@ -83,10 +95,9 @@ def load_single_clock_files(clock_folder : str):
     clock_sub_files_dic = {}
     for tick in range(0, clock_size + 1):
         file_name = str(clock_size) + "-" + str(tick) + ".png"
-        file_path = "Assets/Clocks/" + clock_folder + "/" + file_name
+        file_path = get_clock_asset_folder_path() + clock_folder + "\\" + file_name
         if exists(file_path):
-            clock_sub_files_dic[tick] = \
-                file_path
+            clock_sub_files_dic[tick] = file_path
         else:
             print("Clock " + str(clock_size) + " is missing files and has been deactivated")
             break

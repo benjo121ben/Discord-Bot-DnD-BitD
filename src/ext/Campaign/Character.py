@@ -67,7 +67,8 @@ class Character:
 
     def __str__(self):
         return f"------------------\n" \
-               f"name: {self.name}    health: {self.health}/{self.max_health}    damage taken/caused/max: " \
+               f"{self.name}\n" \
+               f"health: {self.health}/{self.max_health}    damage taken/caused/max: " \
                f"{self.damage_taken}/{self.damage_caused}/{self.max_damage}    healed: {self.damage_healed}\n" \
                f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
                f"dodges: {self.dodged}"

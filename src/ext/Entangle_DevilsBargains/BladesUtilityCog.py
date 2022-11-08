@@ -22,6 +22,7 @@ class BladesUtilityCog(commands.Cog):
 
 def setup(bot: bridge.Bot):
     # Every extension should have this function
+    print("loading Entanglements")
     check_entanglements()
     check_devils_bargain()
     bot.add_cog(BladesUtilityCog())

@@ -244,7 +244,7 @@ class CampaignCog(commands.Cog):
             if chat_id is None:
                 raise cmp_except.CommandException("No cloudsavechannel id assigned")
 
-            await cmp_hlp.get_bot().get_channel(chat_id).send("cache", file=cmp_hlp.get_file())
+            await cmp_hlp.get_bot().get_channel(chat_id).send("cache", file=cmp_hlp.get_current_savefile_as_discord_file())
             await ctx.respond("cached")
         except Exception as err:
             await ctx.respond(str(err))
@@ -261,8 +261,8 @@ class CampaignCog(commands.Cog):
 
             message = await cmp_hlp.get_bot().get_channel(chat_id).history(limit=1).next()
             filename = message.attachments[0].filename
-            cache_save_path = cmp_hlp.cache_location_relative_to_base + '/' + filename
-            local_save_path = cmp_hlp.saves_location_relative_to_base + '/' + filename
+            cache_save_path = cmp_hlp.get_cache_folder_filepath() + '/' + filename
+            local_save_path = cmp_hlp.get_cache_folder_filepath() + '/' + filename
 
             await message.attachments[0].save(fp=cache_save_path)
             if not exists(local_save_path):
@@ -284,7 +284,7 @@ class CampaignCog(commands.Cog):
     async def download(self, ctx: BridgeExtContext):
         try:
             cmp_hlp.check_file_loaded(raise_error=True)
-            await ctx.respond("save file:", file=cmp_hlp.get_file())
+            await ctx.respond("save file:", file=cmp_hlp.get_current_savefile_as_discord_file())
         except Exception as err:
             await ctx.respond(str(err))
 
