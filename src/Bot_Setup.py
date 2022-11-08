@@ -54,9 +54,8 @@ def load_extensions(_bot, reload=False):
     print("\n---------------------LOADING EXTENSIONS---------------------\n")
     load_ext("Campaign.CampaignCog")
     load_ext("Clocks.ClockCog")
-    load_ext("Entangle_DevilsBargains.BladesUtilityCog")
-    print("---------------------EXTENSIONS LOADED---------------------")
-    print()
+    load_ext("BladesUtility.BladesUtilityCog")
+    print("---------------------EXTENSIONS LOADED---------------------\n")
 
 
 def close_bot():

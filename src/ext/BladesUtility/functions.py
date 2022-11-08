@@ -123,6 +123,14 @@ def get_blades_roll(amount: int):
     return erg, rolled_array
 
 
+def get_die_nr_image_filepath(nr: int):
+    return get_entanglement_asset_folder_filepath() + f"dice\\{nr}.png"
+
+
+def get_die_base_image_filepath(nr: int):
+    return get_entanglement_asset_folder_filepath() + f"dice\\dice_base-{nr}.png"
+
+
 def check_devils_bargain():
     global devils_bargains_enabled
     if not exists(get_db_asset_folder_filepath()):
