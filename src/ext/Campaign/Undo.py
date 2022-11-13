@@ -30,22 +30,22 @@ class BaseUndoAction(abc.ABC):
 
 
 class StatUndoAction(BaseUndoAction):
-    def __init__(self, character_name: str, stat: str, old_val, new_val):
+    def __init__(self, character_tag: str, stat: str, old_val, new_val):
         self.stat = stat
-        self.character_name = character_name
+        self.character_tag = character_tag
         self.new_val = new_val
         self.old_val = old_val
 
     def __str__(self):
-        return f"{{{self.character_name},{self.stat}}}=({self.old_val}->{self.new_val})"
+        return f"{{{self.character_tag},{self.stat}}}=({self.old_val}->{self.new_val})"
 
     def undo(self) -> str:
-        pkg_var.charDic[self.character_name].__dict__[self.stat] = self.old_val
-        return f"Undid {{{self.character_name}, {self.stat}}}->{self.new_val}. Returned to {self.old_val}"
+        pkg_var.charDic[self.character_tag].__dict__[self.stat] = self.old_val
+        return f"Undid {{{self.character_tag}, {self.stat}}}->{self.new_val}. Returned to {self.old_val}"
 
     def redo(self):
-        pkg_var.charDic[self.character_name].__dict__[self.stat] = self.new_val
-        return f"Reapplied change of {{{self.character_name}, {self.stat}}}{self.old_val}->{self.new_val}"
+        pkg_var.charDic[self.character_tag].__dict__[self.stat] = self.new_val
+        return f"Reapplied change of {{{self.character_tag}, {self.stat}}}{self.old_val}->{self.new_val}"
 
 
 class FileChangeUndoAction(BaseUndoAction):
@@ -65,26 +65,26 @@ class FileChangeUndoAction(BaseUndoAction):
         return f"Reapplied load of {self.new_file}."
 
 
-class RenameCharUndoAction(BaseUndoAction):
-    def __init__(self, old_name: str, new_name: str):
-        self.old_name = old_name
-        self.new_name = new_name
+class ReTagCharUndoAction(BaseUndoAction):
+    def __init__(self, old_tag: str, new_tag: str):
+        self.old_tag = old_tag
+        self.new_tag = new_tag
 
     def __str__(self):
-        return f"{{char_rename}}=({self.old_name}->{self.new_name})"
+        return f"{{char_retag}}=({self.old_tag}->{self.new_tag})"
 
     def undo(self) -> str:
-        cmp_hlp.rename_char(self.new_name, self.old_name)
-        return f"Undid renaming of {self.old_name} to {self.new_name}. Returned to {self.old_name}."
+        cmp_hlp.rename_char_tag(self.new_tag, self.old_tag)
+        return f"Undid rentag of {self.old_tag} to {self.new_tag}. Returned to {self.old_tag}."
 
     def redo(self):
-        cmp_hlp.rename_char(self.old_name, self.new_name)
-        return f"Reapplied rename of {self.old_name} to {self.new_name}."
+        cmp_hlp.rename_char_tag(self.old_tag, self.new_tag)
+        return f"Reapplied retag of {self.old_tag} to {self.new_tag}."
 
 
 class MultipleBaseAction(BaseUndoAction):
     def __init__(self, char: Character, stats: list[str]):
-        self.character_name = char.name
+        self.character_tag = char.tag
         self.old_vals = []
         self.actions = []
         self.stats = stats
@@ -95,7 +95,7 @@ class MultipleBaseAction(BaseUndoAction):
         for i in range(0, len(self.stats)):
             self.actions.append(
                 StatUndoAction(
-                    self.character_name,
+                    self.character_tag,
                     self.stats[i],
                     self.old_vals[i],
                     char.__dict__[self.stats[i]]
@@ -117,6 +117,7 @@ class MultipleBaseAction(BaseUndoAction):
 actionQueue: deque[BaseUndoAction] = deque()
 pointer = -1
 
+
 def get_pointer():
     return pointer
 
@@ -132,8 +133,8 @@ def queue_undo_action(action: BaseUndoAction):
         pointer += 1
 
 
-def queue_basic_action(char_name, stat, old_val, new_val):
-    queue_undo_action(StatUndoAction(char_name, stat, old_val, new_val))
+def queue_basic_action(char_tag, stat, old_val, new_val):
+    queue_undo_action(StatUndoAction(char_tag, stat, old_val, new_val))
 
 
 def undo():

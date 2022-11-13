@@ -38,13 +38,13 @@ class Game:
             self.character_list.append(Character(player_name, char_name))
             return "Character " + char_name + " added to Game."
 
-    def remove_character(self, command_user, char_name) -> str:
+    def remove_character(self, command_user, char_tag) -> str:
         if self.is_authorized(command_user):
             for char in self.character_list:
-                if char.name == char_name:
+                if char.tag == char_tag:
                     self.character_list.remove(char)
-                    return "Character " + char_name + " removed from Game."
-            return "Character " + char_name + " does not exist in this game"
+                    return "Character " + char_tag + " removed from Game."
+            return "Character " + char_tag + " does not exist in this game"
 
     def __str__(self):
         ret_str = ""

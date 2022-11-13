@@ -1,19 +1,19 @@
 class Character:
 
-    def __init__(self, player_name, name, max_health, damage_taken=0,
-                 damage_caused=0, damage_healed=0, max_damage=0, kills=0, crits=0, faints=0, dodged=0):
-        self.player = player_name
+    def __init__(self, tag, name, max_health):
+        self.player = ""
         self.name = name
+        self.tag = tag
         self.health = max_health
         self.max_health = max_health
-        self.damage_taken = damage_taken
-        self.damage_caused = damage_caused
-        self.damage_healed = damage_healed
-        self.max_damage = max_damage
-        self.kills = kills
-        self.crits = crits
-        self.faints = faints
-        self.dodged = dodged
+        self.damage_taken = 0
+        self.damage_caused = 0
+        self.damage_healed = 0
+        self.max_damage = 0
+        self.kills = 0
+        self.crits = 0
+        self.faints = 0
+        self.dodged = 0
 
     def to_json(self):
         return self.__dict__
@@ -67,7 +67,7 @@ class Character:
 
     def __str__(self):
         return f"------------------\n" \
-               f"{self.name}\n" \
+               f"**{self.name}** / _{self.tag}_\n" \
                f"health: {self.health}/{self.max_health}    damage taken/caused/max: " \
                f"{self.damage_taken}/{self.damage_caused}/{self.max_damage}    healed: {self.damage_healed}\n" \
                f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
@@ -75,7 +75,10 @@ class Character:
 
 
 def char_from_data(data):
-    char = Character(data['player'], data['name'], data['max_health'])
+    if 'tag' in data:
+        char = Character(data['tag'], data['name'], data['max_health'])
+    else:
+        char = Character(data['name'], data['name'], data['max_health'])
     char.__dict__ = data
     if not char.__dict__.__contains__('crits'):
         char.__dict__['crits'] = 0
