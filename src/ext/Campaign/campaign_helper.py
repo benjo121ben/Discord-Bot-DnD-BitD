@@ -120,7 +120,7 @@ def get_module_env_filepath():
 
 
 def get_current_savefile_path():
-    return get_save_folder_filepath() + '/' + get_current_save_file_name()
+    return get_save_folder_filepath() + f'{os.sep}' + get_current_save_file_name()
 
 
 def check_file_loaded(raise_error: bool = False):

@@ -264,8 +264,8 @@ class CampaignCog(commands.Cog):
 
             message = await cmp_hlp.get_bot().get_channel(chat_id).history(limit=1).next()
             filename = message.attachments[0].filename
-            cache_save_path = cmp_hlp.get_cache_folder_filepath() + '/' + filename
-            local_save_path = cmp_hlp.get_cache_folder_filepath() + '/' + filename
+            cache_save_path = cmp_hlp.get_cache_folder_filepath() + f'{os.sep}' + filename
+            local_save_path = cmp_hlp.get_cache_folder_filepath() + f'{os.sep}' + filename
 
             await message.attachments[0].save(fp=cache_save_path)
             if not exists(local_save_path):

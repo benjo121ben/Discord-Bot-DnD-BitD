@@ -14,8 +14,8 @@ from .Entanglement_table import Entanglement_sorting_table
 seed(datetime.now().timestamp())
 
 imported_expanded_entanglements = {}
-db_asset_folder_rel_path = "..\\..\\..\\Assets\\DB\\"
-asset_folder_rel_path = "..\\..\\..\\Assets\\"
+db_asset_folder_rel_path = os.sep.join(["..","..", "..", "Assets", "DB", ""])
+asset_folder_rel_path = os.sep.join(["..", "..", "..", "Assets", ""])
 
 entanglements_enabled = False
 devils_bargains_enabled = False
@@ -139,19 +139,19 @@ def get_roll(amount: int, type: int):
 
 
 def get_die_nr_image_filepath(nr: int):
-    return get_asset_folder_filepath() + f"dice\\{nr}.png"
+    return get_asset_folder_filepath() + os.sep.join(["dice", f"{nr}.png"])
 
 
 def get_die_base_image_filepath(nr: int):
-    return get_asset_folder_filepath() + f"dice\\dice_base-{nr}.png"
+    return get_asset_folder_filepath() + os.sep.join(["dice", f"dice_base-{nr}.png"])
 
 
 def get_spritesheet_filepath():
-    return get_asset_folder_filepath() + f"dice\\Blades_dice_spritesheet.png"
+    return get_asset_folder_filepath() + os.sep.join(["dice", "Blades_dice_spritesheet.png"])
 
 
 def get_tag_spritesheet_filepath():
-    return get_asset_folder_filepath() + f"dice\\blades_success_tags.png"
+    return get_asset_folder_filepath() + os.sep.join(["dice", "blades_success_tags.png"])
 
 
 def get_success_tag_sprite(success: int):
@@ -212,13 +212,14 @@ def get_sprite_from_uniform_spritesheet(spritesheet: Image, sprite_size: int, in
 
 def check_entanglements():
     global imported_expanded_entanglements, entanglements_enabled
-    if not exists(f'{get_asset_folder_filepath()}\\Expanded_Entanglements.json'):
+    expanded_entanglement_path = os.sep.join([f'{get_asset_folder_filepath()}', 'Expanded_Entanglements.json'])
+    if not exists(expanded_entanglement_path):
         print(f"Expanded_Entanglements.json cannot be found at location:\n"
               f"{get_asset_folder_filepath()}\n"
               f"entanglements disabled")
         return
     entanglements_enabled = True
-    imported_expanded_entanglements = json.load(open(f'{get_asset_folder_filepath()}\\Expanded_Entanglements.json'))
+    imported_expanded_entanglements = json.load(open(expanded_entanglement_path))
     print("looking for entanglements")
     for column in Entanglement_sorting_table:
         for roll in column:

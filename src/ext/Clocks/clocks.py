@@ -6,8 +6,8 @@ import pathlib
 
 
 clock_files_dic = {}
-clocks_rel_asset_folder_path = '..\\..\\..\\Assets\\Clocks\\'
-clocks_rel_save_path = "..\\..\\..\\saves\\clock_saves.json"
+clocks_rel_asset_folder_path = os.sep.join(['..', '..', '..', 'Assets', 'Clocks', ''])
+clocks_rel_save_path = os.sep.join(['..', '..', '..', 'saves', 'clock_saves.json'])
 
 
 class NoClockImageException(Exception):
@@ -69,8 +69,8 @@ def load_clocks():
 def save_clocks():
     if not exists(get_clock_save_filepath()):
         path = ""
-        for path_part in get_clock_save_filepath().split("/"):
-            path += path_part + "/"
+        for path_part in get_clock_save_filepath().split(os.sep):
+            path += path_part + os.sep
             if not exists(path) and not ".json" in path:
                 os.mkdir(path)
         print("created savefile")
@@ -95,7 +95,7 @@ def load_single_clock_files(clock_folder : str):
     clock_sub_files_dic = {}
     for tick in range(0, clock_size + 1):
         file_name = str(clock_size) + "-" + str(tick) + ".png"
-        file_path = get_clock_asset_folder_path() + clock_folder + "\\" + file_name
+        file_path = get_clock_asset_folder_path() + os.sep.join([clock_folder, file_name])
         if exists(file_path):
             clock_sub_files_dic[tick] = file_path
         else:
