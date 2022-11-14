@@ -1,4 +1,5 @@
 import os
+from PIL import Image
 from os.path import exists
 import json
 import pathlib
@@ -14,10 +15,11 @@ seed(datetime.now().timestamp())
 
 imported_expanded_entanglements = {}
 db_asset_folder_rel_path = "..\\..\\..\\Assets\\DB\\"
-entangle_asset_folder_rel_path = "..\\..\\..\\Assets\\"
+asset_folder_rel_path = "..\\..\\..\\Assets\\"
 
 entanglements_enabled = False
 devils_bargains_enabled = False
+blades_dice_sprite_size = 64
 
 
 class BladesCommandException(Exception):
@@ -29,9 +31,9 @@ def get_db_asset_folder_filepath():
     return os.path.join(this_file_folder_path, db_asset_folder_rel_path)
 
 
-def get_entanglement_asset_folder_filepath():
+def get_asset_folder_filepath():
     this_file_folder_path = pathlib.Path(__file__).parent.resolve()
-    return os.path.join(this_file_folder_path, entangle_asset_folder_rel_path)
+    return os.path.join(this_file_folder_path, asset_folder_rel_path)
 
 
 async def db_functionality(ctx, amount: int = 1):
@@ -94,41 +96,86 @@ def get_devils_bargain():
     return File(f"{get_db_asset_folder_filepath()}DevilsBargain-{rand}.png")
 
 
-def get_blades_roll(amount: int):
-    erg = 1
-    if amount > 10 or amount < 0:
+def get_blades_roll(dice_amount: int):
+    rolled_max = 1
+    if dice_amount > 10 or dice_amount < 0:
         raise BladesCommandException("cannot roll more than 10 dice")
-    rolled_array = [0, 0, 0, 0, 0, 0]
+    rolled_array = [0, 0, 0, 0, 0, 0]  # dice amounts are tracked in reverse. rolled_array[0] = amount of 6's rolled
 
-    if amount == 0:  # user rolls with disadvantage for this
+    if dice_amount == 0:  # user rolls with disadvantage for this
         roll1 = random.randint(1, 6)
         roll2 = random.randint(1, 6)
-        rolled_array[roll1-1] += 1
-        rolled_array[roll2-1] += 1
-        erg = min(roll1, roll2)
+        rolled_array[6-roll1] += 1
+        rolled_array[6-roll2] += 1
+        rolled_max = min(roll1, roll2)
     else:
-        for _ in range(amount):
+        for _ in range(dice_amount):
             roll = random.randint(1, 6)
-            erg = max(erg, roll)
-            rolled_array[roll-1] += 1
-    if erg <= 3:
-        erg = -1
-    elif erg <= 5:
-        erg = 0
-    else:
-        erg = 1
-        if rolled_array[5] > 1:
-            erg = 2
+            rolled_max = max(rolled_max, roll)
+            rolled_array[6-roll] += 1
 
-    return erg, rolled_array
+    if rolled_array[0] > 1 and not dice_amount == 0:
+        result = 2   # crit
+    elif rolled_max <= 3:
+        result = -1  # fail
+    elif rolled_max <= 5:
+        result = 0  # partial success
+    else:
+        result = 1  # success
+
+    return result, rolled_array
+
+
+def get_roll(amount: int, type: int):
+    if amount > 30 or amount < 1:
+        raise BladesCommandException("cannot roll more than 30 dice or less than 1")
+    rolled_array = [0] * type
+
+    for _ in range(amount):
+        roll = random.randint(1, type)
+        rolled_array[roll-1] += 1
+
+    return rolled_array
 
 
 def get_die_nr_image_filepath(nr: int):
-    return get_entanglement_asset_folder_filepath() + f"dice\\{nr}.png"
+    return get_asset_folder_filepath() + f"dice\\{nr}.png"
 
 
 def get_die_base_image_filepath(nr: int):
-    return get_entanglement_asset_folder_filepath() + f"dice\\dice_base-{nr}.png"
+    return get_asset_folder_filepath() + f"dice\\dice_base-{nr}.png"
+
+
+def get_spritesheet_filepath():
+    return get_asset_folder_filepath() + f"dice\\Blades_dice_spritesheet.png"
+
+
+def get_tag_spritesheet_filepath():
+    return get_asset_folder_filepath() + f"dice\\blades_success_tags.png"
+
+
+def get_success_tag_sprite(success: int):
+    if 2 < success or success < -1:
+        raise BladesCommandException("Blades/get_success_tag: Tried to get success tag outside of range")
+
+    spritesheet = Image.open(get_tag_spritesheet_filepath()).convert('RGBA')
+    success_tag = None
+    width, height = spritesheet.size
+
+    if success == 0:
+        return spritesheet.crop((0, 0, 144, 32))
+    if success == -1:
+        success_tag = spritesheet.crop((0, 32, int(width/3), height))
+    elif success == 1:
+        success_tag = spritesheet.crop((int(width/3), 32, int(width/3)*2, height))
+    elif success == 2:
+        success_tag = spritesheet.crop((int(width/3)*2, 32, width, height))
+
+    return success_tag
+
+
+def get_sprite_size():
+    return blades_dice_sprite_size
 
 
 def check_devils_bargain():
@@ -152,15 +199,26 @@ def check_devils_bargain():
         print("Devils Bargains present, feature enabled\n")
 
 
+def get_sprite_from_uniform_spritesheet(spritesheet: Image, sprite_size: int, index: int):
+    sheet_size = spritesheet.size
+    columns = int(sheet_size[0] / sprite_size)
+    # crop amounts
+    left = (index % columns) * sprite_size
+    right = left + sprite_size
+    top = int(index / columns) * sprite_size
+    bottom = top + sprite_size
+    return spritesheet.crop((left, top, right, bottom))
+
+
 def check_entanglements():
     global imported_expanded_entanglements, entanglements_enabled
-    if not exists(f'{get_entanglement_asset_folder_filepath()}\\Expanded_Entanglements.json'):
+    if not exists(f'{get_asset_folder_filepath()}\\Expanded_Entanglements.json'):
         print(f"Expanded_Entanglements.json cannot be found at location:\n"
-              f"{get_entanglement_asset_folder_filepath()}\n"
+              f"{get_asset_folder_filepath()}\n"
               f"entanglements disabled")
         return
     entanglements_enabled = True
-    imported_expanded_entanglements = json.load(open(f'{get_entanglement_asset_folder_filepath()}\\Expanded_Entanglements.json'))
+    imported_expanded_entanglements = json.load(open(f'{get_asset_folder_filepath()}\\Expanded_Entanglements.json'))
     print("looking for entanglements")
     for column in Entanglement_sorting_table:
         for roll in column:
