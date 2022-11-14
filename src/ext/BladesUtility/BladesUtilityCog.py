@@ -33,7 +33,7 @@ class BladesUtilityCog(commands.Cog):
         all_rolls_index = 0
         for array_index, amount_rolled in enumerate(rolled_array):
             nr_rolled = 6 - array_index
-            if nr_rolled == 6 and rolled_array[0] > 1and dice_amount > 0:
+            if nr_rolled == 6 and erg == 2:
                 nr_rolled = 7
             nr_image = bitd_func.get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled-1)
             for _ in range(amount_rolled):
