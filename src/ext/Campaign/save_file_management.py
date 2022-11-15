@@ -75,7 +75,6 @@ def check_file_loaded(raise_error: bool = False):
 def check_file_version_and_upgrade(save_file_data) -> (bool, dict):
     global save_type_version, version_tag, character_tag, last_changed_tag, session_tag
     if version_tag in save_file_data and save_file_data[version_tag] == save_type_version:
-        print("skipped")
         return False, save_file_data
     else:
         imported_char_dic = None
@@ -96,7 +95,6 @@ def check_file_version_and_upgrade(save_file_data) -> (bool, dict):
             if 'tag' not in char_data:
                 char_data['tag'] = char_data['name']
         save_file_data[character_tag] = imported_char_dic
-    print(imported_char_dic)
     return True, save_file_data
 
 
