@@ -23,29 +23,35 @@ class BladesUtilityCog(commands.Cog):
 
     @slash_command(name="b_roll", description="tests the blades roll")
     async def blades_roll(self, ctx, dice_amount: int):
-        erg, rolled_array = bitd_func.get_blades_roll(dice_amount)
-        spritesheet = Image.open(bitd_func.get_spritesheet_filepath()).convert('RGBA')
-        sheet_size = spritesheet.size
-        dice_sprite_size = bitd_func.get_sprite_size()
-        end_image_length = dice_sprite_size * dice_amount if dice_amount > 0 else 2 * dice_sprite_size
-        new_image = Image.new('RGBA', (end_image_length, dice_sprite_size), (250, 250, 250))
-        # Read the two images
-        all_rolls_index = 0
-        for array_index, amount_rolled in enumerate(rolled_array):
-            nr_rolled = 6 - array_index
-            if nr_rolled == 6 and erg == 2:
-                nr_rolled = 7
-            nr_image = bitd_func.get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled-1)
-            for _ in range(amount_rolled):
-                new_image.paste(nr_image, (dice_sprite_size * all_rolls_index, 0), nr_image)
-                all_rolls_index += 1
-        success_file_path = bitd_func.get_asset_folder_filepath() + "success.png"
-        merged_file_path = bitd_func.get_asset_folder_filepath() + "merged.png"
-        bitd_func.get_success_tag_sprite(erg).save(success_file_path, "PNG")
-        new_image.save(merged_file_path, "PNG")
-        await ctx.respond(files=[File(success_file_path), File(merged_file_path)])
-        os.remove(success_file_path)
-        os.remove(merged_file_path)
+        try:
+            erg, rolled_array = bitd_func.get_blades_roll(dice_amount)
+            spritesheet = Image.open(bitd_func.get_spritesheet_filepath()).convert('RGBA')
+            sheet_size = spritesheet.size
+            dice_sprite_size = bitd_func.get_sprite_size()
+            end_image_length = dice_sprite_size * dice_amount if dice_amount > 0 else 2 * dice_sprite_size
+            end_image_height = dice_sprite_size
+            new_image = Image.new('RGBA', (end_image_length, end_image_height), (250, 250, 250))
+            # Read the two images
+            all_rolls_index = 0
+            for array_index, amount_rolled in enumerate(rolled_array):
+                nr_rolled = 6 - array_index
+                if nr_rolled == 6 and erg == 2:
+                    nr_rolled = 7
+                nr_image = bitd_func.get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled-1)
+                for _ in range(amount_rolled):
+                    new_image.paste(nr_image, (dice_sprite_size * all_rolls_index, 0), nr_image)
+                    all_rolls_index += 1
+            success_file_path = bitd_func.get_asset_folder_filepath() + "success.png"
+            merged_file_path = bitd_func.get_asset_folder_filepath() + "merged.png"
+
+            bitd_func.get_success_tag_sprite(erg).save(success_file_path, "PNG")
+            new_image.resize((end_image_length * 2, end_image_height * 2), resample=0).save(merged_file_path, "PNG")
+
+            await ctx.respond(files=[File(success_file_path), File(merged_file_path)])
+            os.remove(success_file_path)
+            os.remove(merged_file_path)
+        except bitd_func.BladesCommandException as e:
+            await ctx.respond(str(e))
 
     @slash_command(name="roll", description="tests the all roll")
     async def types_roll(self, ctx, dice_amount: int, dice_type: int):
