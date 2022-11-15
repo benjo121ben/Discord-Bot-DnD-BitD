@@ -34,11 +34,11 @@ class NoSaveFileException(CommandException):
         )
 
 
-def check_file_admin(ctx: BridgeExtContext) -> bool:
+def check_file_admin(user_id: int) -> bool:
     if p_vars.bot_admin_id is None:
         return True
     else:
-        return ctx.author.id == p_vars.bot_admin_id
+        return user_id == p_vars.bot_admin_id
 
 
 def check_bot_admin(ctx: BridgeExtContext) -> bool:
@@ -82,6 +82,7 @@ def get_char_tag_if_none(ctx: BridgeExtContext, char_tag: str = None):
     if char_tag is not None:
         return char_tag
 
+    check_file_loaded(raise_error=True)
     for char in charDic.values():
         if char.player == str(ctx.author.id):
             return char.tag
@@ -144,12 +145,17 @@ def check_char_tag(char_tag: str, raise_error: bool = False):
     :param raise_error: If true, the function will throw a CommandException if the character was not found
     :return: True if character was found, False otherwise
     """
-    if char_tag in charDic.keys():
+    if char_tag is None:
+        if raise_error:
+            raise CommandException(
+                "campaign_helper:check_char_tag: Character tag None was given. "
+                "This should never happen, please contact the developer."
+            )
+    elif char_tag in charDic.keys():
         return True
     elif raise_error:
         raise CommandException("Character doesn't exist")
-    else:
-        return False
+    return False
 
 
 def rename_char_tag(char_tag_old: str, char_tag_new: str):

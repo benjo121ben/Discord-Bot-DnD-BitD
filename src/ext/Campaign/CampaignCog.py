@@ -5,7 +5,6 @@ import discord.errors as d_errors
 from discord import slash_command
 from discord.ext import commands
 from discord.ext.bridge import BridgeExtContext, Bot
-from os.path import getmtime
 
 from . import Undo, CommandFunctions as cfuncs, packg_variables as cmp_vars, campaign_helper as cmp_hlp, campaign_exceptions as cmp_except
 
@@ -14,37 +13,22 @@ class CampaignCog(commands.Cog):
     @slash_command(name="crit", description="Character has rollet a nat20")
     async def crit(self, ctx: BridgeExtContext, char_tag: str = None):
         try:
-            print(cmp_vars.charDic)
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
-            cmp_hlp.check_char_tag(char_tag, raise_error=True)
-            crits = cmp_vars.charDic[char_tag].crits
-            Undo.queue_basic_action(char_tag, "crits", crits, crits + 1)
-            cmp_vars.charDic[char_tag].rolled_crit()
-            cmp_hlp.save()
-            await ctx.respond(f"Crit of {char_tag} increased by 1")
+            await ctx.respond(cfuncs.crit(char_tag))
         except cmp_except.CommandException as err:
             await ctx.respond(err)
 
     @slash_command(name="dodged", description="Character dodged an attack")
     async def dodged(self, ctx: BridgeExtContext, char_tag: str = None):
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
-            cmp_hlp.check_char_tag(char_tag, raise_error=True)
-            dodged = cmp_vars.charDic[char_tag].dodged
-            Undo.queue_basic_action(char_tag, "dodged", dodged, dodged + 1)
-            cmp_vars.charDic[char_tag].dodge()
-            cmp_hlp.save()
-            await ctx.respond(f"Character {char_tag}, dodged an attack")
+            await ctx.respond(cfuncs.dodged(char_tag))
         except cmp_except.CommandException as err:
             await ctx.respond(err)
 
     @slash_command(name="cause", description="Character causes damage to enemy")
     async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_tag: str = None):
-        amount = abs(amount)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.cause_damage(char_tag, amount, kills))
         except cmp_except.CommandException as err:
@@ -52,9 +36,7 @@ class CampaignCog(commands.Cog):
 
     @slash_command(name="take", description="Character takes damage, reducing their health and maybe causing them to faint")
     async def take(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
-        amount = abs(amount)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.take_damage(char_tag, amount, False))
         except cmp_except.CommandException as err:
@@ -62,17 +44,9 @@ class CampaignCog(commands.Cog):
 
     @slash_command(name="tank", description="Character tanks damage, not reducing their health")
     async def tank(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
-        amount = abs(amount)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
-            cmp_hlp.check_char_tag(char_tag, raise_error=True)
-            undo_action = Undo.MultipleBaseAction(cmp_vars.charDic[char_tag], ["damage_taken"])
-            cmp_vars.charDic[char_tag].tank(amount)
-            cmp_hlp.save()
-            undo_action.update(cmp_vars.charDic[char_tag])
-            Undo.queue_undo_action(undo_action)
-            await ctx.respond(f"{char_tag} tanks {amount} damage")
+            await ctx.respond(cfuncs.tank_damage(char_tag, amount))
         except cmp_except.CommandException as err:
             await ctx.respond(err)
 
@@ -80,7 +54,6 @@ class CampaignCog(commands.Cog):
     async def take_reduced(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
         amount = abs(amount)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.take_damage(char_tag, amount, True))
         except cmp_except.CommandException as err:
@@ -93,7 +66,6 @@ class CampaignCog(commands.Cog):
     async def set_max(self, ctx: BridgeExtContext, new_max_health: int, char_tag: str = None):
         new_max_health = abs(new_max_health)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.set_max_health(char_tag, new_max_health))
         except cmp_except.CommandException as err:
@@ -106,7 +78,6 @@ class CampaignCog(commands.Cog):
     async def heal_single(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
         amount = abs(amount)
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.heal(char_tag, amount))
         except cmp_except.CommandException as err:
@@ -118,7 +89,6 @@ class CampaignCog(commands.Cog):
     )
     async def full_h(self, ctx: BridgeExtContext, char_tag: str = None):
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             char_tag = cmp_hlp.get_char_tag_if_none(ctx, char_tag)
             await ctx.respond(cfuncs.heal_max(char_tag))
         except cmp_except.CommandException as err:
@@ -139,10 +109,6 @@ class CampaignCog(commands.Cog):
     )
     async def add_c(self, ctx: BridgeExtContext, char_tag: str, char_name: str, max_health: int, user_id: str = None):
         try:
-            if char_tag == "all":
-                await ctx.respond("You are not allowed to call your character all, due to special commands using it a keyword. Please call them something else")
-                return
-            cmp_hlp.check_file_loaded(raise_error=True)
             await ctx.respond(cfuncs.add_char(char_tag, char_name, max_health))
             if user_id is not None:
                 await self.claim(ctx, char_tag, user_id)
@@ -155,9 +121,7 @@ class CampaignCog(commands.Cog):
     )
     async def retag_player_character(self, ctx: BridgeExtContext, char_tag_old: str, char_tag_new: str):
         try:
-            cfuncs.rename_char_tag(char_tag_old, char_tag_new)
-            Undo.queue_undo_action(Undo.ReTagCharUndoAction(char_tag_old, char_tag_new))
-            await ctx.respond(f"Character {char_tag_old} has been renamed to {char_tag_new}")
+            await ctx.respond(cfuncs.retag_character(char_tag_old, char_tag_new))
         except cmp_except.CommandException as err:
             await ctx.respond(err)
 
@@ -166,10 +130,7 @@ class CampaignCog(commands.Cog):
         description="Load an existing campaign save file or create a new one"
     )
     async def file(self, ctx: BridgeExtContext, file_name: str):
-        old_file_name = cmp_hlp.get_current_save_file_name_no_suff()
-        ret_str = cmp_hlp.load(file_name)
-        Undo.queue_undo_action(Undo.FileChangeUndoAction(old_file_name, cmp_hlp.get_current_save_file_name_no_suff()))
-        await ctx.respond(ret_str)
+        await ctx.respond(cfuncs.load_file(file_name))
 
     @slash_command(
         name="claim",
@@ -177,48 +138,31 @@ class CampaignCog(commands.Cog):
     )
     async def claim(self, ctx: BridgeExtContext, char_tag: str, user_id: str = None):
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
             if user_id is None:
                 user_id = ctx.author.id
-            if cmp_hlp.check_if_user_has_char(user_id):
-                raise cmp_except.CommandException(f"this user already has character {cmp_hlp.get_char_tag_by_id(user_id)} assigned")
-            cmp_hlp.check_char_tag(char_tag, raise_error=True)
-
-            current_player = cmp_vars.charDic[char_tag].player
-
-            if not cmp_hlp.check_file_admin(ctx) and current_player != "" and int(current_player) != ctx.author.id:
-                raise cmp_except.CommandException("You are not authorized to assign this character. It has already been claimed by a user.")
-
-            user = ""
-            try:
-                user = await cmp_hlp.get_bot().fetch_user(user_id)
-            except d_errors.NotFound as err:
-                print(str(err))
-                await ctx.respond("This user does not exist")
-                return
-
-            cmp_vars.charDic[char_tag].player = str(user_id)
-            Undo.queue_basic_action(char_tag, "player", current_player, str(user_id))
-            cmp_hlp.save()
-            await ctx.respond(f"{char_tag} assigned to {user.name}")
+            cfuncs.claim_character(ctx.author.id, char_tag, user_id)
         except cmp_except.CommandException as err:
             await ctx.respond(str(err))
+            return
+
+        user = ""
+        try:
+            user = await cmp_hlp.get_bot().fetch_user(user_id)
+        except d_errors.NotFound as err:
+            print(str(err))
+            await ctx.respond("A user with this ID could not be found by the bot.\n"
+                              "Make sure the bot shares a server with the user that has this ID")
+            Undo.undo()
+            Undo.discard_undo_queue()
+            return
+        await ctx.respond(f"{char_tag} assigned to {user.name}")
 
     @slash_command(name="unclaim", description="Unclaim an assigned Character")
     async def unclaim(self, ctx: BridgeExtContext, user_id: str = None):
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
-            if user_id is not None and not cmp_hlp.check_file_admin(ctx):
-                raise cmp_except.CommandException("You are not authorized to use this command on other people's characters")
             if user_id is None:
                 user_id = ctx.author.id
-            if not cmp_hlp.check_if_user_has_char(user_id):
-                raise cmp_except.CommandException("this user has no character assigned")
-            char_tag = cmp_hlp.get_char_tag_by_id(user_id)
-            Undo.queue_basic_action(char_tag, "player", str(user_id), "")
-            cmp_vars.charDic[char_tag].player = ""
-            cmp_hlp.save()
-            await ctx.respond(f"Character {char_tag} unassigned")
+            await ctx.respond(cfuncs.unclaim_user(ctx.author.id, user_id))
         except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
@@ -226,14 +170,12 @@ class CampaignCog(commands.Cog):
     async def session(self, ctx: BridgeExtContext):
         try:
             cmp_hlp.check_file_loaded(raise_error=True)
-            if not cmp_hlp.check_file_admin(ctx):
+            if not cmp_hlp.check_file_admin(ctx.author.id):
                 raise cmp_except.CommandException("You are not authorized to use this command")
             if cmp_hlp.check_bot_admin(ctx):
                 await self.cache(ctx)
-            cmp_vars.imported_dic[cmp_hlp.session_tag] += 1
-            cmp_hlp.save()
-            await ctx.respond("finished session, increased by one")
-        except Exception as err:
+            await ctx.respond(cfuncs.session_increase())
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @slash_command(name="cache", description="Admin command: caches the last save file into the provided server chat")
@@ -249,7 +191,7 @@ class CampaignCog(commands.Cog):
             message = f"cache-{cmp_hlp.get_current_save_file_name_no_suff()}-session {cmp_vars.imported_dic['session']}"
             await cmp_hlp.get_bot().get_channel(chat_id).send(message, file=cmp_hlp.get_current_savefile_as_discord_file())
             await ctx.respond("cached")
-        except Exception as err:
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @slash_command(name="get_cache", description="try to download latestsavefrom cache server chat")
@@ -280,7 +222,7 @@ class CampaignCog(commands.Cog):
             else:
                 os.remove(cache_save_path)
                 await ctx.respond("already up to date")
-        except Exception as err:
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @slash_command(name="download", description="Downloads the selectedsavefile")
@@ -288,35 +230,21 @@ class CampaignCog(commands.Cog):
         try:
             cmp_hlp.check_file_loaded(raise_error=True)
             await ctx.respond("save file:", file=cmp_hlp.get_current_savefile_as_discord_file())
-        except Exception as err:
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @slash_command(name="undo", description="Undo your mistakes")
-    async def undo_comm(self, ctx: BridgeExtContext, amount: int = 1):
+    async def undo(self, ctx: BridgeExtContext, amount: int = 1):
         try:
-            if amount > 10:
-                amount = 10
-            cmp_hlp.check_file_loaded(raise_error=True)
-            ret_val = ""
-            for _ in range(amount):
-                ret_val += Undo.undo() + "\n"
-                if not cmp_hlp.get_current_save_file_name_no_suff() == "":
-                    cmp_hlp.save()
-            await ctx.respond(ret_val)
-        except Exception as err:
+            await ctx.respond(cfuncs.undo_command(amount))
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @slash_command(name="redo", description="Redo your undone non-mistakes")
-    async def redo_comm(self, ctx: BridgeExtContext, amount: int = 1):
+    async def redo(self, ctx: BridgeExtContext, amount: int = 1):
         try:
-            cmp_hlp.check_file_loaded(raise_error=True)
-            ret_val = ""
-            for _ in range(amount):
-                ret_val += Undo.redo() + "\n"
-                if not cmp_hlp.get_current_save_file_name_no_suff() == "":
-                    cmp_hlp.save()
-            await ctx.respond(ret_val)
-        except Exception as err:
+            await ctx.respond(cfuncs.redo_command(amount))
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
     @commands.command(name="save")
@@ -325,7 +253,7 @@ class CampaignCog(commands.Cog):
             cmp_hlp.check_file_loaded(raise_error=True)
             cmp_hlp.save()
             await ctx.respond("saved")
-        except Exception as err:
+        except cmp_except.CommandException as err:
             await ctx.respond(str(err))
 
 

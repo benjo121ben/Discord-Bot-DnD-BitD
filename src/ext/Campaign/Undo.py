@@ -154,3 +154,9 @@ def redo():
         return actionQueue[pointer].redo()
     else:
         return "No actions to redo"
+
+
+def discard_undo_queue():
+    global pointer, actionQueue
+    while len(actionQueue) > pointer + 1:
+        actionQueue.pop()
