@@ -1,9 +1,28 @@
+import decohints
+from functools import wraps
+
 from .Character import Character
-from .campaign_helper import save, load, check_char_tag, check_file_loaded, rename_char_tag, \
-    get_current_save_file_name_no_suff, check_if_user_has_char, get_char_tag_by_id, check_file_admin, session_tag
+from .campaign_helper import check_if_user_has_char, get_char_tag_by_id, check_file_admin, check_char_tag
+from .save_file_management import session_tag, get_current_save_file_name_no_suff, check_file_loaded, load, save
 from .campaign_exceptions import CommandException
 from .packg_variables import localCommDic, charDic, imported_dic
 from . import Undo
+
+
+@decohints.decohints
+def check_file_save_file_wrapper(function_to_wrap):
+    """
+    Decorator for all functions that require a savefile to be open when used and save the changes after being correctly executed
+    :param function_to_wrap: the function that is called
+    :return: wrapped function
+    """
+    @wraps(function_to_wrap)
+    def wrapped_func(*args, **kwargs):
+        check_file_loaded(raise_error=True)
+        value = function_to_wrap(*args, **kwargs)
+        save()
+        return value
+    return wrapped_func
 
 
 def load_file(file_name: str) -> str:
@@ -11,36 +30,6 @@ def load_file(file_name: str) -> str:
     ret_str = load(file_name)
     Undo.queue_undo_action(Undo.FileChangeUndoAction(old_file_name, get_current_save_file_name_no_suff()))
     return ret_str
-
-
-def claim_character(executing_user: int, char_tag: str, assigned_user_id: int):
-    check_file_loaded(raise_error=True)
-    check_char_tag(char_tag, raise_error=True)
-    if check_if_user_has_char(assigned_user_id):
-        raise CommandException(
-            f"this user already has character {get_char_tag_by_id(assigned_user_id)} assigned")
-    current_player = charDic[char_tag].player
-
-    if current_player != "" and int(current_player) != executing_user and not check_file_admin(executing_user):
-        raise CommandException(
-            "You are not authorized to assign this character. It has already been claimed by a user.")
-    charDic[char_tag].player = str(assigned_user_id)
-    Undo.queue_basic_action(char_tag, "player", current_player, str(assigned_user_id))
-    save()
-    return f"character {char_tag} assigned to {assigned_user_id}"
-
-
-def unclaim_user(executing_user: int, to_unclaim_user_id: int):
-    check_file_loaded(raise_error=True)
-    if to_unclaim_user_id != executing_user and not check_file_admin(executing_user):
-        raise CommandException("You are not authorized to use this command on other people's characters")
-    if not check_if_user_has_char(to_unclaim_user_id):
-        raise CommandException("this user has no character assigned")
-    char_tag = get_char_tag_by_id(to_unclaim_user_id)
-    Undo.queue_basic_action(char_tag, "player", str(to_unclaim_user_id), "")
-    charDic[char_tag].player = ""
-    save()
-    return f"Character {char_tag} unassigned"
 
 
 def log(adv=False) -> str:
@@ -62,9 +51,37 @@ def log(adv=False) -> str:
     return ret_string
 
 
+@check_file_save_file_wrapper
+def claim_character(executing_user: int, char_tag: str, assigned_user_id: int):
+    check_char_tag(char_tag, raise_error=True)
+    if check_if_user_has_char(assigned_user_id):
+        raise CommandException(
+            f"this user already has character {get_char_tag_by_id(assigned_user_id)} assigned")
+    current_player = charDic[char_tag].player
+
+    if current_player != "" and int(current_player) != executing_user and not check_file_admin(executing_user):
+        raise CommandException(
+            "You are not authorized to assign this character. It has already been claimed by a user.")
+    charDic[char_tag].player = str(assigned_user_id)
+    Undo.queue_basic_action(char_tag, "player", current_player, str(assigned_user_id))
+    return f"character {char_tag} assigned to {assigned_user_id}"
+
+
+@check_file_save_file_wrapper
+def unclaim_user(executing_user: int, to_unclaim_user_id: int):
+    if to_unclaim_user_id != executing_user and not check_file_admin(executing_user):
+        raise CommandException("You are not authorized to use this command on other people's characters")
+    if not check_if_user_has_char(to_unclaim_user_id):
+        raise CommandException("this user has no character assigned")
+    char_tag = get_char_tag_by_id(to_unclaim_user_id)
+    Undo.queue_basic_action(char_tag, "player", str(to_unclaim_user_id), "")
+    charDic[char_tag].player = ""
+    return f"Character {char_tag} unassigned"
+
+
 # adds new character to the roster
+@check_file_save_file_wrapper
 def add_char(tag: str, char_name: str, max_health: int) -> str:
-    check_file_loaded(raise_error=True)
     if tag == "all":
         raise CommandException(
             "You are not allowed to call your character all, due to special commands using it a keyword."
@@ -74,18 +91,24 @@ def add_char(tag: str, char_name: str, max_health: int) -> str:
     if tag in charDic.keys():
         return "a character with this tag already exists"
     charDic[tag] = Character(tag, char_name, max_health)
-    save()
     return "character " + char_name + " added"
 
 
+@check_file_save_file_wrapper
 def retag_character(char_tag_old: str, char_tag_new: str)->str:
-    rename_char_tag(char_tag_old, char_tag_new)
+    check_char_tag(char_tag_old, raise_error=True)
+    if check_char_tag(char_tag_new):
+        raise CommandException("A Character of this name already exists")
+
+    charDic[char_tag_new] = charDic[char_tag_old]
+    charDic[char_tag_new].tag = char_tag_new
+    del charDic[char_tag_old]
     Undo.queue_undo_action(Undo.ReTagCharUndoAction(char_tag_old, char_tag_new))
-    save()
     return f"Character {char_tag_old} has been renamed to {char_tag_new}"
 
 
 # increases the caused damage stat
+@check_file_save_file_wrapper
 def cause_damage(char_tag: str, dam: int, kills: int) -> str:
     check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
@@ -103,8 +126,8 @@ def cause_damage(char_tag: str, dam: int, kills: int) -> str:
 
 
 # adds Damage taken to a character
+@check_file_save_file_wrapper
 def take_damage(char_tag: str, dam: int, resisted: bool) -> str:
-    check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
     dam = abs(dam)
     _char_name = charDic[char_tag].name
@@ -112,35 +135,33 @@ def take_damage(char_tag: str, dam: int, resisted: bool) -> str:
     fainted, dam = charDic[char_tag].take_dam(dam, resisted)
     undo_action.update(charDic[char_tag])
     Undo.queue_undo_action(undo_action)
-    save()
     if fainted:
         return f"character {_char_name} takes {dam} damage and faints"
     else:
         return f"character {_char_name} takes {dam} damage"
 
 
+# character damage_taken increased without decreasing health
+@check_file_save_file_wrapper
 def tank_damage(char_tag: str, amount: int) -> str:
-    check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
     amount = abs(amount)
     undo_action = Undo.MultipleBaseAction(charDic[char_tag], ["damage_taken"])
     charDic[char_tag].tank(amount)
-    save()
     undo_action.update(charDic[char_tag])
     Undo.queue_undo_action(undo_action)
     return f"{char_tag} tanks {amount} damage"
 
 
 # heals character to their health maximum, corresponds to a long rest in D&D
+@check_file_save_file_wrapper
 def heal_max(char_tag: str) -> str:
-    check_file_loaded(raise_error=True)
     if char_tag == "all":
         for char in charDic.values():
             undo_action = Undo.MultipleBaseAction(char, ["health", "damage_healed"])
             char.heal_max()
             undo_action.update(char)
             Undo.queue_undo_action(undo_action)
-        save()
         return "all characters were healed"
     _char_name = charDic[char_tag].name
     check_char_tag(char_tag, raise_error=True)
@@ -148,13 +169,12 @@ def heal_max(char_tag: str) -> str:
     charDic[char_tag].heal_max()
     undo_action.update(charDic[char_tag])
     Undo.queue_undo_action(undo_action)
-    save()
     return "character " + _char_name + " healed to their maximum"
 
 
 # heals by a certain amount
+@check_file_save_file_wrapper
 def heal(char_tag: str, healed: int) -> str:
-    check_file_loaded(raise_error=True)
     healed = abs(healed)
     if char_tag == "all":
         for char in charDic.values():
@@ -162,7 +182,6 @@ def heal(char_tag: str, healed: int) -> str:
             char.heal_dam(healed)
             undo_action.update(char)
             Undo.queue_undo_action(undo_action)
-        save()
         return f"All characters were healed by {healed}"
     else:
         check_char_tag(char_tag, raise_error=True)
@@ -170,49 +189,44 @@ def heal(char_tag: str, healed: int) -> str:
         charDic[char_tag].heal_dam(healed)
         undo_action.update(charDic[char_tag])
         Undo.queue_undo_action(undo_action)
-        save()
         _char_name = charDic[char_tag].name
         return "character " + _char_name + " healed " + str(healed)
 
 
 # command usage: set_max char_name amount
+@check_file_save_file_wrapper
 def set_max_health(char_tag: str, new_max: int) -> str:
     new_max = abs(new_max)
-    check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
     undo_action = Undo.MultipleBaseAction(charDic[char_tag], ["health", "max_health"])
     charDic[char_tag].set_max_health(new_max)
     undo_action.update(charDic[char_tag])
     Undo.queue_undo_action(undo_action)
-    save()
     _char_name = charDic[char_tag].name
     return "character " + _char_name + " health increased to " + str(new_max)
 
 
+@check_file_save_file_wrapper
 def crit(char_tag: str) -> str:
-    check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
     crits = charDic[char_tag].crits
     Undo.queue_basic_action(char_tag, "crits", crits, crits + 1)
     charDic[char_tag].rolled_crit()
-    save()
     return f"Crit of {char_tag} increased by 1"
 
 
+@check_file_save_file_wrapper
 def dodged(char_tag:str) -> str:
-    check_file_loaded(raise_error=True)
     check_char_tag(char_tag, raise_error=True)
     dodged = charDic[char_tag].dodged
     Undo.queue_basic_action(char_tag, "dodged", dodged, dodged + 1)
     charDic[char_tag].dodge()
-    save()
     return f"Character {char_tag}, dodged an attack"
 
 
+@check_file_save_file_wrapper
 def session_increase():
-    check_file_loaded(raise_error=True)
     imported_dic[session_tag] += 1
-    save()
     return "finished session, increased by one"
 
 

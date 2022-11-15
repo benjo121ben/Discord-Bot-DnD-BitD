@@ -40,6 +40,10 @@ def start_bot(_command_prefix, _bot_token):
     except ClientConnectorError:
         print("ERROR RAISED_BOT_SETUP CLIENT ERROR")
         raise MyInternetException("could not connect to the servers")
+    except Exception as e:
+        print("ERROR RAISED; FIND ME IN BOT SETUP")
+        print(e)
+        raise e
     finally:
         loop.close()
 

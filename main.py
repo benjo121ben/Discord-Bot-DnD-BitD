@@ -2,12 +2,13 @@ import os
 import time
 import pathlib
 
+from typing import Optional
 from src import GlobalVariables
 from dotenv import load_dotenv
 from src.Bot_Setup import start_bot, MyInternetException, close_bot
 
 
-def check_env_var_int(environment_tag: str) -> int:
+def check_env_var_int(environment_tag: str) -> Optional[int]:
     """
     This is a wrapper for environ.get, that returns an int with None instead of ""
     if the tag was written down but not assigned.
@@ -45,6 +46,7 @@ def main():
             execute = True
             tries -= 1
         finally:
+            print("bot was closed, smth happened")
             close_bot()
 
 

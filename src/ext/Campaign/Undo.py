@@ -1,5 +1,6 @@
-import src.ext.Campaign.campaign_helper as cmp_hlp
-import src.ext.Campaign.packg_variables as pkg_var
+import src.ext.Campaign.save_file_management
+from . import campaign_helper as cmp_hlp
+from . import packg_variables as pkg_var
 from collections import deque
 import abc
 from .Character import Character
@@ -57,11 +58,11 @@ class FileChangeUndoAction(BaseUndoAction):
         return f"{{filechange}}=({self.old_file}->{self.new_file})"
 
     def undo(self) -> str:
-        cmp_hlp.load(self.old_file)
+        src.ext.Campaign.save_versioning.load(self.old_file)
         return f"Undid load of {self.new_file}. Returned to {self.old_file}."
 
     def redo(self):
-        cmp_hlp.load(self.new_file)
+        src.ext.Campaign.save_versioning.load(self.new_file)
         return f"Reapplied load of {self.new_file}."
 
 

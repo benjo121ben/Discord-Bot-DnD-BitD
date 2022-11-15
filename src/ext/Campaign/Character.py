@@ -74,16 +74,3 @@ class Character:
                f"dodges: {self.dodged}"
 
 
-def char_from_data(data):
-    if 'tag' in data:
-        char = Character(data['tag'], data['name'], data['max_health'])
-    else:
-        char = Character(data['name'], data['name'], data['max_health'])
-    char.__dict__ = data
-    if not char.__dict__.__contains__('crits'):
-        char.__dict__['crits'] = 0
-        char.__dict__['faints'] = 0
-        char.__dict__['kills'] = 0
-    if not char.__dict__.__contains__('dodged'):
-        char.__dict__['dodged'] = 0
-    return char
