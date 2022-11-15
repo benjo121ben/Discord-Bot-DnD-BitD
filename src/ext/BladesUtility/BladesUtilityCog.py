@@ -4,8 +4,6 @@ from PIL import Image
 from discord import slash_command, File
 from discord.ext import commands
 from discord.ext import bridge
-
-import src.ext.Campaign.save_file_management
 from . import functions as bitd_func
 
 
@@ -43,7 +41,7 @@ class BladesUtilityCog(commands.Cog):
                 all_rolls_index += 1
         success_file_path = bitd_func.get_asset_folder_filepath() + "success.png"
         merged_file_path = bitd_func.get_asset_folder_filepath() + "merged.png"
-        src.ext.Campaign.save_versioning.save(success_file_path, "PNG")
+        bitd_func.get_success_tag_sprite(erg).save(success_file_path, "PNG")
         new_image.save(merged_file_path, "PNG")
         await ctx.respond(files=[File(success_file_path), File(merged_file_path)])
         os.remove(success_file_path)

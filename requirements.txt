@@ -2,3 +2,4 @@ python-dotenv
 py-cord
 pillow
 decohints
+

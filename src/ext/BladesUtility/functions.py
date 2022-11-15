@@ -17,6 +17,7 @@ imported_expanded_entanglements = {}
 db_asset_folder_rel_path = os.sep.join(["..","..", "..", "Assets", "DB", ""])
 asset_folder_rel_path = os.sep.join(["..", "..", "..", "Assets", ""])
 
+
 entanglements_enabled = False
 devils_bargains_enabled = False
 blades_dice_sprite_size = 64
@@ -220,6 +221,7 @@ def check_entanglements():
         return
     entanglements_enabled = True
     imported_expanded_entanglements = json.load(open(expanded_entanglement_path))
+
     print("looking for entanglements")
     for column in Entanglement_sorting_table:
         for roll in column:
