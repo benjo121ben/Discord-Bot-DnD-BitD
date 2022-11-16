@@ -45,7 +45,7 @@ class BladesUtilityCog(commands.Cog):
             merged_file_path = bitd_func.get_asset_folder_filepath() + "merged.png"
 
             bitd_func.get_success_tag_sprite(erg).save(success_file_path, "PNG")
-            new_image.resize((end_image_length * 2, end_image_height * 2), resample=0).save(merged_file_path, "PNG")
+            new_image.save(merged_file_path, "PNG")
 
             await ctx.respond(files=[File(success_file_path), File(merged_file_path)])
             os.remove(success_file_path)
