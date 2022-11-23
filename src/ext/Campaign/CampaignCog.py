@@ -211,15 +211,15 @@ class CampaignCog(commands.Cog):
             message = await cmp_hlp.get_bot().get_channel(chat_id).history(limit=1).next()
             filename = message.attachments[0].filename
             cache_save_path = save_manager.get_cache_folder_filepath() + f'{os.sep}' + filename
-            local_save_path = save_manager.get_cache_folder_filepath() + f'{os.sep}' + filename
+            local_save_path = save_manager.get_save_folder_filepath() + f'{os.sep}' + filename
 
             await message.attachments[0].save(fp=cache_save_path)
             if not exists(local_save_path):
                 os.rename(cache_save_path, local_save_path)
-                await ctx.respond(f"No local version found.save{filename} has been imported.")
+                await ctx.respond(f"No local version found. Save {filename} has been imported.")
                 return
 
-            if save_manager.compare_savefile_date(local_save_path, cache_save_path) == -1:
+            if save_manager.compare_savefile_novelty(local_save_path, cache_save_path) == -1:
                 os.remove(local_save_path)
                 os.rename(cache_save_path, local_save_path)
                 await ctx.respond("replaced")

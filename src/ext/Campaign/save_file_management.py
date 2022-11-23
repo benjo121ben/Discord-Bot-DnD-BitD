@@ -108,12 +108,16 @@ def parse_date_time(time_string: str) -> datetime:
     return datetime.strptime(time_string, date_time_save_format)
 
 
-def compare_savefile_date(path1, path2):
-    first_time = parse_date_time(json.load(open(path1))[last_changed_tag])
-    second_time = parse_date_time(json.load(open(path2))[last_changed_tag])
-    if first_time < second_time:
+def compare_savefile_novelty(path1, path2):
+    path1_dic = json.load(open(path1))
+    first_time = parse_date_time(path1_dic[last_changed_tag])
+    first_version = float(path1_dic[version_tag])
+    path2_dic = json.load(open(path2))
+    second_time = parse_date_time(path2_dic[last_changed_tag])
+    second_version = float(path2_dic[version_tag])
+    if first_version < second_version or first_time < second_time:
         return -1
-    elif first_time == second_time:
+    elif first_version == second_version or first_time == second_time:
         return 0
     else:
         return 1
