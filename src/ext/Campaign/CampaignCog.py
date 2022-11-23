@@ -172,9 +172,7 @@ class CampaignCog(commands.Cog):
     @slash_command(name="session", description="increase session")
     async def session(self, ctx: BridgeExtContext):
         try:
-            save_manager.check_file_loaded(raise_error=True)
-            if not cmp_hlp.check_file_admin(ctx.author.id):
-                raise comm_except("You are not authorized to use this command")
+            cmp_hlp.check_file_admin(ctx.author.id, raise_error=True)
             if cmp_hlp.check_bot_admin(ctx):
                 await self.cache(ctx)
             await ctx.respond(cfuncs.session_increase())
@@ -183,16 +181,21 @@ class CampaignCog(commands.Cog):
 
     @slash_command(name="cache", description="Admin command: caches the last save file into the provided server chat")
     async def cache(self, ctx: BridgeExtContext):
+        """
+        Sends the current savefile into the discord chat with the ID assigned in the campaign environment file
+        :param ctx: Discord context
+        :raises NoSaveFileException if no savefile is present
+        """
         try:
             save_manager.check_file_loaded(raise_error=True)
-            if not cmp_hlp.check_bot_admin(ctx):
-                raise comm_except("You are not authorized to use this command")
+            cmp_hlp.check_bot_admin(ctx, raise_error=True)
 
             chat_id = cmp_vars.cache_folder
             if chat_id is None:
                 raise comm_except("No cloudsavechannel id assigned")
             message = f"cache-{save_manager.get_current_save_file_name_no_suff()}-session {cmp_vars.imported_dic['session']}"
-            await cmp_hlp.get_bot().get_channel(chat_id).send(message, file=save_manager.get_current_savefile_as_discord_file())
+            current_file = save_manager.get_current_savefile_as_discord_file()
+            await cmp_hlp.get_bot().get_channel(chat_id).send(message, file=current_file)
             await ctx.respond("cached")
         except comm_except as err:
             await ctx.respond(str(err))
@@ -200,9 +203,7 @@ class CampaignCog(commands.Cog):
     @slash_command(name="get_cache", description="try to download latestsavefrom cache server chat")
     async def get_cache(self, ctx: BridgeExtContext):
         try:
-            if not cmp_hlp.check_bot_admin(ctx):
-                raise comm_except("You are not authorized to use this command")
-
+            cmp_hlp.check_bot_admin(ctx, raise_error=True)
             chat_id = cmp_vars.cache_folder
             if chat_id is None:
                 raise comm_except("No cloudsavechannel id assigned")
@@ -212,7 +213,7 @@ class CampaignCog(commands.Cog):
             cache_save_path = save_manager.get_cache_folder_filepath() + f'{os.sep}' + filename
             local_save_path = save_manager.get_cache_folder_filepath() + f'{os.sep}' + filename
 
-            await save_manager.save()
+            await message.attachments[0].save(fp=cache_save_path)
             if not exists(local_save_path):
                 os.rename(cache_save_path, local_save_path)
                 await ctx.respond(f"No local version found.save{filename} has been imported.")

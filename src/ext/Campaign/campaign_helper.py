@@ -10,23 +10,27 @@ from discord.ext.bridge import BridgeExtContext
 from . import packg_variables as p_vars
 from .save_file_management import get_save_folder_filepath, get_cache_folder_filepath, check_file_loaded
 from .packg_variables import charDic
-from .campaign_exceptions import CommandException
+from .campaign_exceptions import CommandException, NotBotAdminException, NotFileAdminException
 
 from src import GlobalVariables
 
 
-def check_file_admin(user_id: int) -> bool:
-    if p_vars.bot_admin_id is None:
+def check_file_admin(user_id: int, raise_error=False) -> bool:
+    if p_vars.bot_admin_id is None or user_id == p_vars.bot_admin_id:
         return True
+    elif raise_error:
+        raise NotFileAdminException()
     else:
-        return user_id == p_vars.bot_admin_id
+        return False
 
 
-def check_bot_admin(ctx: BridgeExtContext) -> bool:
-    if p_vars.bot_admin_id is None:
+def check_bot_admin(ctx: BridgeExtContext, raise_error=False) -> bool:
+    if p_vars.bot_admin_id is None or ctx.author.id == p_vars.bot_admin_id:
         return True
+    elif raise_error:
+        raise NotBotAdminException()
     else:
-        return ctx.author.id == p_vars.bot_admin_id
+        return False
 
 
 def get_bot():
