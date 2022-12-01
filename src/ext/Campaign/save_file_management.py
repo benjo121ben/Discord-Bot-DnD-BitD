@@ -55,7 +55,7 @@ def get_cache_folder_filepath():
 
 
 def get_current_savefile_path():
-    return get_save_folder_filepath() + f'{os.sep}' + get_current_save_file_name()
+    return os.sep.join([get_save_folder_filepath(), get_current_save_file_name()])
 
 
 def check_file_loaded(raise_error: bool = False):
@@ -123,6 +123,11 @@ def compare_savefile_novelty(path1, path2):
         return 1
 
 
+def check_savefile_existence(_save_name):
+    global save_files_suffix
+    return exists(os.sep.join([get_save_folder_filepath(), _save_name + save_files_suffix]))
+
+
 def load(_save_name):
     global save_file_no_suffix
     save_file_no_suffix = _save_name
@@ -160,3 +165,18 @@ def save():
             temp = char.to_json()
             output[character_tag][temp['tag']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
+
+
+def remove(_save_name):
+    global save_file_no_suffix
+    if _save_name == "":
+        raise Exception("cannot remove file with empty name")
+    path = os.sep.join([get_save_folder_filepath(), _save_name + save_files_suffix])
+    if save_file_no_suffix == _save_name:
+        charDic.clear()
+        imported_dic.clear()
+        imported_dic[session_tag] = 1
+        save_file_no_suffix = ""
+    if exists(path):
+        print("deleted savefile", _save_name)
+        os.remove(path)
