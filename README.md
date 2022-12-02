@@ -148,7 +148,7 @@ These are the variables that can be assigned in the .env file.
 To work properly, the bot requires these permissions, some of them are not yet used, but may be used in future versions. 
 1. Once you are done with the setup above, enter into the OAuth tab on the Discord Developer page and select the URL generator.
 2. Here you will need to select the permissions below and copy the URL at the bottom
-![test](readme images/OAuthGenerator.png)
+![test](Assets/readme_images/OAuthGenerator.png)
 3. Save this url somewhere, maybe in your bot's description. People will be able to invite your discord bot into their server, by using this url.
 4. Enter the url into your browser and invite the bot to your discord server. 
 5. Run the bot
