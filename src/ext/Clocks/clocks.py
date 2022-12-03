@@ -58,7 +58,8 @@ def get_clock_asset_folder_path():
 def load_clocks():
     if exists(get_clock_save_filepath()):
         print("Clocks savefile exists")
-        imported_dic = json.load(open(get_clock_save_filepath()))
+        with open(get_clock_save_filepath()) as file:
+            imported_dic = json.load(file)
         for clock_data in imported_dic.values():
             clocks_save_dic[clock_data["name"]] = clock_from_json(clock_data)
     else:

@@ -18,6 +18,9 @@ class Character:
     def to_json(self):
         return self.__dict__
 
+    def set_player(self, player):
+        self.player = str(player)
+
     def rolled_crit(self):
         self.crits += 1
 

@@ -109,18 +109,24 @@ def parse_date_time(time_string: str) -> datetime:
 
 
 def compare_savefile_novelty(path1, path2):
-    path1_dic = json.load(open(path1))
-    first_time = parse_date_time(path1_dic[last_changed_tag])
-    first_version = float(path1_dic[version_tag])
-    path2_dic = json.load(open(path2))
-    second_time = parse_date_time(path2_dic[last_changed_tag])
-    second_version = float(path2_dic[version_tag])
-    if first_version < second_version or first_time < second_time:
-        return -1
-    elif first_version == second_version or first_time == second_time:
-        return 0
-    else:
-        return 1
+    try:
+        with open(path1) as file1:
+            path1_dic = json.load(file1)
+        with open(path2) as file2:
+            path2_dic = json.load(file2)
+
+        first_time = parse_date_time(path1_dic[last_changed_tag])
+        second_time = parse_date_time(path2_dic[last_changed_tag])
+        first_version = float(path1_dic[version_tag])
+        second_version = float(path2_dic[version_tag])
+        if first_version < second_version or first_time < second_time:
+            return -1
+        elif first_version == second_version or first_time == second_time:
+            return 0
+        else:
+            return 1
+    finally:
+        path1_dic
 
 
 def check_savefile_existence(_save_name):
@@ -135,7 +141,8 @@ def load(_save_name):
     imported_dic.clear()
     imported_dic[session_tag] = 1
     if exists(get_current_savefile_path()):
-        file_dic = json.load(open(get_current_savefile_path()))
+        with open(get_current_savefile_path()) as file:
+            file_dic = json.load(file)
         updated, file_dic = check_file_version_and_upgrade(file_dic)
         imported_dic[last_changed_tag] = parse_date_time(file_dic[last_changed_tag])
         imported_dic[session_tag] = file_dic[session_tag]
@@ -143,10 +150,10 @@ def load(_save_name):
             charDic[char_tag] = char_from_data(char_data)
         if updated:
             save()
-            return "Savefile of older version exists.\nLoaded " + _save_name + " and updated to newest version."
-        return "Savefile exists.\nLoaded " + _save_name + "."
+            return f"Savefile of older version exists.\nLoaded {_save_name} and updated to newest version."
+        return f"Savefile exists.\nLoaded {_save_name}."
     else:
-        return "SaveFile " + _save_name + " does not exist. SaveFile will be created when a character is added"
+        return f"SaveFile {_save_name} does not exist. SaveFile will be created when a character is added"
 
 
 def save():
@@ -155,9 +162,11 @@ def save():
     if not exists(get_current_savefile_path()):
         print("created savefile " + get_current_save_file_name())
     with open(get_current_savefile_path(), 'w') as newfile:
+        change_time = datetime.now().replace(microsecond=0)
+        imported_dic[last_changed_tag] = change_time
         output = {
             session_tag: imported_dic[session_tag],
-            last_changed_tag: datetime.now().strftime(date_time_save_format),
+            last_changed_tag: change_time.strftime(date_time_save_format),
             version_tag: save_type_version,
             character_tag: {}
         }

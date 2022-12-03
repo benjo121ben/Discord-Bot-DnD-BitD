@@ -9,7 +9,8 @@ import os
 def load(_save_name):
     if exists('saves/' + _save_name):
         print("Savefile exists")
-        imported_dic = json.load(open('saves/' + _save_name))
+        with open('saves/' + _save_name) as file:
+            imported_dic = json.load(file)
         for char_name, char_data in imported_dic.items():
             GlobalVariables.charDic[char_name] = char_from_data(char_data)
 

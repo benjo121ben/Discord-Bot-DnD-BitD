@@ -219,9 +219,10 @@ def check_entanglements():
               f"{get_asset_folder_filepath()}\n"
               f"entanglements disabled")
         return
-    entanglements_enabled = True
-    imported_expanded_entanglements = json.load(open(expanded_entanglement_path))
 
+    entanglements_enabled = True
+    with open(expanded_entanglement_path)as file:
+        imported_expanded_entanglements = json.load(file)
     print("looking for entanglements")
     for column in Entanglement_sorting_table:
         for roll in column:
@@ -229,6 +230,7 @@ def check_entanglements():
                 if entanglement not in imported_expanded_entanglements:
                     entanglements_enabled = False
                     print("missing", entanglement)
+
     if not entanglements_enabled:
         print("Entanglements disabled, due to missing entanglements\n")
     else:
