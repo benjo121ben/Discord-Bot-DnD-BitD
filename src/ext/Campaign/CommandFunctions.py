@@ -62,7 +62,7 @@ def claim_character(executing_user: int, char_tag: str, assigned_user_id: int):
     if current_player != "" and int(current_player) != executing_user and not check_file_admin(executing_user):
         raise CommandException(
             "You are not authorized to assign this character. It has already been claimed by a user.")
-    charDic[char_tag].player = str(assigned_user_id)
+    charDic[char_tag].set_player(assigned_user_id)
     Undo.queue_basic_action(char_tag, "player", current_player, str(assigned_user_id))
     return f"character {char_tag} assigned to {assigned_user_id}"
 
@@ -75,7 +75,7 @@ def unclaim_user(executing_user: int, to_unclaim_user_id: int):
         raise CommandException("this user has no character assigned")
     char_tag = get_char_tag_by_id(to_unclaim_user_id)
     Undo.queue_basic_action(char_tag, "player", str(to_unclaim_user_id), "")
-    charDic[char_tag].player = ""
+    charDic[char_tag].set_player("")
     return f"Character {char_tag} unassigned"
 
 
