@@ -1,5 +1,5 @@
 import asyncio
-
+import logging
 from aiohttp import ClientConnectorError
 from discord.ext import bridge
 import discord
@@ -22,27 +22,30 @@ def start_bot(_command_prefix, _bot_token):
 
     @GlobalVariables.bot.event
     async def on_ready():
-        print("Bot startup completed")
-        print('We have logged in as {0.user}'.format(GlobalVariables.bot))
+        print(f"Bot startup completed\n"
+              f"We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.command(name="r")
     async def reload(ctx):
         if not hlp_f.check_admin(ctx):
             await ctx.send("you are not authorized to use this command")
+            logging.debug(f"user {ctx.user} attempted to use reload command")
             return
         load_extensions(GlobalVariables.bot, reload=True)
         await ctx.send("reloaded")
+        logging.debug(f"user {ctx.user} reloaded bot")
 
     print("starting up bot")
+    logging.debug("bot startup")
     loop = asyncio.new_event_loop()
     try:
         loop.run_until_complete(GlobalVariables.bot.start(_bot_token))
     except ClientConnectorError:
-        print("ERROR RAISED_BOT_SETUP CLIENT ERROR")
+        logging.error("BOT_SETUP: ClientConnectorError. Raising MyInternetException")
         raise MyInternetException("could not connect to the servers")
     except Exception as e:
-        print("ERROR RAISED; FIND ME IN BOT SETUP")
-        print(e)
+        logging.error(f"unexpected error raised in BOT_SETUP."
+                      f"Error: {e}")
         raise e
     finally:
         loop.close()

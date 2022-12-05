@@ -1,6 +1,7 @@
 import os
 import time
 import pathlib
+import logging
 
 from typing import Optional
 from src import GlobalVariables
@@ -26,6 +27,8 @@ def check_env_var_int(environment_tag: str) -> Optional[int]:
 
 def main():
     print("Discord_BOT startup")
+    logging.basicConfig(filename='debug.log', encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename='error.log', encoding='utf-8', level=logging.WARN)
     execute = True
     tries = 10
     main_path = pathlib.Path(__file__).parent.resolve()
@@ -40,14 +43,17 @@ def main():
         execute = False
         try:
             start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
-        except MyInternetException:
+        except MyInternetException as e:
             print("could not establish connection, retry in 5 seconds")
+            logging.warning(f"MyInternetException raised. retry to establish connection.\n"
+                            f"[TRIES LEFT= {tries-1}]\nError: {e}")
             time.sleep(5.0)
             execute = True
             tries -= 1
         finally:
             print("bot was closed, smth happened")
             close_bot()
+            logging.error("BOT TERMINATED")
 
 
 if __name__ == "__main__":
