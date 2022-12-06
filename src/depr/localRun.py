@@ -17,8 +17,8 @@ def load(_save_name):
 
 def save(_save_name):
     if not exists('saves/' + _save_name):
-        if not exists('saves'):
-            os.mkdir("saves")
+        if not exists('../../saves'):
+            os.mkdir("../../saves")
         print("created savefile")
     with open('saves/' + _save_name, 'w') as newfile:
         output = {}
