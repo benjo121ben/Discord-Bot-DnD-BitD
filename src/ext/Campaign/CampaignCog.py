@@ -1,3 +1,4 @@
+import logging
 import os
 from os.path import exists
 
@@ -10,6 +11,8 @@ from . import Undo, CommandFunctions as cfuncs, \
     packg_variables as cmp_vars, \
     campaign_helper as cmp_hlp, \
     save_file_management as save_manager
+
+logger = logging.getLogger('bot')
 
 
 class CampaignCog(commands.Cog):
@@ -152,7 +155,7 @@ class CampaignCog(commands.Cog):
         try:
             user = await cmp_hlp.get_bot().fetch_user(user_id)
         except d_errors.NotFound as err:
-            print(str(err))
+            logger.error(err)
             await ctx.respond("A user with this ID could not be found by the bot.\n"
                               "Make sure the bot shares a server with the user that has this ID")
             Undo.undo()
@@ -265,4 +268,4 @@ def setup(bot: Bot):
     cmp_hlp.check_base_setup()
     bot.add_cog(CampaignCog())
 
-    print("campaign extension loaded\n")
+    logger.info("campaign extension loaded\n")

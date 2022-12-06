@@ -1,3 +1,4 @@
+import logging
 import os
 from PIL import Image
 from os.path import exists
@@ -16,6 +17,7 @@ seed(datetime.now().timestamp())
 imported_expanded_entanglements = {}
 db_asset_folder_rel_path = os.sep.join(["..","..", "..", "Assets", "DB", ""])
 asset_folder_rel_path = os.sep.join(["..", "..", "..", "Assets", ""])
+logger = logging.getLogger('bot')
 
 
 entanglements_enabled = False
@@ -182,7 +184,7 @@ def get_sprite_size():
 def check_devils_bargain():
     global devils_bargains_enabled
     if not exists(get_db_asset_folder_filepath()):
-        print(f"Cannot find devils bargain asset folder:\n"
+        logger.error(f"Cannot find devils bargain asset folder:\n"
               f"{get_db_asset_folder_filepath()}"
               f"Devils Bargain Feature disabled")
         return
@@ -193,11 +195,11 @@ def check_devils_bargain():
             nr = "0" + str(i)
         if not os.path.exists(get_db_asset_folder_filepath() + "DevilsBargain-" + nr + ".png"):
             devils_bargains_enabled = False
-            print("DevilsBargain-" + nr + ".png", "missing")
+            logger.warning("DevilsBargain-" + nr + ".png", "missing")
     if not devils_bargains_enabled:
-        print("Devils Bargains disabled, due to missing Files\n")
+        logger.warning("Devils Bargains disabled, due to missing Files\n")
     else:
-        print("Devils Bargains present, feature enabled\n")
+        logger.info("Devils Bargains present, feature enabled\n")
 
 
 def get_sprite_from_uniform_spritesheet(spritesheet: Image, sprite_size: int, index: int):
@@ -215,23 +217,23 @@ def check_entanglements():
     global imported_expanded_entanglements, entanglements_enabled
     expanded_entanglement_path = os.sep.join([f'{get_asset_folder_filepath()}', 'Expanded_Entanglements.json'])
     if not exists(expanded_entanglement_path):
-        print(f"Expanded_Entanglements.json cannot be found at location:\n"
-              f"{get_asset_folder_filepath()}\n"
-              f"entanglements disabled")
+        logger.error(f"Expanded_Entanglements.json cannot be found at location:\n"
+                     f"{get_asset_folder_filepath()}\n"
+                     f"entanglements disabled")
         return
 
     entanglements_enabled = True
     with open(expanded_entanglement_path)as file:
         imported_expanded_entanglements = json.load(file)
-    print("looking for entanglements")
+    logger.debug("looking for entanglements")
     for column in Entanglement_sorting_table:
         for roll in column:
             for entanglement in roll:
                 if entanglement not in imported_expanded_entanglements:
                     entanglements_enabled = False
-                    print("missing", entanglement)
+                    logger.debug("missing", entanglement)
 
     if not entanglements_enabled:
-        print("Entanglements disabled, due to missing entanglements\n")
+        logger.warning("Entanglements disabled, due to entanglements missing in json file\n")
     else:
-        print("Entanglements present, feature enabled\n")
+        logger.info("All Entanglement info present, feature enabled\n")

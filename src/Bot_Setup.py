@@ -1,11 +1,15 @@
 import asyncio
 import logging
+import discord
+from src.ext.Campaign import packg_variables as c_var
 from aiohttp import ClientConnectorError
 from discord.ext import bridge
-import discord
+
+import src.ext.Campaign.packg_variables
 from src import GlobalVariables, command_helper_functions as hlp_f
 
 ext_base_path = "src.ext."
+logger: logging.Logger = None
 
 
 class MyInternetException(Exception):
@@ -14,38 +18,41 @@ class MyInternetException(Exception):
 
 
 def start_bot(_command_prefix, _bot_token):
+    global logger
+    logger = logging.getLogger('bot')
     intents = discord.Intents.default()
     intents.message_content = True
     bot_loop = asyncio.get_event_loop()
-    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents, loop= bot_loop)
+    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents, loop=bot_loop)
+    c_var.bot = GlobalVariables.bot
     load_extensions(GlobalVariables.bot)
 
     @GlobalVariables.bot.event
     async def on_ready():
-        print(f"Bot startup completed\n"
-              f"We have logged in as {GlobalVariables.bot.user}")
+        logger.info(f"Bot startup completed\n"
+                    f"We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.command(name="r")
     async def reload(ctx):
         if not hlp_f.check_admin(ctx):
             await ctx.send("you are not authorized to use this command")
-            logging.debug(f"user {ctx.user} attempted to use reload command")
+            logger.info(f"user {ctx.user} attempted to use reload command")
             return
         load_extensions(GlobalVariables.bot, reload=True)
         await ctx.send("reloaded")
-        logging.debug(f"user {ctx.user} reloaded bot")
+        logger.info(f"user {ctx.user} reloaded bot")
 
-    print("starting up bot")
-    logging.debug("bot startup")
+    logger.info("attempting bot startup")
     loop = asyncio.new_event_loop()
     try:
         loop.run_until_complete(GlobalVariables.bot.start(_bot_token))
+        logger.warning("Bot start has somehow completed")
     except ClientConnectorError:
-        logging.error("BOT_SETUP: ClientConnectorError. Raising MyInternetException")
+        logger.error("BOT_SETUP: ClientConnectorError. Raising MyInternetException")
         raise MyInternetException("could not connect to the servers")
     except Exception as e:
-        logging.error(f"unexpected error raised in BOT_SETUP."
-                      f"Error: {e}")
+        logger.error(f"unexpected error raised in BOT_SETUP."
+                     f"Error: {e}")
         raise e
     finally:
         loop.close()
@@ -58,11 +65,12 @@ def load_extensions(_bot, reload=False):
         else:
             _bot.load_extension(ext_base_path + extension)
 
-    print("\n---------------------LOADING EXTENSIONS---------------------\n")
+    global logger
+    logger.info("\n---------------------LOADING EXTENSIONS---------------------\n")
     load_ext("Campaign.CampaignCog")
     load_ext("Clocks.ClockCog")
     load_ext("BladesUtility.BladesUtilityCog")
-    print("---------------------EXTENSIONS LOADED---------------------\n")
+    logger.info("---------------------EXTENSIONS LOADED---------------------\n")
 
 
 def close_bot():

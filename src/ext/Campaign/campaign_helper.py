@@ -1,3 +1,5 @@
+import logging
+
 from dotenv import load_dotenv
 import os
 from os import mkdir
@@ -9,10 +11,9 @@ from discord.ext.bridge import BridgeExtContext
 
 from . import packg_variables as p_vars
 from .save_file_management import get_save_folder_filepath, get_cache_folder_filepath, check_file_loaded
-from .packg_variables import charDic
 from .campaign_exceptions import CommandException, NotBotAdminException, NotFileAdminException
 
-from src import GlobalVariables
+logger = logging.getLogger('bot')
 
 
 def check_file_admin(user_id: int, raise_error=False) -> bool:
@@ -34,14 +35,14 @@ def check_bot_admin(ctx: BridgeExtContext, raise_error=False) -> bool:
 
 
 def get_bot():
-    if GlobalVariables.bot is not None:
-        return GlobalVariables.bot
+    if p_vars.bot is not None:
+        return p_vars.bot
     else:
-        raise CommandException("get_bot tries to get an empty bot")
+        raise Exception("Campaign: get_bot tries to get an empty bot")
 
 
 def check_if_user_has_char(user_id) -> bool:
-    for char in charDic.values():
+    for char in p_vars.charDic.values():
         if char.player == str(user_id):
             return True
     return False
@@ -50,7 +51,7 @@ def check_if_user_has_char(user_id) -> bool:
 def get_char_tag_by_id(user_id: int):
     if not check_if_user_has_char(user_id):
         raise CommandException("get_tag_by_id: attempted to get the character of an unassigned user")
-    for char in charDic.values():
+    for char in p_vars.charDic.values():
         if char.player == str(user_id):
             return char.tag
 
@@ -58,7 +59,7 @@ def get_char_tag_by_id(user_id: int):
 def get_char_name_by_id(user_id: int):
     if not check_if_user_has_char(user_id):
         raise CommandException("get_char_name_by_id: attempted to get the character of an unassigned user")
-    for char in charDic.values():
+    for char in p_vars.charDic.values():
         if char.player == str(user_id):
             return char.name
 
@@ -78,7 +79,7 @@ def check_char_tag(char_tag: str, raise_error: bool = False):
                 "campaign_helper:check_char_tag: Character tag None was given. "
                 "This should never happen, please contact the developer."
             )
-    elif char_tag in charDic.keys():
+    elif char_tag in p_vars.charDic.keys():
         return True
     elif raise_error:
         raise CommandException("Character doesn't exist")
@@ -90,7 +91,7 @@ def get_char_tag_if_none(ctx: BridgeExtContext, char_tag: str = None):
         return char_tag
 
     check_file_loaded(raise_error=True)
-    for char in charDic.values():
+    for char in p_vars.charDic.values():
         if char.player == str(ctx.author.id):
             return char.tag
     raise CommandException(
@@ -129,10 +130,10 @@ def check_base_setup():
         return
 
     if not exists(get_save_folder_filepath()):
-        print("SAVE_FILEPATH_CREATED")
+        logger.debug("SAVE_FILEPATH_CREATED")
         mkdir(get_save_folder_filepath())
     if not exists(get_cache_folder_filepath()):
-        print("CACHE_FILEPATH_CREATED")
+        logger.debug("CACHE_FILEPATH_CREATED")
         mkdir(get_cache_folder_filepath())
 
 
