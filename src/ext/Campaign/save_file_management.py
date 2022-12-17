@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pathlib
 from datetime import datetime
@@ -20,6 +21,8 @@ character_tag = 'characters'
 last_changed_tag = 'last_change'
 version_tag = 'v'
 session_tag = 'session'
+
+logger = logging.getLogger('bot')
 
 
 class NoSaveFileException(CommandException):
@@ -160,7 +163,7 @@ def save():
     if get_current_save_file_name_no_suff() == "":
         raise Exception("trying to save Characters without a given save_file_name")
     if not exists(get_current_savefile_path()):
-        print("created savefile " + get_current_save_file_name())
+        logger.info("created savefile " + get_current_save_file_name())
     with open(get_current_savefile_path(), 'w') as newfile:
         change_time = datetime.now().replace(microsecond=0)
         imported_dic[last_changed_tag] = change_time
@@ -187,5 +190,5 @@ def remove(_save_name):
         imported_dic[session_tag] = 1
         save_file_no_suffix = ""
     if exists(path):
-        print("deleted savefile", _save_name)
+        logger.info("deleted savefile", _save_name)
         os.remove(path)

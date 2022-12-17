@@ -1,3 +1,4 @@
+import logging
 from os.path import exists
 from discord import File
 import os
@@ -8,6 +9,7 @@ import pathlib
 clock_files_dic = {}
 clocks_rel_asset_folder_path = os.sep.join(['..', '..', '..', 'Assets', 'Clocks', ''])
 clocks_rel_save_path = os.sep.join(['..', '..', '..', 'saves', 'clock_saves.json'])
+logger = logging.getLogger('bot')
 
 
 class NoClockImageException(Exception):
@@ -57,13 +59,13 @@ def get_clock_asset_folder_path():
 
 def load_clocks():
     if exists(get_clock_save_filepath()):
-        print("Clocks savefile exists")
+        logger.info("Clocks savefile exists")
         with open(get_clock_save_filepath()) as file:
             imported_dic = json.load(file)
         for clock_data in imported_dic.values():
             clocks_save_dic[clock_data["name"]] = clock_from_json(clock_data)
     else:
-        print("Clock savefile doesn't exist, will create new savefile")
+        logger.info("Clock savefile doesn't exist, will create new savefile")
     load_clock_files()
 
 
@@ -74,7 +76,7 @@ def save_clocks():
             path += path_part + os.sep
             if not exists(path) and not ".json" in path:
                 os.mkdir(path)
-        print("created savefile")
+        logger.info("created savefile")
     with open(get_clock_save_filepath(), 'w') as newfile:
         output = {}
         for clock in clocks_save_dic.values():
@@ -84,7 +86,7 @@ def save_clocks():
 
 def load_clock_files():
     if not exists(get_clock_asset_folder_path()):
-        print("No clock file directory")
+        logger.error("Clock asset directory path given is invalid. Check if the correct path was assigned")
         return
     clock_folders_list = os.listdir(get_clock_asset_folder_path())
     for clock_folder in clock_folders_list:
@@ -100,11 +102,11 @@ def load_single_clock_files(clock_folder : str):
         if exists(file_path):
             clock_sub_files_dic[tick] = file_path
         else:
-            print("Clock " + str(clock_size) + " is missing files and has been deactivated")
+            logger.info("Clock " + str(clock_size) + " is missing files and has been deactivated")
             break
     if len(clock_sub_files_dic) == clock_size + 1:
         clock_files_dic[clock_size] = clock_sub_files_dic
-        print("clock " + str(clock_size) + " loaded")
+        logger.info("clock " + str(clock_size) + " loaded and working")
 
 
 

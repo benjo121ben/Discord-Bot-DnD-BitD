@@ -1,8 +1,11 @@
-
+import logging
 from discord.ext import commands
 from discord.ext import bridge
 from discord import slash_command
 from .clocks import NoClockImageException, clocks_save_dic, save_clocks, Clock, load_clocks
+
+
+logger = logging.getLogger('bot')
 
 
 async def print_clock(ctx, clock):
@@ -11,7 +14,7 @@ async def print_clock(ctx, clock):
     except NoClockImageException as err:
         await ctx.respond("Clocks of this size have missing output images\n**"
                           + str(clock) + "**")
-        print(
+        logger.info(
             "clock of size ",
             str(clock.size),
             "was printed without image, make sure images are included for all clocks needed."
@@ -69,5 +72,4 @@ def setup(bot: bridge.Bot):
     load_clocks()
     bot.add_cog(ClockCog())
 
-    print("clock extension loaded")
-    print()
+    logger.debug("clock extension loaded\n")

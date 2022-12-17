@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 from PIL import Image
@@ -5,6 +6,8 @@ from discord import slash_command, File
 from discord.ext import commands
 from discord.ext import bridge
 from . import functions as bitd_func
+
+logger = logging.getLogger('bot')
 
 
 class BladesUtilityCog(commands.Cog):
@@ -75,7 +78,7 @@ class BladesUtilityCog(commands.Cog):
 
 def setup(bot: bridge.Bot):
     # Every extension should have this function
-    print("loading Entanglements")
+    logger.debug("setting up Blades Cog")
     bitd_func.check_entanglements()
     bitd_func.check_devils_bargain()
     bot.add_cog(BladesUtilityCog())

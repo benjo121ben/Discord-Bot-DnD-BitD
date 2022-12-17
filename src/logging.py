@@ -13,14 +13,15 @@ class StreamFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    format = "%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d)\n%(message)s"
+    format = "%(message)s"
+    formaterr = "%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d)\n%(message)s"
 
     FORMATS = {
         logging.DEBUG: grey + format + reset,
         logging.INFO: grey + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset
+        logging.WARNING: yellow + formaterr + reset,
+        logging.ERROR: red + formaterr + reset,
+        logging.CRITICAL: bold_red + formaterr + reset
     }
 
     def format(self, record):
@@ -42,6 +43,7 @@ def setup_logging():
 
     soutputhandler = logging.StreamHandler(stream=sys.stdout)
     soutputhandler.setFormatter(StreamFormatter())
+    soutputhandler.setLevel(logging.INFO)
     logger.addHandler(soutputhandler)
 
     return logger
