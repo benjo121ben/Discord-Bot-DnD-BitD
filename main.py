@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 from src.Bot_Setup import start_bot, MyInternetException, close_bot
 from src.logging import setup_logging
 
+main_path = pathlib.Path(__file__).parent.resolve()
+
+
 
 def check_env_var_int(environment_tag: str) -> Optional[int]:
     """
@@ -30,12 +33,6 @@ def check_env_var_int(environment_tag: str) -> Optional[int]:
 def main():
 
     print("Discord_BOT startup")
-    logger = setup_logging()
-    logger.debug("test_debug")
-    logger.error("test_error")
-    logger.critical("test_debug2")
-    logger.warning("test_error2")
-    return
     execute = True
     tries = 10
     load_dotenv(os.path.join(main_path, GlobalVariables.env_file_rel_path))
