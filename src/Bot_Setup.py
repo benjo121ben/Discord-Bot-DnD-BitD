@@ -22,8 +22,7 @@ def start_bot(_command_prefix, _bot_token):
     logger = logging.getLogger('bot')
     intents = discord.Intents.default()
     intents.message_content = True
-    bot_loop = asyncio.get_event_loop()
-    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents, loop=bot_loop)
+    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents)
     c_var.bot = GlobalVariables.bot
     load_extensions(GlobalVariables.bot)
 
@@ -49,7 +48,6 @@ def start_bot(_command_prefix, _bot_token):
     logger.info("attempting bot startup")
     GlobalVariables.bot.run(_bot_token)
     logger.warning("Bot start has somehow completed")
-
 
 
 def load_extensions(_bot, reload=False):
