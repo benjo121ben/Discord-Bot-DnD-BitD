@@ -138,6 +138,15 @@ class CampaignCog(commands.Cog):
     async def load_command(self, ctx: BridgeExtContext, file_name: str):
         await ctx.respond(cfuncs.load_file(file_name))
 
+    @commands.command(name="save")
+    async def save_command(self, ctx: BridgeExtContext):
+        try:
+            save_manager.check_file_loaded(raise_error=True)
+            save_manager.save()
+            await ctx.respond("saved")
+        except comm_except as err:
+            await ctx.respond(str(err))
+
     @slash_command(
         name="claim",
         description="Claim a character. If a userId is provided, the Character is assigned to that user instead"
@@ -254,14 +263,6 @@ class CampaignCog(commands.Cog):
         except comm_except as err:
             await ctx.respond(str(err))
 
-    @commands.command(name="save")
-    async def save_command(self, ctx: BridgeExtContext):
-        try:
-            save_manager.check_file_loaded(raise_error=True)
-            save_manager.save()
-            await ctx.respond("saved")
-        except comm_except as err:
-            await ctx.respond(str(err))
 
 
 def setup(bot: Bot):
