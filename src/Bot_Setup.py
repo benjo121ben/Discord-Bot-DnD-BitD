@@ -42,20 +42,14 @@ def start_bot(_command_prefix, _bot_token):
         await ctx.send("reloaded")
         logger.info(f"user {ctx.user} reloaded bot")
 
+    @GlobalVariables.bot.slash_command(name="ping")
+    async def ping(ctx):
+        await ctx.respond("pong")
+
     logger.info("attempting bot startup")
-    loop = asyncio.new_event_loop()
-    try:
-        loop.run_until_complete(GlobalVariables.bot.start(_bot_token))
-        logger.warning("Bot start has somehow completed")
-    except ClientConnectorError:
-        logger.error("BOT_SETUP: ClientConnectorError. Raising MyInternetException")
-        raise MyInternetException("could not connect to the servers")
-    except Exception as e:
-        logger.error(f"unexpected error raised in BOT_SETUP."
-                     f"Error: {e}")
-        raise e
-    finally:
-        loop.close()
+    GlobalVariables.bot.run(_bot_token)
+    logger.warning("Bot start has somehow completed")
+
 
 
 def load_extensions(_bot, reload=False):
@@ -72,8 +66,3 @@ def load_extensions(_bot, reload=False):
     load_ext("BladesUtility.BladesUtilityCog")
     logger.info("---------------------EXTENSIONS LOADED---------------------\n")
 
-
-def close_bot():
-    loop2 = asyncio.new_event_loop()
-    loop2.run_until_complete(GlobalVariables.bot.close())
-    loop2.close()

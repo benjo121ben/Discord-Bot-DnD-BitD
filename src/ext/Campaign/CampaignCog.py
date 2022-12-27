@@ -132,10 +132,10 @@ class CampaignCog(commands.Cog):
             await ctx.respond(err)
 
     @slash_command(
-        name="file",
+        name="load",
         description="Load an existing campaign save file or create a new one"
     )
-    async def file(self, ctx: BridgeExtContext, file_name: str):
+    async def load_command(self, ctx: BridgeExtContext, file_name: str):
         await ctx.respond(cfuncs.load_file(file_name))
 
     @slash_command(
