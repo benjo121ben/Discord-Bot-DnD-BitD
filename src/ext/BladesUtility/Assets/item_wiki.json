@@ -1,0 +1,14 @@
+{
+  "a blade or two": {
+    "type": "Item",
+    "description": "Perhaps you carry a simple fighting knife. Or two curved swords. Or a rapier and stiletto. Or a heavy butcher's cleaver.",
+    "extra_info": "*Your choice of blade might reflect your heritage:\nIn the North (Akoros and Skovlan) blades tend to be broad, heavy, and single-edged. In Severos, the horse-lords favor spears in battle, but for personal combat they carry distinctive double-edged daggers with very wide blades, often intricately inscribed with family histories. In the Dagger Isles, the corsairs often use narrow, light blades made for quick thrusts such as the rapier and stiletto. In Iruvia, curved blades are common; sharpened on the outer edge like a saber, or sharpened on the inner edge, like a sickle.*",
+    "load": 1
+  },
+
+  "throwing knives": {
+    "type": "Item",
+    "description": "Six small, light blades.",
+    "load": 1
+  }
+}

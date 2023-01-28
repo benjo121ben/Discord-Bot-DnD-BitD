@@ -5,7 +5,7 @@ from PIL import Image
 from discord import slash_command, File
 from discord.ext import commands
 from discord.ext import bridge
-from . import functions as bitd_func
+from . import functions as bitd_func, ItemWiki as wiki
 
 logger = logging.getLogger('bot')
 
@@ -75,12 +75,18 @@ class BladesUtilityCog(commands.Cog):
         await ctx.respond(file=File(merged_file_path))
         os.remove(merged_file_path)
 
+    @slash_command(name="wiki",
+                   description="Prints out the item description for the selected item")
+    async def wiki(self, ctx, item_name: str):
+        await wiki.wiki_search(ctx, item_name)
+
 
 def setup(bot: bridge.Bot):
     # Every extension should have this function
     logger.debug("setting up Blades Cog")
     bitd_func.check_entanglements()
     bitd_func.check_devils_bargain()
+    wiki.setup_wiki()
     bot.add_cog(BladesUtilityCog())
 
 
