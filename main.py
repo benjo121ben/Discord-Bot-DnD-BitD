@@ -8,9 +8,6 @@ from dotenv import load_dotenv
 from src.Bot_Setup import start_bot
 from src.logging import setup_logging
 
-main_path = pathlib.Path(__file__).parent.resolve()
-
-
 
 def check_env_var_int(environment_tag: str) -> Optional[int]:
     """
