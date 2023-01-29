@@ -19,7 +19,7 @@ class ItemEntry(WikiEntry):
 
     def __init__(self, info):
         self.name = info["name"]
-        self.load = int(info["load"])
+        self.load = info["load"]
         self.description = info["description"]
         if "extra_info" in info:
             self.extra_header = info["extra_header"]
@@ -28,9 +28,28 @@ class ItemEntry(WikiEntry):
             self.extra_header = ""
 
     async def sendInfo(self, ctx):
-        embed = Embed(title=f'**{self.name}**\n_load {self.load}_', description=self.description)
+        embed = Embed(title=f'**{self.name}**\nPlaybook: _All playbooks_\nItem  Load _{self.load}_', description=self.description)
         if len(self.extra_header) > 0:
-            embed.add_field(name="*"+self.extra_header+"*", value=self.extra_info, inline=True)
+            embed.add_field(name="*"+self.extra_header+"*", value=f'_{self.extra_info}_', inline=True)
+        await ctx.respond(embed=embed)
+
+
+class ClassItemEntry(WikiEntry):
+
+    def __init__(self, info):
+        self.name = info["name"]
+        self.load = info["load"]
+        self.description = info["description"]
+        self.playbook = info["playbook"]
+        if "extra" in info:
+            self.extra = info["extra"]
+        else:
+            self.extra = ""
+
+    async def sendInfo(self, ctx):
+        embed = Embed(title=f'**{self.name}**\nPlaybook: _{self.playbook}_\nItem  Load: _{self.load}_', description=self.description)
+        if len(self.extra) > 0:
+            embed.add_field(name="Also", value=f'_{self.extra}_', inline=True)
         await ctx.respond(embed=embed)
 
 
@@ -101,6 +120,9 @@ def setup_wiki():
         for stat in imported_wiki["stats"]:
             key = stat["name"].lower()
             wiki[key] = StatEntry(stat)
+        for stat in imported_wiki["class_items"]:
+            key = stat["name"].lower()
+            wiki[key] = ClassItemEntry(stat)
 
 
 async def wiki_search(ctx, search_term: str):
