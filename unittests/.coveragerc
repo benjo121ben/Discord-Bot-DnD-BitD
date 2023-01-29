@@ -1,0 +1,7 @@
+[run]
+omit=
+    *venv*
+	venv/*
+	Assets/*
+	*unittests*
+	

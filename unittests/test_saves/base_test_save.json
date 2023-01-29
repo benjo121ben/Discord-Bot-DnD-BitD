@@ -1,0 +1,22 @@
+{
+    "characters": {
+        "test": {
+            "crits": 0,
+            "damage_caused": 0,
+            "damage_healed": 0,
+            "damage_taken": 0,
+            "dodged": 0,
+            "faints": 0,
+            "health": 0,
+            "kills": 0,
+            "max_damage": 0,
+            "max_health": 10,
+            "name": "test_name",
+            "player": "",
+            "tag": "test"
+        }
+    },
+    "last_change": "0001-01-01 00:00:00",
+    "session": 1,
+    "v": "1.1"
+}
