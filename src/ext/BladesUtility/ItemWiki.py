@@ -131,17 +131,13 @@ async def wiki_search(ctx, search_term: str):
     if term in wiki:
         await wiki[term].sendInfo(ctx)
     else:
-        print("\n"+term)
         for key in wiki.keys():
             if term in key and len(term) >= 4:
                 found.append({"key": key, "distance": -1})
-                print(key, levenshtein_distance(term, key))
                 continue
             distance = levenshtein_distance(term, key)
-            print(key, distance)
             if distance < 5:
                 found.append({"key": key, "distance": distance})
-        print()
         found = sorted(found, key=lambda val1: val1["distance"])
         found = found[:min(5, len(found))]
 
