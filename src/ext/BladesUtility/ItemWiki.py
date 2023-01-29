@@ -10,8 +10,6 @@ wiki = {}
 
 
 class WikiEntry:
-    def __init__(self, info):
-        self.info = info
 
     async def sendInfo(self, ctx):
         ctx.respond(str(self))
@@ -19,10 +17,45 @@ class WikiEntry:
 
 class ItemEntry(WikiEntry):
 
+    def __init__(self, info):
+        self.name = info["name"]
+        self.load = int(info["load"])
+        self.description = info["description"]
+        if "extra_info" in info:
+            self.extra_header = info["extra_header"]
+            self.extra_info = info["extra_info"]
+        else:
+            self.extra_header = ""
+
     async def sendInfo(self, ctx):
-        embed = Embed(title=f'**{self.info["name"]}**\n_load {self.info["load"]}_', description=self.info["description"])
-        if "extra_info" in self.info:
-            embed.add_field(name="*"+self.info["extra_header"]+"*", value=self.info["extra_info"], inline=True)
+        embed = Embed(title=f'**{self.name}**\n_load {self.load}_', description=self.description)
+        if len(self.extra_header) > 0:
+            embed.add_field(name="*"+self.extra_header+"*", value=self.extra_info, inline=True)
+        await ctx.respond(embed=embed)
+
+
+class StatEntry(WikiEntry):
+
+    def __init__(self, info):
+        self.name = info["name"]
+        self.description = info["description"]
+        self.example = info["example"]
+
+    async def sendInfo(self, ctx):
+        embed = Embed(title=f'{self.name}', description=self.description)
+        embed.add_field(name="*Example*", value=f'*{self.example}*', inline=True)
+
+        await ctx.respond(embed=embed)
+
+
+class PlaybookEntry(WikiEntry):
+
+    def __init__(self, info):
+        self.name = info["name"]
+        self.description = info["description"]
+
+    async def sendInfo(self, ctx):
+        embed = Embed(title=f'{self.name}', description=self.description)
         await ctx.respond(embed=embed)
 
 
@@ -59,9 +92,15 @@ def setup_wiki():
 
     with open(wiki_path)as file:
         imported_wiki = json.load(file)
-        for info in imported_wiki["items"]:
-            key = info["name"].lower()
-            wiki[key] = ItemEntry(info)
+        for item in imported_wiki["items"]:
+            key = item["name"].lower()
+            wiki[key] = ItemEntry(item)
+        for playbook in imported_wiki["playbooks"]:
+            key = playbook["name"].lower()
+            wiki[key] = PlaybookEntry(playbook)
+        for stat in imported_wiki["stats"]:
+            key = stat["name"].lower()
+            wiki[key] = StatEntry(stat)
 
 
 async def wiki_search(ctx, search_term: str):
