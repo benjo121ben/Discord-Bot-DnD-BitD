@@ -1,14 +1,97 @@
 {
-  "a blade or two": {
-    "type": "Item",
-    "description": "Perhaps you carry a simple fighting knife. Or two curved swords. Or a rapier and stiletto. Or a heavy butcher's cleaver.",
-    "extra_info": "*Your choice of blade might reflect your heritage:\nIn the North (Akoros and Skovlan) blades tend to be broad, heavy, and single-edged. In Severos, the horse-lords favor spears in battle, but for personal combat they carry distinctive double-edged daggers with very wide blades, often intricately inscribed with family histories. In the Dagger Isles, the corsairs often use narrow, light blades made for quick thrusts such as the rapier and stiletto. In Iruvia, curved blades are common; sharpened on the outer edge like a saber, or sharpened on the inner edge, like a sickle.*",
-    "load": 1
-  },
+  "items" : [
+    {
+      "name": "A Blade or two",
+      "description": "Perhaps you carry a simple fighting knife. Or two curved swords. Or a rapier and stiletto. Or a heavy butcher's cleaver.",
+      "extra_header": "Tip",
+      "extra_info": "*Your choice of blade might reflect your heritage:\nIn the North (Akoros and Skovlan) blades tend to be broad, heavy, and single-edged. In Severos, the horse-lords favor spears in battle, but for personal combat they carry distinctive double-edged daggers with very wide blades, often intricately inscribed with family histories. In the Dagger Isles, the corsairs often use narrow, light blades made for quick thrusts such as the rapier and stiletto. In Iruvia, curved blades are common; sharpened on the outer edge like a saber, or sharpened on the inner edge, like a sickle.*",
+      "load": 1
+    },
 
-  "throwing knives": {
-    "type": "Item",
-    "description": "Six small, light blades.",
-    "load": 1
-  }
+    {
+      "name": "Throwing knives",
+      "description": "Six small, light blades.",
+      "load": 1
+    },
+
+    {
+      "name": "A pistol",
+      "description": "A heavy, single-shot, breechloading firearm. Devastating at 20 paces, slow to reload.",
+      "load": 1
+    },
+
+    {
+      "name": "A large weapon",
+      "description": "A weapon meant for two hands. A battle-axe, greatsword, warhammer, or pole-arm. A hunting rifle. A blunderbuss. A bow or crossbow.",
+      "load": 2
+    },
+
+    {
+      "name": "An unusual weapon",
+      "description": "A curiosity or tool turned into a weapon. A whip, a flail, a hatchet, a shovel, a length of chain, a razor-edged fan, steel-toed boots.",
+      "load": 1
+    },
+
+    {
+      "name": "Armor",
+      "description": "A thick leather tunic plus reinforced gloves and boots.",
+      "extra_header": "Adding heavy armor",
+      "extra_info": "**+Heavy[3 load]**: *The addition of chain mail, metal plates, a metal helm. The load for heavy armor is in addition to normal armor load total.*",
+      "load": 2
+    },
+
+    {
+      "name": "Burglary Gear",
+      "description": "A set of lockpicks. A small pry-bar. Vials of oil to silence squeaky hinges. A coil of wire and fishing hooks. A small pouch of fine sand.",
+      "load": 1
+    },
+
+    {
+      "name": "Climbing Gear",
+      "description": "A large coil of rope. A small coil of rope. Grappling hooks. A small pouch of chalk dust. A climbing harness with loops and metal rings. A set of iron pitons and a small mallet.",
+      "load": 2
+    },
+
+    {
+      "name": "Documents",
+      "description": "A collection of slim volumes on a variety of topics, including a registry of the nobility, City Watch commanders, and other notable citizens. Blank pages, a vial of ink, a pen. A number of interesting maps.",
+      "load": 1
+    },
+
+    {
+      "name": "Arcane Implements",
+      "description": "A vial of quicksilver. A pouch of black salt. A spirit anchor in the form of a small stone. A spirit bottle. A vial of electroplasm, designed to breakand splatter on impact.",
+      "load": 1
+    },
+
+    {
+      "name": "Subterfuge Supplies",
+      "description": "A theatrical makeup kit. A selection of blank documents, ready for the forger’s hand. Costume jewelry. A reversible cloak and distinctive hat. A forged badge of office.",
+      "load": 1
+    },
+
+    {
+      "name": "Demolition Tools",
+      "description": "A sledgehammer and iron spikes. Heavy drill. Crowbar.",
+      "load": 2
+    },
+
+    {
+      "name": "Tinkering Tools",
+      "description": "An assortment for detailed mechanist work: jeweler’s loupe, tweezers, a small hammer, pliers, screwdriver, etc.",
+      "load": 1
+    },
+
+    {
+      "name": "Lantern",
+      "description": "A simple oil lantern, a fancy electroplasmic lamp, or other light source.",
+      "load": 1
+    },
+
+    {
+      "name": "Spiritbane Charm",
+      "description": "A small arcane trinket that ghosts prefer to avoid.",
+      "load": 0
+    }
+  ]
 }
