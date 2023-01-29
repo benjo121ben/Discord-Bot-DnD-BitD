@@ -10,7 +10,6 @@ deprecated/
 dist/
 build/
 __pycache__/
-unittests/
 
 .Python
 build/
