@@ -1,0 +1,2 @@
+class BladesCommandException(Exception):
+    pass

@@ -60,7 +60,7 @@ def load_extensions(_bot, reload=False):
     global logger
     logger.info("\n---------------------LOADING EXTENSIONS---------------------\n")
     load_ext("Campaign.CampaignCog")
-    load_ext("Clocks.ClockCog")
     load_ext("BladesUtility.BladesUtilityCog")
+    load_ext("BladesUtility.ClockCog")
     logger.info("---------------------EXTENSIONS LOADED---------------------\n")
 
