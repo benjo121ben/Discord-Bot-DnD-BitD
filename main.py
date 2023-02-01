@@ -1,5 +1,5 @@
+import asyncio
 import os
-import time
 import pathlib
 
 from typing import Optional
@@ -37,7 +37,7 @@ def main():
         input(
             "\nERROR:DISCORD_TOKEN IS EMPTY.\nrestart the bot after inserting a token into the .env file\npress ENTER")
         return
-    start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"))
+    asyncio.run(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN")))
 
 
 if __name__ == "__main__":

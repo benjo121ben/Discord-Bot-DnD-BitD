@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import time
+
 import discord
 from src.ext.Campaign import packg_variables as c_var
 from aiohttp import ClientConnectorError
@@ -10,6 +12,7 @@ from src import GlobalVariables, command_helper_functions as hlp_f
 
 ext_base_path = "src.ext."
 logger: logging.Logger = None
+retry_connection = True
 
 
 class MyInternetException(Exception):
@@ -17,8 +20,8 @@ class MyInternetException(Exception):
         super().__init__(msg)
 
 
-def start_bot(_command_prefix, _bot_token):
-    global logger
+async def start_bot(_command_prefix, _bot_token):
+    global logger, retry_connection
     logger = logging.getLogger('bot')
     intents = discord.Intents.default()
     intents.message_content = True
@@ -26,9 +29,14 @@ def start_bot(_command_prefix, _bot_token):
     c_var.bot = GlobalVariables.bot
     load_extensions(GlobalVariables.bot)
 
+    def stop_retrying():
+        global retry_connection
+        retry_connection = False
+
     @GlobalVariables.bot.event
     async def on_ready():
-        logger.info(f"Bot startup completed\n"
+        stop_retrying()
+        logger.info(f"Bot connection completed\n"
                     f"We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.command(name="r")
@@ -46,7 +54,18 @@ def start_bot(_command_prefix, _bot_token):
         await ctx.respond("pong")
 
     logger.info("attempting bot startup")
-    GlobalVariables.bot.run(_bot_token)
+    counter = 30
+    while retry_connection and counter > 0:
+        try:
+            await GlobalVariables.bot.start(_bot_token, reconnect=True)
+        except ClientConnectorError as e:
+            logger.error("Connector Error: " + str(e))
+            counter -= 1
+        except Exception as e:
+            logger.error("Exception: " + str(e))
+        finally:
+            time.sleep(20)
+
     logger.warning("Bot start has somehow completed")
 
 
