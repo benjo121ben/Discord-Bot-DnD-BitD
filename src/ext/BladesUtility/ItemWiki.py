@@ -2,32 +2,54 @@ import json
 import logging
 import os
 import pathlib
+from typing import TypeVar, Generic
 
 from discord import Embed
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki = {}
 
+# property labels
+NAME_LABEL = 'name'
+DESCRIPTION_LABEL = 'description'
+EXAMPLE_LABEL = 'example'
+LOAD_LABEL = 'load'
+PLAYBOOK_LABEL = 'playbook'
+EXTRA_HEADER_LABEL = 'extra_header'
+EXTRA_LABEL = 'extra'
+LIST_LABEL = 'list'
+
+# wiki entry category labels
+CAT_ITEMS_LABEL = 'items'
+CAT_CLASS_ITEMS_LABEL = 'class_items'
+CAT_PLAYBOOKS_LABEL = 'playbooks'
+CAT_STATS_LABEL = 'stats'
+
 
 class WikiEntry:
+    def __init__(self, info=None):
+        self.name = ""
+        self.description = ""
+        if info is not None:
+            self.name = info[NAME_LABEL]
+            if DESCRIPTION_LABEL not in info:
+                return
+            self.description = info[DESCRIPTION_LABEL]
 
-    async def sendInfo(self, ctx):
-        ctx.respond(str(self))
+    async def send_info(self, ctx):
+        embed = Embed(title=f'{self.name}', description=self.description)
+        await ctx.respond(embed=embed)
 
 
 class ItemEntry(WikiEntry):
 
     def __init__(self, info):
-        self.name = info["name"]
-        self.load = info["load"]
-        self.description = info["description"]
-        if "extra_info" in info:
-            self.extra_header = info["extra_header"]
-            self.extra_info = info["extra_info"]
-        else:
-            self.extra_header = ""
+        super().__init__(info)
+        self.load = info[LOAD_LABEL]
+        self.extra_header = info[EXTRA_HEADER_LABEL] if EXTRA_HEADER_LABEL in info else ""
+        self.extra_info = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
 
-    async def sendInfo(self, ctx):
+    async def send_info(self, ctx):
         embed = Embed(title=f'**{self.name}**\nPlaybook: _All playbooks_\nItem  Load _{self.load}_', description=self.description)
         if len(self.extra_header) > 0:
             embed.add_field(name="*"+self.extra_header+"*", value=f'_{self.extra_info}_', inline=True)
@@ -37,49 +59,51 @@ class ItemEntry(WikiEntry):
 class ClassItemEntry(WikiEntry):
 
     def __init__(self, info):
-        self.name = info["name"]
-        self.load = info["load"]
-        self.description = info["description"]
-        self.playbook = info["playbook"]
-        if "extra" in info:
-            self.extra = info["extra"]
-        else:
-            self.extra = ""
+        super().__init__(info)
+        self.load = info[LOAD_LABEL]
+        self.playbook = info[PLAYBOOK_LABEL]
+        self.extra = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
 
-    async def sendInfo(self, ctx):
+    async def send_info(self, ctx):
         embed = Embed(title=f'**{self.name}**\nPlaybook: _{self.playbook}_\nItem  Load: _{self.load}_', description=self.description)
         if len(self.extra) > 0:
             embed.add_field(name="Also", value=f'_{self.extra}_', inline=True)
         await ctx.respond(embed=embed)
 
 
-class StatEntry(WikiEntry):
-
+class CompositeEntry(WikiEntry):
     def __init__(self, info):
-        self.name = info["name"]
-        self.description = info["description"]
-        self.example = info["example"]
+        super().__init__(info)
+        self.extra_header = info[EXTRA_HEADER_LABEL] if EXTRA_HEADER_LABEL in info else ""
+        self.extra = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
+        self.children = []
+        for listentry in info[LIST_LABEL]:
+            self.children.append(listentry)
 
-    async def sendInfo(self, ctx):
-        embed = Embed(title=f'{self.name}', description=self.description)
-        embed.add_field(name="*Example*", value=f'*{self.example}*', inline=True)
-
+    async def send_info(self, ctx):
+        embed = Embed(title=f'**{self.name}**', description=self.description)
+        if not self.extra == "":
+            embed.add_field(name=f'**{self.extra_header}**', value=self.extra, inline=False)
+        for child in self.children:
+            embed.add_field(name=f'**{child[NAME_LABEL]}**', value=child[DESCRIPTION_LABEL])
         await ctx.respond(embed=embed)
 
 
-class PlaybookEntry(WikiEntry):
+class StatEntry(WikiEntry):
 
     def __init__(self, info):
-        self.name = info["name"]
-        self.description = info["description"]
+        super().__init__(info)
+        self.example = info[EXAMPLE_LABEL] if EXAMPLE_LABEL in info else ""
 
-    async def sendInfo(self, ctx):
+    async def send_info(self, ctx):
         embed = Embed(title=f'{self.name}', description=self.description)
+        if self.example != "":
+            embed.add_field(name="*Example*", value=f'*{self.example}*', inline=True)
+
         await ctx.respond(embed=embed)
 
 
 def levenshtein_distance(word1, word2):
-
     # Declaring array 'D' with rows = len(a) + 1 and columns = len(b) + 1:
     D = [[0 for i in range(len(word2) + 1)] for j in range(len(word1) + 1)]
 
@@ -111,25 +135,46 @@ def setup_wiki():
 
     with open(wiki_path)as file:
         imported_wiki = json.load(file)
-        for item in imported_wiki["items"]:
-            key = item["name"].lower()
-            wiki[key] = ItemEntry(item)
-        for playbook in imported_wiki["playbooks"]:
-            key = playbook["name"].lower()
-            wiki[key] = PlaybookEntry(playbook)
-        for stat in imported_wiki["stats"]:
-            key = stat["name"].lower()
-            wiki[key] = StatEntry(stat)
-        for stat in imported_wiki["class_items"]:
-            key = stat["name"].lower()
-            wiki[key] = ClassItemEntry(stat)
+
+        for name, entry in imported_wiki.items():
+            if name == CAT_ITEMS_LABEL:
+                insert_wiki_entry(entry, ItemEntry)
+            elif name == CAT_CLASS_ITEMS_LABEL:
+                insert_wiki_entry(entry, ClassItemEntry)
+            elif name == CAT_PLAYBOOKS_LABEL:
+                insert_wiki_entry(entry, WikiEntry)
+            elif name == CAT_STATS_LABEL:
+                composite_wiki_entry = insert_wiki_entry(entry, CompositeEntry)
+                for child in composite_wiki_entry.children:
+                    insert_wiki_entry(child, StatEntry)
+
+
+def insert_wiki_entry(checked_object, wiki_entry_class_type):
+    """
+        parses the values inside a list or object type from a json wiki and puts it into the wiki dictionary.
+
+        :param checked_object: The object or list entry
+        :param wiki_entry_class_type: the class that should be used to package the object
+
+        :returns: None if the checked object was a list otherwise it will return the created WikiEntry
+    """
+    obj = None
+    if type(checked_object) is list:
+        for list_entry in checked_object:
+            key = list_entry[NAME_LABEL].lower()
+            wiki[key] = wiki_entry_class_type(list_entry)
+    else:
+        key = checked_object[NAME_LABEL].lower()
+        obj = wiki_entry_class_type(checked_object)
+        wiki[key] = obj
+    return obj
 
 
 async def wiki_search(ctx, search_term: str):
     found = []
     term = search_term.lower()
     if term in wiki:
-        await wiki[term].sendInfo(ctx)
+        await wiki[term].send_info(ctx)
     else:
         for key in wiki.keys():
             if term in key and len(term) >= 4:
@@ -142,7 +187,7 @@ async def wiki_search(ctx, search_term: str):
         found = found[:min(5, len(found))]
 
         if len(found) == 1:
-            await wiki[found[0]["key"]].sendInfo(ctx)
+            await wiki[found[0]["key"]].send_info(ctx)
         elif len(found) > 1:
             await ctx.respond("Entry could not be found. Did you mean any of these?\n" +
                               ", ".join(
