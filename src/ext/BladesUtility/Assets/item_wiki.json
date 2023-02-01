@@ -397,14 +397,6 @@
     ]
   },
 
-  "craftables" : [
-    {
-      "name": "Throwing knives",
-      "description": "Six small, light blades.",
-      "load": 1
-    }
-  ],
-
   "playbooks": [
     {
       "name": "Cutter",
@@ -447,6 +439,166 @@
       "description": "Whispers are good at magical stuff and dealing with ghosts. Play a Whisper if you want to meddle with arcane powers.",
       "items": ["Fine lightning hook", "Fine spirit mask", "Spirit bottles (2)", "Ghost key", "Demonbane charm"],
       "friends and enemies": ["Nyryx, a possessor ghost", "Scurlock, a vampire", "Setarra, a demon", "Quellyn, a witch", "Flint, a spirit trafficker"]
+    }
+  ],
+  "sample-creations": [
+    {
+      "type": "SPARK-CRAFT/ Bomb",
+      "drawback": "(Conspicuous): This creation doesn't go unnoticed. Take **+1 HEAT** if it's used any number of times on an operation.",
+      "list": [
+        {
+          "name": "Grenade",
+          "description": "A small explosive charge with a short fuse that detonates into metal shrapnel.",
+          "uses": "2",
+          "tier": "III"
+        },
+        {
+          "name": "Large Bomb",
+          "description": "A large explosive charge with a long fuse.",
+          "uses": "1",
+          "tier": "V"
+        },
+        {
+          "name": "Smoke Bomb",
+          "description": "Creates a cloud of acrid smoke that's difficult to breathe and stings the eyes.",
+          "uses": "2",
+          "tier": "II"
+        }
+      ]
+    },
+
+    {
+      "type": "ALCHEMICAL/ Drug",
+      "drawback": "(Volatile): The item creates this side effect as a consequence (Can be resisted):  \"Woozy\", lvl 1 harm",
+      "list": [
+        {
+          "name": "Black Lotus",
+          "description": "A tar-like resin made from the leaves of the plant. Induces coma-like stupor and visions.",
+          "uses": "1",
+          "tier": "I"
+        },
+        {
+          "name": "Bloodneedle",
+          "description": "Induces fever, euphoric mania, rampant energy.",
+          "uses": "3",
+          "tier": "I"
+        },
+        {
+          "name": "Dream Smoke",
+          "description": "A milder formulation of black lotus. Induces a pleasant intoxication.",
+          "uses": "3",
+          "tier": "I"
+        },
+        {
+          "name": "Quicksilver",
+          "description": "A toxic metallic fluid. The user's mind opens further to the ghost field. Take +1d to Attune  roll upon use, suffer level 2 harm (\"Zoned-out\").",
+          "uses": "1",
+          "tier": "IV"
+        },
+        {
+          "name": "Spark",
+          "description": "A measure of raw electroplasm blended with seawater. The user feels empowered and emits mild electrical energy.",
+          "uses": "3",
+          "tier": "I"
+        },
+        {
+          "name": "Trance Powder",
+          "description": "A glittering blue powder. Induces a pleasant hypnotic trance when inhaled.",
+          "uses": "3",
+          "tier": "I"
+        }
+      ]
+    },
+
+    {
+      "type": "ALCHEMICAL/ Oil",
+      "list": [
+        {
+          "name": "Alcahest",
+          "description": "A fluid that stops the effects of any other alchemical.",
+          "uses": "1 ",
+          "tier": "III"
+        },
+        {
+          "name": "Binding Oil",
+          "description": "Permanently fuses two surfaces until dissolved by alcahest or electroplasm.",
+          "uses": "1 ",
+          "tier": "III"
+        },
+        {
+          "name": "Fire Oil",
+          "description": "Erupts in searing flame upon contact with air.",
+          "uses": "3 ",
+          "tier": "III"
+        }
+      ]
+    },
+
+    {
+      "type": "ALCHEMICAL/ Poison",
+      "drawback": "(Volatile): The item creates this side effect as a consequence (Can be resisted): \"Sickened\", lvl 1 harm",
+      "list": [
+        {
+          "name": "Drown Powder",
+          "description": "A fine dust that incapacitates by giving the sensation of drowning.",
+          "uses": "2 ",
+          "tier": "III"
+        },
+        {
+          "name": "Eyeblind",
+          "description": "A powder that causes blindness for a moment.",
+          "uses": "3 ",
+          "tier": "III"
+        },
+        {
+          "name": "Skullfire",
+          "description": "Toxic fumes from overly heated leviathan blood. Causes incapacitating migraines.",
+          "uses": "1 ",
+          "tier": "III"
+        },
+        {
+          "name": "Standstill",
+          "description": "A powder that causes temporary paralysis.",
+          "uses": "1 ",
+          "tier": "IV"
+        }
+      ]
+    },
+
+    {
+      "type": "ARCANE/ Potion",
+      "list": [
+        {
+          "name": "Silence Potion",
+          "description": "Creates an area of utter silence around the shattered vial.",
+          "uses": "1",
+          "tier": "III"
+        },
+        {
+          "name": "Shadow Essence",
+          "description": "A distillation of the void. Creates a cloud of unnatural pitch darkness.",
+          "uses": "1",
+          "tier": "III"
+        },
+        {
+          "name": "Viper Potion",
+          "description": "The user's saliva and blood become highly toxic to others for a few minutes.",
+          "uses": "1",
+          "tier": "IV"
+        }
+      ]
+    },
+
+    {
+      "type": "ARCANE/ Oil",
+      "list": [
+        {
+          "name": "Drift Oil",
+          "description": "Creates neutral buoyancy when poured on an object, causing it to float in the air for an hour.",
+          "uses": "1 ",
+          "tier": "III"
+        }
+      ]
     }
   ]
 }

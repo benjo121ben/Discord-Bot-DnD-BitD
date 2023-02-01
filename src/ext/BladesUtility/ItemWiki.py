@@ -19,11 +19,20 @@ EXTRA_HEADER_LABEL = 'extra_header'
 EXTRA_LABEL = 'extra'
 LIST_LABEL = 'list'
 
+# properties unique to created items
+CREATION_TYPE_LABEL = 'type'
+CREATION_DRAWBACK_LABEL = 'drawback'
+CREATION_USES_LABEL = 'uses'
+CREATION_TIER_LABEL = 'tier'
+
 # wiki entry category labels
 CAT_ITEMS_LABEL = 'items'
 CAT_CLASS_ITEMS_LABEL = 'class_items'
+CAT_CREATIONS_LABEL = 'sample-creations'
 CAT_PLAYBOOKS_LABEL = 'playbooks'
 CAT_STATS_LABEL = 'stats'
+
+
 
 
 class WikiEntry:
@@ -71,6 +80,25 @@ class ClassItemEntry(WikiEntry):
         await ctx.respond(embed=embed)
 
 
+class CraftedItemEntry(WikiEntry):
+
+    def __init__(self, info):
+        super().__init__(info)
+        self.type = info[CREATION_TYPE_LABEL]
+        self.drawback = info[CREATION_DRAWBACK_LABEL]
+        self.uses = info[CREATION_USES_LABEL]
+        self.tier = info[CREATION_TIER_LABEL]
+
+    async def send_info(self, ctx):
+        embed = Embed(title=f'**{self.name}**', description=self.description)
+        embed.add_field(name="Type", value=f'_{self.type}_', inline=True)
+        embed.add_field(name="Uses / Ammo", value=f'{self.uses}', inline=True)
+        embed.add_field(name="Tier", value=f'{self.tier}', inline=True)
+        if self.drawback != "":
+            embed.add_field(name="Drawback", value=self.drawback, inline=False)
+        await ctx.respond(embed=embed)
+
+
 class CompositeEntry(WikiEntry):
     def __init__(self, info):
         super().__init__(info)
@@ -96,9 +124,9 @@ class StatEntry(WikiEntry):
         self.example = info[EXAMPLE_LABEL] if EXAMPLE_LABEL in info else ""
 
     async def send_info(self, ctx):
-        embed = Embed(title=f'{self.name}', description=self.description)
+        embed = Embed(title=f'**{self.name}**', description=self.description)
         if self.example != "":
-            embed.add_field(name="*Example*", value=f'*{self.example}*', inline=True)
+            embed.add_field(name="**Example**", value=f'_{self.example}_', inline=True)
 
         await ctx.respond(embed=embed)
 
@@ -147,6 +175,14 @@ def setup_wiki():
                 composite_wiki_entry = insert_wiki_entry(entry, CompositeEntry)
                 for child in composite_wiki_entry.children:
                     insert_wiki_entry(child, StatEntry)
+            elif name == CAT_CREATIONS_LABEL:
+                for item_cat in entry:
+                    item_type = item_cat[CREATION_TYPE_LABEL]
+                    item_drawback = item_cat[CREATION_DRAWBACK_LABEL] if CREATION_DRAWBACK_LABEL in entry else ""
+                    for item in item_cat[LIST_LABEL]:
+                        item[CREATION_TYPE_LABEL] = item_type
+                        item[CREATION_DRAWBACK_LABEL] = item_drawback
+                        insert_wiki_entry(item, CraftedItemEntry)
 
 
 def insert_wiki_entry(checked_object, wiki_entry_class_type):
