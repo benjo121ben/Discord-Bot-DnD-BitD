@@ -3,9 +3,9 @@ from functools import wraps
 
 from .Character import Character
 from .campaign_helper import check_if_user_has_char, get_char_tag_by_id, check_file_admin, check_char_tag
-from .save_file_management import session_tag, get_current_save_file_name_no_suff, check_file_loaded, load, save
+from .save_file_management import session_tag, check_file_loaded, load_user_file, save_user_file, get_user_filename_no_suff
 from .campaign_exceptions import CommandException
-from .packg_variables import localCommDic, charDic, imported_dic
+from .packg_variables import ID_dic, file_dic
 from . import Undo
 
 
@@ -18,24 +18,25 @@ def check_file_save_file_wrapper(function_to_wrap):
     """
     @wraps(function_to_wrap)
     def wrapped_func(*args, **kwargs):
-        check_file_loaded(raise_error=True)
+        user_id = kwargs["user_id"]
+        check_file_loaded(user_id, raise_error=True)
         value = function_to_wrap(*args, **kwargs)
-        save()
+        save_user_file(user_id)
         return value
     return wrapped_func
 
 
-def load_file(file_name: str) -> str:
-    old_file_name = get_current_save_file_name_no_suff()
-    ret_str = load(file_name)
-    Undo.queue_undo_action(Undo.FileChangeUndoAction(old_file_name, get_current_save_file_name_no_suff()))
+def load_file(user_id, file_name: str) -> str:
+    old_file_name = get_user_filename_no_suff(user_id)
+    ret_str = load_user_file(user_id, file_name)
+    Undo.queue_undo_action(Undo.FileChangeUndoAction(old_file_name, file_name))
     return ret_str
 
 
-def log(adv=False) -> str:
+def log(user_id: str, adv=False) -> str:
     ptr = Undo.get_pointer()
-    check_file_loaded(raise_error=True)
-    ret_string = f"**Session {imported_dic['session']}**\n"
+    check_file_loaded(user_id, raise_error=True)
+    ret_string = f"**Session {file_dic[user_id]['session']}**\n"
     if len(charDic.values()) == 0:
         ret_string += "There are no characters at the moment\n"
     for char in charDic.values():

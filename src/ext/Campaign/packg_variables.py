@@ -10,7 +10,7 @@ cache_folder: int = None
 bot_admin_id: int = None
 bot: discord.Bot = None
 
-charDic: dict[str, Character] = {}
-localCommDic = {}
-imported_dic = {}
+# charDic: dict[str, Character] = {}
+# localCommDic = {}
+# imported_dic = {}
 
