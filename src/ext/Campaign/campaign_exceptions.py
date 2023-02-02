@@ -5,14 +5,14 @@ class CommandException(Exception):
 class NotFileAdminException(CommandException):
     def __init__(self, msg=None):
         if msg is None:
-            super().__init__("You are not authorised to use this command in this save_file")
+            super("You are not authorised to use this command in this save_file")
         else:
-            super().__init__(msg)
+            super(msg)
 
 
 class NotBotAdminException(CommandException):
     def __init__(self, msg=None):
         if msg is None:
-            super().__init__("You must be a BOT administrator to use this command")
+            super("You must be a BOT administrator to use this command")
         else:
-            super().__init__(msg)
+            super(msg)

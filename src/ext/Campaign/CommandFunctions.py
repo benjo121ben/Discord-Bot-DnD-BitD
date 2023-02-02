@@ -2,10 +2,10 @@ import decohints
 from functools import wraps
 
 from .Character import Character
-from .campaign_helper import check_if_user_has_char, get_char_tag_by_id, check_file_admin, check_char_tag
-from .save_file_management import session_tag, check_file_loaded, load_user_file, save_user_file, get_user_filename_no_suff
+from .save_file_management import session_tag, character_tag
+from .live_save_manager import check_file_loaded, save_user_file, get_user_save_name, get_user_save_dic, check_char_tag, \
+    check_if_user_has_char, get_char_tag_by_id, get_user_char_dic, check_file_admin
 from .campaign_exceptions import CommandException
-from .packg_variables import ID_dic, file_dic
 from . import Undo
 
 
@@ -26,9 +26,9 @@ def check_file_save_file_wrapper(function_to_wrap):
     return wrapped_func
 
 
-def load_file(user_id, file_name: str) -> str:
-    old_file_name = get_user_filename_no_suff(user_id)
-    ret_str = load_user_file(user_id, file_name)
+def load_file(user_id: str, file_name: str) -> str:
+    old_file_name = get_user_save_name(user_id)
+    ret_str = load(user_id, file_name)
     Undo.queue_undo_action(Undo.FileChangeUndoAction(old_file_name, file_name))
     return ret_str
 
@@ -36,10 +36,12 @@ def load_file(user_id, file_name: str) -> str:
 def log(user_id: str, adv=False) -> str:
     ptr = Undo.get_pointer()
     check_file_loaded(user_id, raise_error=True)
-    ret_string = f"**Session {file_dic[user_id]['session']}**\n"
-    if len(charDic.values()) == 0:
+    save_dic = get_user_save_dic(user_id)
+    char_dic = save_dic[character_tag]
+    ret_string = f"**Session {save_dic[user_id][session_tag]}**\n"
+    if len(char_dic) == 0:
         ret_string += "There are no characters at the moment\n"
-    for char in charDic.values():
+    for char in char_dic:
         ret_string += str(char) + "\n"
 
     if adv:
@@ -53,12 +55,12 @@ def log(user_id: str, adv=False) -> str:
 
 
 @check_file_save_file_wrapper
-def claim_character(executing_user: int, char_tag: str, assigned_user_id: int):
-    check_char_tag(char_tag, raise_error=True)
-    if check_if_user_has_char(assigned_user_id):
+def claim_character(executing_user: str, char_tag: str, assigned_user_id: str):
+    check_char_tag(executing_user, char_tag, raise_error=True)
+    if check_if_user_has_char(executing_user, assigned_user_id):
         raise CommandException(
-            f"this user already has character {get_char_tag_by_id(assigned_user_id)} assigned")
-    current_player = charDic[char_tag].player
+            f"this user already has character {get_char_tag_by_id(executing_user, assigned_user_id)} assigned")
+    current_player = get_user_char_dic(executing_user)[char_tag].player
 
     if current_player != "" and int(current_player) != executing_user and not check_file_admin(executing_user):
         raise CommandException(
@@ -69,7 +71,7 @@ def claim_character(executing_user: int, char_tag: str, assigned_user_id: int):
 
 
 @check_file_save_file_wrapper
-def unclaim_user(executing_user: int, to_unclaim_user_id: int):
+def unclaim_user(executing_user: str, to_unclaim_user_id: str):
     if to_unclaim_user_id != executing_user and not check_file_admin(executing_user):
         raise CommandException("You are not authorized to use this command on other people's characters")
     if not check_if_user_has_char(to_unclaim_user_id):
@@ -217,7 +219,7 @@ def crit(char_tag: str) -> str:
 
 
 @check_file_save_file_wrapper
-def dodged(char_tag:str) -> str:
+def dodged(char_tag: str) -> str:
     check_char_tag(char_tag, raise_error=True)
     dodged = charDic[char_tag].dodged
     Undo.queue_basic_action(char_tag, "dodged", dodged, dodged + 1)

@@ -154,8 +154,9 @@ class CampaignCog(commands.Cog):
     async def claim(self, ctx: BridgeExtContext, char_tag: str, user_id: str = None):
         try:
             if user_id is None:
-                user_id = ctx.author.id
-            cfuncs.claim_character(ctx.author.id, char_tag, user_id)
+                user_id = str(ctx.author.id)
+            executing_user = str(ctx.author.id)
+            cfuncs.claim_character(executing_user, char_tag, user_id)
         except comm_except as err:
             await ctx.respond(str(err))
             return
@@ -176,15 +177,15 @@ class CampaignCog(commands.Cog):
     async def unclaim(self, ctx: BridgeExtContext, user_id: str = None):
         try:
             if user_id is None:
-                user_id = ctx.author.id
-            await ctx.respond(cfuncs.unclaim_user(ctx.author.id, user_id))
+                user_id = str(ctx.author.id)
+            await ctx.respond(cfuncs.unclaim_user(str(ctx.author.id), user_id))
         except comm_except as err:
             await ctx.respond(str(err))
 
     @slash_command(name="session", description="increase session")
     async def session(self, ctx: BridgeExtContext):
         try:
-            cmp_hlp.check_file_admin(ctx.author.id, raise_error=True)
+            cmp_hlp.check_file_admin(str(ctx.author.id), raise_error=True)
             if cmp_hlp.check_bot_admin(ctx):
                 await self.cache(ctx)
             await ctx.respond(cfuncs.session_increase())

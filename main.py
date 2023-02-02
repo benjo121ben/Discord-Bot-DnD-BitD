@@ -31,7 +31,7 @@ def main():
     logger.info("initializing")
     main_path = pathlib.Path(__file__).parent.resolve()
     load_dotenv(os.path.join(main_path, GlobalVariables.env_file_rel_path))
-    GlobalVariables.admin_id = check_env_var_int("ADMIN_ID")
+    GlobalVariables.admin_id = os.environ.get("ADMIN_ID")
     token = os.environ.get("DISCORD_TOKEN")
     if token is None or token == "":
         input(

@@ -1,10 +1,14 @@
+import logging
+
 from discord.ext.bridge import BridgeExtContext
 
+from .campaign_exceptions import NotFileAdminException
 from ..command_exceptions import CommandException
-from .save_file_management import load_file, save_data_to_file, players_tag
+from .save_file_management import load_file, save_data_to_file, players_tag, character_tag, last_changed_tag
 
 ID_dic = {}
 file_dic = {}
+logger = logging.getLogger('bot')
 
 
 class NoAssignedSaveException(CommandException):
@@ -33,7 +37,7 @@ def get_user_save_name(user_id: str):
         return None
 
 
-def get_user_save(user_id: str):
+def get_user_save_dic(user_id: str):
     """
     Gets the savefile dictionary assigned to a user, or None if the user does not have an assigned savefile. If the
     file is not in memory, it will attempt to load the file from the drive, which may cause a SaveFileNotFoundException.
@@ -54,6 +58,29 @@ def get_user_save(user_id: str):
             raise UserNotPlayerException("It seems you had your access rights to this savefile removed.\n"
                                          "Please contact the admin of the savefile you are trying to access")
     return file_dic[_save_name]
+
+
+def get_user_char_dic(user_id: str):
+    """
+    Gets the character dictionary assigned to a user's save, or None if the user does not have an assigned savefile. If the
+    file is not in memory, it will attempt to load the file from the drive, which may cause a SaveFileNotFoundException.
+    If a user is not authorized to access the file, this will raise a
+    :param user_id: the user_id of the user trying to access
+    :return: the save file dictionary
+    :raises UserNotPlayerException
+    :raises SaveFileNotFoundException
+    """
+    _save_name = get_user_save_name(user_id)
+    if _save_name is None:
+        return None
+
+    if _save_name not in file_dic:
+        try:
+            load(user_id, _save_name)
+        except UserNotPlayerException:
+            raise UserNotPlayerException("It seems you had your access rights to this savefile removed.\n"
+                                         "Please contact the admin of the savefile you are trying to access")
+    return file_dic[_save_name][character_tag]
 
 
 def check_file_loaded(user_id: str, raise_error: bool = False):
@@ -88,6 +115,7 @@ def save_by_filename(_save_name: str):
     if _save_name not in file_dic:
         raise Exception(f"trying to save a file that is not in memory: {_save_name}")
     save_data_to_file(_save_name, file_dic[_save_name])
+    logger.info(f"time in memory {file_dic[_save_name][last_changed_tag]}")
 
 
 def set_user_save(user_id: str, _save_name: str):
@@ -98,22 +126,22 @@ def clear_user_save(user_id : str):
     del ID_dic[user_id]
 
 
-def check_if_user_has_char(user_id) -> bool:
-    for char in p_vars.charDic.values():
-        if char.player == str(user_id):
+def check_if_user_has_char(executing_user: str, search_user_id: str) -> bool:
+    for char in get_user_char_dic(executing_user):
+        if char.player == search_user_id:
             return True
     return False
 
 
-def get_char_tag_by_id(user_id: int):
-    if not check_if_user_has_char(user_id):
+def get_char_tag_by_id(executing_user: str, search_user_id: str):
+    if not check_if_user_has_char(executing_user, search_user_id):
         raise CommandException("get_tag_by_id: attempted to get the character of an unassigned user")
-    for char in p_vars.charDic.values():
-        if char.player == str(user_id):
+    for char in get_user_char_dic(search_user_id):
+        if char.player == search_user_id:
             return char.tag
 
 
-def get_char_name_by_id(user_id: int):
+def get_char_name_by_id(user_id: str):
     if not check_if_user_has_char(user_id):
         raise CommandException("get_char_name_by_id: attempted to get the character of an unassigned user")
     for char in p_vars.charDic.values():
@@ -121,14 +149,15 @@ def get_char_name_by_id(user_id: int):
             return char.name
 
 
-def check_char_tag(char_tag: str, raise_error: bool = False):
+def check_char_tag(user_id: str, char_tag: str, raise_error: bool = False):
     """
     Checks if a character with this tag exists in the current save file
+    :param user_id: id of executing user
     :param char_tag: tag of checked character
     :param raise_error: If true, the function will throw a CommandException if the character was not found
     :return: True if character was found, False otherwise
     """
-    if not check_file_loaded(raise_error=raise_error):
+    if not check_file_loaded(user_id, raise_error=raise_error):
         return False
     if char_tag is None:
         if raise_error:
@@ -136,7 +165,7 @@ def check_char_tag(char_tag: str, raise_error: bool = False):
                 "campaign_helper:check_char_tag: Character tag None was given. "
                 "This should never happen, please contact the developer."
             )
-    elif char_tag in p_vars.charDic:
+    elif char_tag in get_user_char_dic(user_id):
         return True
     elif raise_error:
         raise CommandException("Character doesn't exist")
@@ -147,21 +176,24 @@ def get_char_tag_if_none(ctx: BridgeExtContext, char_tag: str = None):
     if char_tag is not None:
         return char_tag
 
-    check_file_loaded(raise_error=True)
-    for char in p_vars.charDic.values():
+    user_id = str(ctx.author.id)
+    check_file_loaded(user_id, raise_error=True)
+    char_dic = get_user_char_dic(user_id)
+    for char in char_dic.values():
         if char.player == str(ctx.author.id):
             return char.tag
     raise CommandException(
         "No character is assigned to you. Either claim a character or add the char_tag as a parameter")
 
 
-def check_file_admin(user_id: int, raise_error=False) -> bool:
-    if p_vars.bot_admin_id is None or user_id == p_vars.bot_admin_id:
-        return True
-    elif raise_error:
-        raise NotFileAdminException()
-    else:
-        return False
+def check_file_admin(user_id: str, raise_error=False) -> bool:
+    raise NotFileAdminException("check_file_admin Not implemented!!!")
+    # if p_vars.bot_admin_id is None or user_id == p_vars.bot_admin_id:
+    #     return True
+    # elif raise_error:
+    #     raise NotFileAdminException()
+    # else:
+    #     return False
 
 
 def check_file_player(user_id: int, _save_name: str, raise_error=False) -> bool:

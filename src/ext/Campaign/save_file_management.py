@@ -139,7 +139,7 @@ def load_file(_save_name):
     return returned_dic
 
 
-def save_data_to_file(_save_name, export_dic):
+def save_data_to_file(_save_name: str, export_dic: dict):
 
     save_path = get_savefile_path(_save_name)
     if not exists(save_path):
@@ -147,16 +147,15 @@ def save_data_to_file(_save_name, export_dic):
 
     with open(save_path, 'w') as newfile:
         change_time = datetime.now().replace(microsecond=0)
-
-        save_dic = file_dic[_save_name]
-        save_dic[last_changed_tag] = change_time
+        export_dic[last_changed_tag] = change_time
+        print(f"new time {change_time}")
         output = {
-            session_tag: save_dic[session_tag],
+            session_tag: export_dic[session_tag],
             last_changed_tag: change_time.strftime(date_time_save_format),
             version_tag: save_type_version,
             character_tag: {}
         }
-        for char in save_dic[character_tag].values():
+        for char in export_dic[character_tag].values():
             temp = char.to_json()
             output[character_tag][temp['tag']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
