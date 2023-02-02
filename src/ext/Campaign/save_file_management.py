@@ -133,7 +133,7 @@ def load_file(_save_name):
     for char_tag, char_data in save_dic[character_tag].items():
         returned_dic[character_tag][char_tag] = char_from_data(char_data)
     if updated:
-        save_data_to_file(_save_name)
+        save_data_to_file(_save_name, returned_dic)
         logger.info(f"Old save exists.\nLoaded {_save_name} into memory and updated to newest version.")
     logger.info(f"Savefile exists.\nLoaded {_save_name} into memory.")
     return returned_dic
@@ -149,26 +149,28 @@ def save_data_to_file(_save_name: str, export_dic: dict):
         change_time = datetime.now().replace(microsecond=0)
         export_dic[last_changed_tag] = change_time
         print(f"new time {change_time}")
-        output = {
-            session_tag: export_dic[session_tag],
-            last_changed_tag: change_time.strftime(date_time_save_format),
-            version_tag: save_type_version,
-            character_tag: {}
-        }
+        output = get_fresh_save()
+        output[session_tag] = export_dic[session_tag]
+        output[last_changed_tag] = change_time.strftime(date_time_save_format)
         for char in export_dic[character_tag].values():
             temp = char.to_json()
             output[character_tag][temp['tag']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
 
 
-
+def get_fresh_save():
+    return {
+        session_tag: 0,
+        last_changed_tag: datetime.now().replace(microsecond=0).strftime(date_time_save_format),
+        version_tag: save_type_version,
+        character_tag: {}
+    }
 
 
 def remove_file(_save_name):
     if _save_name == "":
         raise Exception("cannot remove file with empty name")
     path = get_savefile_path(_save_name)
-    del file_dic[_save_name]
     if exists(path):
         logger.info("deleted savefile", _save_name)
         os.remove(path)
