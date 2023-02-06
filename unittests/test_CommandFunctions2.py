@@ -1,6 +1,7 @@
 import pytest
 
-from src.ext.Campaign import save_file_management as save_manager, CommandFunctions as commands
+from src.ext.Campaign import CommandFunctions as commands
+from src.ext.Campaign.SaveDataManagement import save_file_management as save_manager
 
 from .test_const_vars import unit_test_save_file_name
 

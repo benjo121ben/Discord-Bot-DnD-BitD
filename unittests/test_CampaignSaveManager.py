@@ -3,7 +3,8 @@ import json
 import pathlib
 import shutil
 import pytest
-from src.ext.Campaign import save_file_management as save_manager, packg_variables as cvars
+from src.ext.Campaign import packg_variables as cvars
+from src.ext.Campaign.SaveDataManagement import save_file_management as save_manager
 from .test_const_vars import template_save_folder_relative_path, save_folder_relative_path, unit_test_save_file_name
 
 this_file_folder_path = pathlib.Path(__file__).parent.resolve()
@@ -17,8 +18,6 @@ def get_save_path(save_name):
     return f"{os.path.join(this_file_folder_path, save_folder_relative_path)}{os.sep}{save_name}{save_manager.save_files_suffix}"
 
 
-
-
 def move_template_save_to_save_folder(template_name):
     source = get_template_path(template_name)
     if not os.path.exists(source):
@@ -28,7 +27,7 @@ def move_template_save_to_save_folder(template_name):
     return destination
 
 
-class TestCampaignSaveManager():
+class TestCampaignSaveManager:
     @pytest.fixture(autouse=True)
     def setup_teardown(self):
         yield "setup"

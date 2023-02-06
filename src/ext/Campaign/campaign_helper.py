@@ -1,16 +1,11 @@
-import logging
-
-from dotenv import load_dotenv
 import os
-from os import mkdir
-from os.path import exists
-from typing import Optional
 import pathlib
-
+import logging
+from typing import Optional
+from dotenv import load_dotenv
 from discord.ext.bridge import BridgeExtContext
-
 from . import packg_variables as p_vars
-from .save_file_management import get_save_folder_filepath, get_cache_folder_filepath
+from .SaveDataManagement import live_save_manager as live_save
 from .campaign_exceptions import NotBotAdminException
 
 logger = logging.getLogger('bot')
@@ -63,11 +58,7 @@ def check_base_setup():
         )
         return
 
-    if not exists(get_save_folder_filepath()):
-        logger.debug("SAVE_FILEPATH_CREATED")
-        mkdir(get_save_folder_filepath())
-    if not exists(get_cache_folder_filepath()):
-        logger.debug("CACHE_FILEPATH_CREATED")
-        mkdir(get_cache_folder_filepath())
+    live_save.setup_live_save_data()
+
 
 

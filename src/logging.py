@@ -2,9 +2,10 @@ import pathlib
 import logging
 import os
 import sys
+from datetime import datetime
 
 main_path = pathlib.Path(__file__).parent.resolve()
-
+date_time_save_format = "%Y_%m_%d-%H_%M_%S"
 
 class StreamFormatter(logging.Formatter):
 
@@ -37,7 +38,7 @@ def setup_logging():
     logger = logging.getLogger('bot')
     logger.setLevel(logging.DEBUG)
 
-    fhandler = logging.FileHandler(filename=os.path.join(main_path, f'{logpath}{os.sep}debug.log'), mode='w', encoding='utf-8')
+    fhandler = logging.FileHandler(filename=os.path.join(main_path, f'{logpath}{os.sep}{datetime.now().replace(microsecond=0).strftime(date_time_save_format)}.log'), mode='w', encoding='utf-8')
     fhandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d)\n%(message)s "))
     logger.addHandler(fhandler)
 

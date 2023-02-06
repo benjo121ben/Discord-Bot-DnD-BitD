@@ -6,12 +6,14 @@ import discord.errors as d_errors
 from discord import slash_command
 from discord.ext import commands
 from discord.ext.bridge import BridgeExtContext, Bot
+
+from .SaveDataManagement import char_data_access as char_data
+from . import packg_variables
 from .campaign_exceptions import CommandException as ComExcept
 from . import Undo, CommandFunctions as CFuncs, \
     packg_variables as cmp_vars, \
-    campaign_helper as cmp_hlp, \
-    save_file_management as save_manager, \
-    live_save_manager as live_save
+    campaign_helper as cmp_hlp
+from .SaveDataManagement import save_file_management as save_manager, live_save_manager as live_save
 
 logger = logging.getLogger('bot')
 
@@ -21,7 +23,8 @@ class CampaignCog(commands.Cog):
     async def crit(self, ctx: BridgeExtContext, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.crit(executing_user, char_tag))
         except ComExcept as err:
             await ctx.respond(err)
@@ -30,7 +33,8 @@ class CampaignCog(commands.Cog):
     async def dodged(self, ctx: BridgeExtContext, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.dodge(executing_user, char_tag))
         except ComExcept as err:
             await ctx.respond(err)
@@ -39,7 +43,8 @@ class CampaignCog(commands.Cog):
     async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.cause_damage(executing_user, char_tag, amount, kills))
         except ComExcept as err:
             await ctx.respond(err)
@@ -49,7 +54,8 @@ class CampaignCog(commands.Cog):
     async def take(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.take_damage(executing_user, char_tag, amount, False))
         except ComExcept as err:
             await ctx.respond(err)
@@ -58,7 +64,8 @@ class CampaignCog(commands.Cog):
     async def tank(self, ctx: BridgeExtContext, amount: int, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.tank_damage(executing_user, char_tag, amount))
         except ComExcept as err:
             await ctx.respond(err)
@@ -69,7 +76,8 @@ class CampaignCog(commands.Cog):
         amount = abs(amount)
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.take_damage(executing_user, char_tag, amount, True))
         except ComExcept as err:
             await ctx.respond(err)
@@ -82,7 +90,8 @@ class CampaignCog(commands.Cog):
         new_max_health = abs(new_max_health)
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.set_max_health(executing_user, char_tag, new_max_health))
         except ComExcept as err:
             await ctx.respond(err)
@@ -95,7 +104,8 @@ class CampaignCog(commands.Cog):
         amount = abs(amount)
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.heal(executing_user, char_tag, amount))
         except ComExcept as err:
             await ctx.respond(err)
@@ -108,7 +118,8 @@ class CampaignCog(commands.Cog):
     async def full_h(self, ctx: BridgeExtContext, char_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            char_tag = live_save.get_char_tag_if_none(ctx, char_tag)
+            if char_tag is None:
+                char_tag = char_data.get_char_tag_by_id(executing_user)
             await ctx.respond(CFuncs.heal_max(executing_user, char_tag))
         except ComExcept as err:
             await ctx.respond(err)
@@ -153,7 +164,10 @@ class CampaignCog(commands.Cog):
     )
     async def load_command(self, ctx: BridgeExtContext, file_name: str):
         executing_user = str(ctx.author.id)
-        await ctx.respond(CFuncs.load_or_create_save(executing_user, file_name))
+        try:
+            await ctx.respond(CFuncs.load_or_create_save(executing_user, file_name))
+        except ComExcept as err:
+            await ctx.respond(str(err))
 
     @commands.command(name="save")
     async def save_command(self, ctx: BridgeExtContext):
@@ -186,18 +200,18 @@ class CampaignCog(commands.Cog):
             logger.error(err)
             await ctx.respond("A user with this ID could not be found by the bot.\n"
                               "Make sure the bot shares a server with the user that has this ID")
-            Undo.undo()
-            Undo.discard_undo_queue()
+            Undo.undo(executing_user)
+            Undo.discard_undo_queue(executing_user)
             return
         await ctx.respond(f"{char_tag} assigned to {user.name}")
 
     @slash_command(name="unclaim", description="Unclaim an assigned Character")
-    async def unclaim(self, ctx: BridgeExtContext, user_id: str = None):
+    async def unclaim(self, ctx: BridgeExtContext, character_tag: str = None):
         executing_user = str(ctx.author.id)
         try:
-            if user_id is None:
-                user_id = str(ctx.author.id)
-            await ctx.respond(CFuncs.unclaim_user(executing_user, user_id))
+            if character_tag is None:
+                character_tag = char_data.get_char_tag_by_id(executing_user, executing_user)
+            await ctx.respond(CFuncs.unclaim_char(executing_user, character_tag))
         except ComExcept as err:
             await ctx.respond(str(err))
 
@@ -227,9 +241,9 @@ class CampaignCog(commands.Cog):
             chat_id = cmp_vars.cache_folder
             if chat_id is None:
                 raise ComExcept("No cloudsavechannel id assigned")
-            file_name = live_save.get_user_save_name(executing_user)
-            message = f"cache-{file_name}-session " \
-                      f"{live_save.get_user_save_dic(executing_user)[save_manager.session_tag]}"
+            file_name = live_save.get_user_loaded_file_name(executing_user)
+            save_dic = live_save.get_user_loaded_dict(executing_user)
+            message = f"cache-{file_name}-session {save_dic[save_manager.session_tag]}-{save_dic[save_manager.version_tag]}"
             current_file = save_manager.get_savefile_as_discord_file(file_name)
             await cmp_hlp.get_bot().get_channel(chat_id).send(message, file=current_file)
             await ctx.respond("cached")
@@ -246,8 +260,8 @@ class CampaignCog(commands.Cog):
 
             message = await cmp_hlp.get_bot().get_channel(chat_id).history(limit=1).next()
             filename = message.attachments[0].filename
-            cache_save_path = save_manager.get_cache_folder_filepath() + f'{os.sep}' + filename
-            local_save_path = save_manager.get_save_folder_filepath() + f'{os.sep}' + filename
+            cache_save_path = packg_variables.get_cache_folder_filepath() + f'{os.sep}' + filename
+            local_save_path = packg_variables.get_save_folder_filepath() + f'{os.sep}' + filename
 
             await message.attachments[0].save(fp=cache_save_path)
             if not exists(local_save_path):
@@ -258,6 +272,7 @@ class CampaignCog(commands.Cog):
             if save_manager.compare_savefile_novelty(local_save_path, cache_save_path) == -1:
                 os.remove(local_save_path)
                 os.rename(cache_save_path, local_save_path)
+                live_save.load_file_into_memory(filename, replace=True)
                 await ctx.respond("replaced")
             else:
                 os.remove(cache_save_path)
@@ -270,7 +285,7 @@ class CampaignCog(commands.Cog):
         executing_user = str(ctx.author.id)
         try:
             live_save.check_file_loaded(executing_user, raise_error=True)
-            file_name = live_save.get_user_save_name(executing_user)
+            file_name = live_save.get_user_loaded_file_name(executing_user)
             await ctx.respond("save file:", file=save_manager.get_savefile_as_discord_file(file_name))
         except ComExcept as err:
             await ctx.respond(str(err))
