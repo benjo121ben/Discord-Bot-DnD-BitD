@@ -18,6 +18,8 @@ PLAYBOOK_LABEL = 'playbook'
 EXTRA_HEADER_LABEL = 'extra_header'
 EXTRA_LABEL = 'extra'
 LIST_LABEL = 'list'
+PLAYBOOK_ITEMS_LABEL = 'items'
+PLAYBOOK_FRIENDS_LABEL = 'friends_and_enemies'
 
 # properties unique to created items
 CREATION_TYPE_LABEL = 'type'
@@ -33,8 +35,6 @@ CAT_PLAYBOOKS_LABEL = 'playbooks'
 CAT_STATS_LABEL = 'stats'
 
 
-
-
 class WikiEntry:
     def __init__(self, info=None):
         self.name = ""
@@ -47,6 +47,19 @@ class WikiEntry:
 
     async def send_info(self, ctx):
         embed = Embed(title=f'{self.name}', description=self.description)
+        await ctx.respond(embed=embed)
+
+
+class PlaybookEntry(WikiEntry):
+    def __init__(self, info=None):
+        super().__init__(info)
+        self.items = info[PLAYBOOK_ITEMS_LABEL]
+        self.friends = info[PLAYBOOK_FRIENDS_LABEL]
+
+    async def send_info(self, ctx):
+        embed = Embed(title=f'{self.name}', description=self.description)
+        embed.add_field(name="*Special Items*", value=''.join([f'> {value}\n'.replace("Fine", "**Fine**") for value in self.items]), inline=True)
+        embed.add_field(name="*Friends and Rivals*", value=''.join([f'> **{value.split(",")[0]}**, {value.split(",")[1]}\n' for value in self.friends]), inline=True)
         await ctx.respond(embed=embed)
 
 
@@ -170,7 +183,7 @@ def setup_wiki():
             elif name == CAT_CLASS_ITEMS_LABEL:
                 insert_wiki_entry(entry, ClassItemEntry)
             elif name == CAT_PLAYBOOKS_LABEL:
-                insert_wiki_entry(entry, WikiEntry)
+                insert_wiki_entry(entry, PlaybookEntry)
             elif name == CAT_STATS_LABEL:
                 composite_wiki_entry = insert_wiki_entry(entry, CompositeEntry)
                 for child in composite_wiki_entry.children:
