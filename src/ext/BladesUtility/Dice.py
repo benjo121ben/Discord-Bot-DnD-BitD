@@ -4,7 +4,7 @@ from PIL import Image
 import random
 import pathlib
 
-from discord import File
+from discord import File, Embed
 
 from .BladesCommandException import BladesCommandException
 
@@ -42,7 +42,10 @@ async def blades_roll_command(ctx, dice_amount: int):
     get_success_tag_sprite(erg).save(success_file_path, "PNG")
     new_image.save(merged_file_path, "PNG")
 
-    await ctx.respond(files=[File(success_file_path), File(merged_file_path)])
+    embed = Embed(title=f'Rolled {dice_amount} dice')
+    embed.set_image(url='attachment://merged.png')
+    embed.set_thumbnail(url='attachment://success.png')
+    await ctx.respond(embed=embed, files=[File(success_file_path), File(merged_file_path)])
     os.remove(success_file_path)
     os.remove(merged_file_path)
 
@@ -133,7 +136,7 @@ def get_success_tag_sprite(success: int):
     width, height = spritesheet.size
 
     if success == 0:
-        return spritesheet.crop((0, 0, 144, 32))
+        return spritesheet.crop((0, 0, int(width/3), 32))
     if success == -1:
         success_tag = spritesheet.crop((0, 32, int(width/3), height))
     elif success == 1:
