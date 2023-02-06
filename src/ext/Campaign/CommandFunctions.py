@@ -4,7 +4,8 @@ from functools import wraps
 from .Character import Character
 from .save_file_management import session_tag, character_tag, check_savefile_existence
 from .live_save_manager import check_file_loaded, save_user_file, get_user_save_name, get_user_save_dic, \
-    check_char_tag, check_if_user_has_char, get_char_tag_by_id, get_user_char_dic, check_file_admin, load, new_save
+    check_char_tag, check_if_user_has_char, get_char_tag_by_id, get_user_char_dic, check_file_admin, load, new_save, \
+    retag_char
 from .campaign_exceptions import CommandException
 from . import Undo
 
@@ -108,10 +109,7 @@ def retag_character(executing_user: str, char_tag_old: str, char_tag_new: str) -
     check_char_tag(executing_user, char_tag_old, raise_error=True)
     if check_char_tag(executing_user, char_tag_new):
         raise CommandException("A Character of this name already exists")
-    save_dic = get_user_save_dic(executing_user)
-    save_dic[character_tag][char_tag_new] = save_dic[character_tag][char_tag_old]
-    save_dic[character_tag][char_tag_new].tag = char_tag_new
-    del save_dic[character_tag][char_tag_old]
+    retag_char(executing_user, char_tag_old, char_tag_new)
     Undo.queue_undo_action(Undo.ReTagCharUndoAction(char_tag_old, char_tag_new))
     return f"Character {char_tag_old} has been renamed to {char_tag_new}"
 

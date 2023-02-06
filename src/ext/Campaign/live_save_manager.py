@@ -213,3 +213,10 @@ def check_file_player(user_id: int, _save_name: str, raise_error=False) -> bool:
         raise UserNotPlayerException()
     else:
         return False
+
+
+def retag_char(executing_user: str, char_tag_old: str, char_tag_new: str):
+    save_dic = get_user_save_dic(executing_user)
+    save_dic[character_tag][char_tag_new] = save_dic[character_tag][char_tag_old]
+    save_dic[character_tag][char_tag_new].tag = char_tag_new
+    del save_dic[character_tag][char_tag_old]

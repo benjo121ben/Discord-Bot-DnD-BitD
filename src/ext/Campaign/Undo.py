@@ -1,6 +1,4 @@
-import src.ext.Campaign.save_file_management
-from . import campaign_helper as cmp_hlp
-from . import packg_variables as pkg_var
+from . import live_save_manager as lsave
 from collections import deque
 import abc
 from .Character import Character
@@ -18,11 +16,11 @@ class UndoMultipleStatException(Exception):
 
 class BaseUndoAction(abc.ABC):
     @abc.abstractmethod
-    def undo(self) -> str:
+    def undo(self, executing_user: str) -> str:
         pass
 
     @abc.abstractmethod
-    def redo(self) -> str:
+    def redo(self, executing_user: str) -> str:
         pass
 
     @abc.abstractmethod
@@ -40,12 +38,12 @@ class StatUndoAction(BaseUndoAction):
     def __str__(self):
         return f"{{{self.character_tag},{self.stat}}}=({self.old_val}->{self.new_val})"
 
-    def undo(self) -> str:
-        pkg_var.charDic[self.character_tag].__dict__[self.stat] = self.old_val
+    def undo(self, executing_user: str) -> str:
+        lsave.get_user_char_dic(executing_user)[self.character_tag].__dict__[self.stat] = self.old_val
         return f"Undid {{{self.character_tag}, {self.stat}}}->{self.new_val}. Returned to {self.old_val}"
 
-    def redo(self):
-        pkg_var.charDic[self.character_tag].__dict__[self.stat] = self.new_val
+    def redo(self, executing_user: str):
+        lsave.get_user_char_dic(executing_user)[self.character_tag].__dict__[self.stat] = self.new_val
         return f"Reapplied change of {{{self.character_tag}, {self.stat}}}{self.old_val}->{self.new_val}"
 
 
@@ -57,12 +55,12 @@ class FileChangeUndoAction(BaseUndoAction):
     def __str__(self):
         return f"{{filechange}}=({self.old_file}->{self.new_file})"
 
-    def undo(self) -> str:
-        src.ext.Campaign.save_versioning.load(self.old_file)
+    def undo(self, executing_user: str) -> str:
+        lsave.load(executing_user, self.old_file)
         return f"Undid load of {self.new_file}. Returned to {self.old_file}."
 
-    def redo(self):
-        src.ext.Campaign.save_versioning.load(self.new_file)
+    def redo(self, executing_user: str):
+        lsave.load(executing_user, self.new_file)
         return f"Reapplied load of {self.new_file}."
 
 
@@ -74,12 +72,12 @@ class ReTagCharUndoAction(BaseUndoAction):
     def __str__(self):
         return f"{{char_retag}}=({self.old_tag}->{self.new_tag})"
 
-    def undo(self) -> str:
-        cmp_hlp.rename_char_tag(self.new_tag, self.old_tag)
+    def undo(self, executing_user: str) -> str:
+        lsave.retag_char(executing_user, self.new_tag, self.old_tag)
         return f"Undid rentag of {self.old_tag} to {self.new_tag}. Returned to {self.old_tag}."
 
-    def redo(self):
-        cmp_hlp.rename_char_tag(self.old_tag, self.new_tag)
+    def redo(self, executing_user: str):
+        lsave.retag_char(executing_user, self.old_tag, self.new_tag)
         return f"Reapplied retag of {self.old_tag} to {self.new_tag}."
 
 
@@ -106,12 +104,12 @@ class MultipleBaseAction(BaseUndoAction):
     def __str__(self):
         return "\n".join(str(action) for action in self.actions)
 
-    def undo(self):
+    def undo(self, executing_user: str):
         if len(self.actions) == 0:
             raise Exception("A multiple stat is empty")
         return f"Undid changes:\n" + "\n".join(action.undo() for action in self.actions)
 
-    def redo(self):
+    def redo(self, executing_user: str):
         return f"Reapplied changes\n" + "\n".join(action.redo() for action in self.actions)
 
 
@@ -138,21 +136,21 @@ def queue_basic_action(char_tag, stat, old_val, new_val):
     queue_undo_action(StatUndoAction(char_tag, stat, old_val, new_val))
 
 
-def undo():
+def undo(executing_user: str):
     global pointer
     if pointer > -1:
-        ret_val = actionQueue[pointer].undo()
+        ret_val = actionQueue[pointer].undo(executing_user)
         pointer -= 1
         return ret_val
     else:
         return "No actions to undo"
 
 
-def redo():
+def redo(executing_user: str):
     global pointer
     if pointer < len(actionQueue) - 1:
         pointer += 1
-        return actionQueue[pointer].redo()
+        return actionQueue[pointer].redo(executing_user)
     else:
         return "No actions to redo"
 
@@ -161,3 +159,4 @@ def discard_undo_queue():
     global pointer, actionQueue
     while len(actionQueue) > pointer + 1:
         actionQueue.pop()
+        

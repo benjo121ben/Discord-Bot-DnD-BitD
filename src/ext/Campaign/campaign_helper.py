@@ -36,6 +36,7 @@ def get_module_env_filepath():
     this_file_folder_path = pathlib.Path(__file__).parent.resolve()
     return os.path.join(this_file_folder_path, p_vars.campaign_env_file_rel_path)
 
+
 def check_base_setup():
     def check_env_var_int(environment_tag: str) -> Optional[int]:
         """
