@@ -1,20 +1,18 @@
 *.env
 .idea/
-venv/
 __pycache__/
 saves/
+*_save.json
+*_clsave.json
 run_main.txt
 deprecated/
 *.spec
 *.out
 dist/
 build/
-__pycache__/
 
 .Python
-build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -35,7 +33,6 @@ MANIFEST
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
 
 # Installer logs
 pip-log.txt
