@@ -3,12 +3,14 @@ from os.path import exists
 from discord import File
 import os
 import json
+from json.decoder import JSONDecodeError
 import pathlib
 
 
 clock_files_dic = {}
 clocks_rel_asset_folder_path = os.sep.join(['Assets', 'Clocks', ''])
-clocks_rel_save_path = os.sep.join(['..', '..', '..', 'clock_saves', 'clock_saves.json'])
+clocks_rel_save_path = os.sep.join(['..', '..', '..', 'saves', 'clock_saves'])
+clock_save_suffix = '_clsave.json'
 logger = logging.getLogger('bot')
 
 
@@ -20,11 +22,11 @@ class Clock:
     def __init__(self, _name: str, _size: int, _ticks: int = 0):
         self.name: str = _name
         self.size: int = _size
-        self.existing_ticks: int = max(0, min(_size, _ticks))
+        self.ticks: int = max(0, min(_size, _ticks))
 
     def tick(self, _ticks=1):
-        self.existing_ticks = min(self.size,  _ticks + self.existing_ticks)
-        self.existing_ticks = max(self.existing_ticks, 0)
+        self.ticks = min(self.size, _ticks + self.ticks)
+        self.ticks = max(self.ticks, 0)
         return self
 
     def assign_dic(self, dictionary):
@@ -32,24 +34,22 @@ class Clock:
         return self
 
     def __str__(self):
-        return self.name + " Clock:{" + str(self.existing_ticks) + "/" + str(self.size) + "}"
+        return f'**{self.name}**: {{{self.ticks}/{self.size}}}'
 
     def get_embed_info(self) -> (str, File):
-        if not self.size in clock_files_dic:
+        if self.size not in clock_files_dic:
             raise NoClockImageException("clocks of this size cannot be printed, missing files")
-        return self.name, File(clock_files_dic[self.size][self.existing_ticks])
-
-
-clocks_save_dic: dict[str, Clock] = {}
+        return File(clock_files_dic[self.size][self.ticks])
 
 
 def clock_from_json(clock_data):
     return Clock("TEMP", 4).assign_dic(clock_data)
 
 
-def get_clock_save_filepath():
+def get_clock_save_filepath(user_id: str):
+    global clocks_rel_save_path, clock_save_suffix
     this_file_folder_path = pathlib.Path(__file__).parent.resolve()
-    return os.path.join(this_file_folder_path, clocks_rel_save_path)
+    return os.path.join(this_file_folder_path, os.sep.join([clocks_rel_save_path, user_id + clock_save_suffix]))
 
 
 def get_clock_asset_folder_path():
@@ -57,27 +57,32 @@ def get_clock_asset_folder_path():
     return os.path.join(this_file_folder_path, clocks_rel_asset_folder_path)
 
 
-def load_clocks():
-    if exists(get_clock_save_filepath()):
-        logger.info("Clocks savefile exists")
-        with open(get_clock_save_filepath()) as file:
-            imported_dic = json.load(file)
+def load_clocks(user_id: str):
+    clocks_save_dic = {}
+    if exists(get_clock_save_filepath(user_id)):
+        with open(get_clock_save_filepath(user_id)) as file:
+            try:
+                imported_dic = json.load(file)
+            except JSONDecodeError as e:
+                logger.error(str(e))
+                logger.error(f"user_id: {user_id}")
         for clock_data in imported_dic.values():
             clocks_save_dic[clock_data["name"]] = clock_from_json(clock_data)
+        return clocks_save_dic
     else:
         logger.info("Clock savefile doesn't exist, will create new savefile")
-    load_clock_files()
+        return {}
 
 
-def save_clocks():
-    if not exists(get_clock_save_filepath()):
+def save_clocks(user_id: str, clocks_save_dic):
+    if not exists(get_clock_save_filepath(user_id)):
         path = ""
-        for path_part in get_clock_save_filepath().split(os.sep):
+        for path_part in get_clock_save_filepath(user_id).split(os.sep):
             path += path_part + os.sep
-            if not exists(path) and not ".json" in path:
+            if not exists(path) and ".json" not in path:
                 os.mkdir(path)
         logger.info("created savefile")
-    with open(get_clock_save_filepath(), 'w') as newfile:
+    with open(get_clock_save_filepath(user_id), 'w') as newfile:
         output = {}
         for clock in clocks_save_dic.values():
             output[clock.name] = clock.__dict__
@@ -93,7 +98,7 @@ def load_clock_files():
         load_single_clock_files(clock_folder)
 
 
-def load_single_clock_files(clock_folder : str):
+def load_single_clock_files(clock_folder: str):
     clock_size = int(clock_folder)
     clock_sub_files_dic = {}
     for tick in range(0, clock_size + 1):
@@ -102,12 +107,8 @@ def load_single_clock_files(clock_folder : str):
         if exists(file_path):
             clock_sub_files_dic[tick] = file_path
         else:
-            logger.info("Clock " + str(clock_size) + " is missing files and has been deactivated")
+            logger.info(f"Clock {clock_size} is missing files and has been deactivated")
             break
     if len(clock_sub_files_dic) == clock_size + 1:
         clock_files_dic[clock_size] = clock_sub_files_dic
         logger.info("clock " + str(clock_size) + " loaded and working")
-
-
-
-

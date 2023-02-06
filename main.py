@@ -37,7 +37,13 @@ def main():
         input(
             "\nERROR:DISCORD_TOKEN IS EMPTY.\nrestart the bot after inserting a token into the .env file\npress ENTER")
         return
-    asyncio.run(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN")))
+
+    loop = asyncio.new_event_loop()
+
+    try:
+        loop.run_until_complete(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN")))
+    except KeyboardInterrupt:
+        logger.info("Keyboard Interrupt")
 
 
 if __name__ == "__main__":

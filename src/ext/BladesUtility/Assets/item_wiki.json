@@ -400,45 +400,45 @@
   "playbooks": [
     {
       "name": "Cutter",
-      "description": "Cutters are good at winning fights, with violence and with intimidation. Play a Cutter if you want to get your way.",
+      "description": "Cutters are good at winning fights, with violence and with intimidation. Play a Cutter if you want to get your way.\n+2 **SKIRMISH**\n+1 **COMMAND**",
       "items": ["Fine hand weapon", "Fine heavy weapon", "Scary weapon or tool", "Manacles & chain", "Rage essence vial"],
-      "friends and enemies": ["Marlane, a pugilist", "Chael, a vicious thug", "Mercy, a cold killer", "Grace, an extortionist", "Sawtooth, a physicker"]
+      "friends_and_enemies": ["Marlane, a pugilist", "Chael, a vicious thug", "Mercy, a cold killer", "Grace, an extortionist", "Sawtooth, a physicker"]
     },
     {
       "name": "Hound",
-      "description": "Hounds are good at tracking things down and also long-distance combat. Play a Hound if you want to choose your battles.",
+      "description": "Hounds are good at tracking things down and also long-distance combat. Play a Hound if you want to choose your battles.\n+2 **HUNT**\n+1 **SURVEY**",
       "items": ["Fine pair of pistols", "Fine long rifle", "Electroplasmic ammunition", "A trained hunting pet", "Spyglass"],
-      "friends and enemies": ["Steiner, an assassin", "Celene, a sentinel", "Melvir, a physicker", "Veleris, a spy", "Casta, a bounty hunter"]
+      "friends_and_enemies": ["Steiner, an assassin", "Celene, a sentinel", "Melvir, a physicker", "Veleris, a spy", "Casta, a bounty hunter"]
     },
     {
       "name": "Leech",
-      "description": "Leeches are good at using alchemy and wrecking stuff with sabotage. Play a Leech if you want to be creative with weird tools.",
+      "description": "Leeches are good at using alchemy and wrecking stuff with sabotage. Play a Leech if you want to be creative with weird tools.\n+2 **TINKER**\n+1 **WRECK**",
       "items": ["Fine tinkering tools", "Fine wrecking tools", "Blowgun & darts, syringes", "Bandolier", "Gadgets"],
-      "friends and enemies": ["Stazia, an apothecary", "Veldren, a psychonaut", "Eckerd, a corpse thief", "Jul, a blood dealer", "Malista, a priestess"]
+      "friends_and_enemies": ["Stazia, an apothecary", "Veldren, a psychonaut", "Eckerd, a corpse thief", "Jul, a blood dealer", "Malista, a priestess"]
     },
     {
       "name": "Lurk",
-      "description": "Lurks are good at sneaking around and breaking into places. Play a Lurk if you want to slink around in the shadows.",
+      "description": "Lurks are good at sneaking around and breaking into places. Play a Lurk if you want to slink around in the shadows.\n+2 **PROWL**\n+1 **FINESSE**",
       "items": ["Fine lockpicks", "Fine shadow cloak", "Light climbing gear", "Silence potion vial", "Dark-sight goggles"],
-      "friends and enemies": ["Telda, a beggar", "Darmot, a Bluecoat", "Frake, a locksmith", "Roslyn Kellis, a noble", "Petra, a city clerk"]
+      "friends_and_enemies": ["Telda, a beggar", "Darmot, a Bluecoat", "Frake, a locksmith", "Roslyn Kellis, a noble", "Petra, a city clerk"]
     },
     {
       "name": "Slide",
-      "description": "Slides are good at social situations and subterfuge. Play a Slide if you want to manipulate and deceive people.",
+      "description": "Slides are good at social situations and subterfuge. Play a Slide if you want to manipulate and deceive people.\n+2 **SWAY**\n+1 **SLIDE**",
       "items": ["Fine clothes & jewelry", "Fine disguise kit", "Fine loaded dice, trick cards", "Trance powder", "A cane-sword"],
-      "friends and enemies": ["Bryl, a drug dealer", "Bazso Baz, a gang leader", "Klyra, a tavern owner", "Nyryx, a prostitute", "Harker, a jail bird"]
+      "friends_and_enemies": ["Bryl, a drug dealer", "Bazso Baz, a gang leader", "Klyra, a tavern owner", "Nyryx, a prostitute", "Harker, a jail bird"]
     },
     {
       "name": "Spider",
-      "description": "Spiders are good at masterminding maneuvers. Play a Spider if you want to assist teammates and deal with other factions.",
+      "description": "Spiders are good at masterminding maneuvers. Play a Spider if you want to assist teammates and deal with other factions.\n+2 **CONSORT**\n+1 **STUDY**",
       "items": ["Fine cover identity", "Fine bottle of whiskey", "Blueprints", "Vial of slumber essence", "Concealed palm pistol"],
-      "friends and enemies": ["Salia, an information broker", "Augus, a master architect", "Jennah, a servant", "Riven, a chemist", "Jeren, a Bluecoat archivist"]
+      "friends_and_enemies": ["Salia, an information broker", "Augus, a master architect", "Jennah, a servant", "Riven, a chemist", "Jeren, a Bluecoat archivist"]
     },
     {
       "name": "Whisper",
-      "description": "Whispers are good at magical stuff and dealing with ghosts. Play a Whisper if you want to meddle with arcane powers.",
+      "description": "Whispers are good at magical stuff and dealing with ghosts. Play a Whisper if you want to meddle with arcane powers.\n+2 **ATTUNE**\n+1 **STUDY**",
       "items": ["Fine lightning hook", "Fine spirit mask", "Spirit bottles (2)", "Ghost key", "Demonbane charm"],
-      "friends and enemies": ["Nyryx, a possessor ghost", "Scurlock, a vampire", "Setarra, a demon", "Quellyn, a witch", "Flint, a spirit trafficker"]
+      "friends_and_enemies": ["Nyryx, a possessor ghost", "Scurlock, a vampire", "Setarra, a demon", "Quellyn, a witch", "Flint, a spirit trafficker"]
     }
   ],
   "sample-creations": [
