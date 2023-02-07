@@ -13,9 +13,9 @@ class StatUndoAction(BaseUndoAction):
         return f"{{{self.character_tag},{self.stat}}}=({self.old_val}->{self.new_val})"
 
     def undo(self, executing_user: str) -> str:
-        lsave.get_user_loaded_chars(executing_user)[self.character_tag].__dict__[self.stat] = self.old_val
+        lsave.get_loaded_chars(executing_user)[self.character_tag].__dict__[self.stat] = self.old_val
         return f"Undid {{{self.character_tag}, {self.stat}}}->{self.new_val}. Returned to {self.old_val}"
 
     def redo(self, executing_user: str):
-        lsave.get_user_loaded_chars(executing_user)[self.character_tag].__dict__[self.stat] = self.new_val
+        lsave.get_loaded_chars(executing_user)[self.character_tag].__dict__[self.stat] = self.new_val
         return f"Reapplied change of {{{self.character_tag}, {self.stat}}}{self.old_val}->{self.new_val}"

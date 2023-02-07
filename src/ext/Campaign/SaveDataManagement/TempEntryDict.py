@@ -1,5 +1,8 @@
+import logging
 from threading import Timer
 from typing import Any, Optional
+
+logger = logging.getLogger('bot')
 
 
 class TempEntry:
@@ -15,28 +18,46 @@ class TempEntry:
         self.timer = Timer(self.time, self.func)
         self.timer.start()
 
+    def cancel(self):
+        self.timer.cancel()
+
+    def get(self):
+        self.reset_timer()
+        return self.value
+
+    def set(self, value):
+        self.reset_timer()
+        self.value = value
+
 
 class TempEntryDict:
-    def __init__(self, deletion_time: int):
+    def __init__(self, deletion_time: int, entry_name: str):
+        self.entry_name = entry_name
         self.deletion_time = deletion_time
         self.temp_entries: dict[str, TempEntry] = {}
 
-    def clear_entry(self, key: str):
+    def remove(self, key: str):
         if key in self.temp_entries:
-            self.temp_entries[key].timer.cancel()
+            self.temp_entries[key].cancel()
+            del self.temp_entries[key]
+            logger.info(f"{key}: {self.entry_name} was cleared from memory")
+
+    def clear(self):
+        for key, val in self.temp_entries.items():
+            val.cancel()
             del self.temp_entries[key]
 
-    def set_value(self, key, value):
+    def set(self, key, value):
         if key in self.temp_entries:
-            self.temp_entries[key].value = value
-            self.temp_entries[key].reset_timer()
+            self.temp_entries[key].set(value)
+            logger.debug(f"{key}: {self.entry_name} timer was reset")
         else:
-            self.temp_entries[key] = TempEntry(value, self.deletion_time, lambda: self.clear_entry(key))
+            self.temp_entries[key] = TempEntry(value, self.deletion_time, lambda: self.remove(key))
 
-    def get_value(self, key) -> Optional[Any]:
+    def get(self, key) -> Optional[Any]:
         if key in self.temp_entries:
-            self.temp_entries[key].reset_timer()
-            return self.temp_entries[key].value
+            logger.debug(f"{key}: {self.entry_name} timer was reset")
+            return self.temp_entries[key].get()
         else:
             return None
 

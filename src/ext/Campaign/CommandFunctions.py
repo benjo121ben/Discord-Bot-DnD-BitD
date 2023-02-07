@@ -2,16 +2,16 @@ import decohints
 from functools import wraps
 
 from .Character import Character
-from src.ext.Campaign.SaveDataManagement.save_file_management import session_tag, character_tag, check_savefile_existence
-from src.ext.Campaign.SaveDataManagement.live_save_manager import check_file_loaded, save_user_file, get_user_loaded_file_name, get_user_loaded_dict, \
-    get_user_loaded_chars, check_file_admin, access_file_as_user, new_save
-from src.ext.Campaign.SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, retag_char, check_if_user_has_char
+from .SaveDataManagement.save_file_management import session_tag, character_tag, check_savefile_existence
+from .SaveDataManagement.live_save_manager import save_user_file, check_file_loaded, get_loaded_dict, \
+    get_loaded_chars, check_file_admin, access_file_as_user, new_save, get_loaded_filename
+from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, retag_char, check_if_user_has_char
 from .campaign_exceptions import CommandException
 from . import Undo, UndoActions
 
 
 @decohints.decohints
-def check_file_save_file_wrapper(function_to_wrap):
+def check_and_save_file_wrapper(function_to_wrap):
     """
     Decorator for all functions that require a savefile to be open when used and save the changes after being correctly
     executed
@@ -30,7 +30,7 @@ def check_file_save_file_wrapper(function_to_wrap):
 
 
 def load_or_create_save(executing_user: str, file_name: str) -> str:
-    old_file_name = get_user_loaded_file_name(executing_user)
+    old_file_name = get_loaded_filename(executing_user)
     if old_file_name is None:
         old_file_name = ""
     ret_str = ""
@@ -44,8 +44,7 @@ def load_or_create_save(executing_user: str, file_name: str) -> str:
 
 def log(executing_user: str, adv=False) -> str:
     ptr = Undo.get_pointer(executing_user)
-    check_file_loaded(executing_user, raise_error=True)
-    save_dic = get_user_loaded_dict(executing_user)
+    save_dic = get_loaded_dict(executing_user)
     char_dic = save_dic[character_tag]
     ret_string = f"**Session {save_dic[session_tag]}**\n"
     if len(char_dic) == 0:
@@ -63,25 +62,25 @@ def log(executing_user: str, adv=False) -> str:
     return ret_string
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def claim_character(executing_user: str, char_tag: str, assigned_user_id: str):
     check_char_tag(executing_user, char_tag, raise_error=True)
     if check_if_user_has_char(executing_user, assigned_user_id):
         raise CommandException(
             f"this user already has character {get_char_tag_by_id(executing_user, assigned_user_id)} assigned")
-    current_player = get_user_loaded_chars(executing_user)[char_tag].player
+    current_player = get_loaded_chars(executing_user)[char_tag].player
 
     if current_player != "" and int(current_player) != executing_user and not check_file_admin(executing_user):
         raise CommandException(
             "You are not authorized to assign this character. It has already been claimed by a user.")
-    get_user_loaded_chars(executing_user)[char_tag].set_player(assigned_user_id)
+    get_loaded_chars(executing_user)[char_tag].set_player(assigned_user_id)
     Undo.queue_basic_action(executing_user, char_tag, "player", current_player, str(assigned_user_id))
     return f"character {char_tag} assigned to {assigned_user_id}"
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def unclaim_char(executing_user: str, char_tag: str):
-    _char_dict = get_user_loaded_chars(executing_user)
+    _char_dict = get_loaded_chars(executing_user)
     if not check_char_tag(executing_user, char_tag):
         raise CommandException("This character does not exist")
     if _char_dict[char_tag].player == "":
@@ -90,26 +89,26 @@ def unclaim_char(executing_user: str, char_tag: str):
         raise CommandException("Only file creators can use this command on other people's characters")
 
     Undo.queue_basic_action(executing_user, char_tag, "player", str(_char_dict[char_tag].player), "")
-    get_user_loaded_chars(executing_user)[char_tag].set_player("")
+    get_loaded_chars(executing_user)[char_tag].set_player("")
     return f"Character {char_tag} unassigned"
 
 
 # adds new character to the roster
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def add_char(executing_user: str, tag: str, char_name: str, max_health: int) -> str:
     if tag == "all":
         raise CommandException(
-            "You are not allowed to call your character all, due to special commands using it a keyword."
+            "You are not allowed to call your character all, due to special commands using it as a keyword." +
             " Please call them something else"
         )
 
-    if tag in get_user_loaded_chars(executing_user):
+    if tag in get_loaded_chars(executing_user):
         return "a character with this tag already exists"
-    get_user_loaded_chars(executing_user)[tag] = Character(tag, char_name, max_health)
+    get_loaded_chars(executing_user)[tag] = Character(tag, char_name, max_health)
     return "character " + char_name + " added"
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def retag_character(executing_user: str, char_tag_old: str, char_tag_new: str) -> str:
     check_char_tag(executing_user, char_tag_old, raise_error=True)
     if check_char_tag(executing_user, char_tag_new):
@@ -120,13 +119,12 @@ def retag_character(executing_user: str, char_tag_old: str, char_tag_new: str) -
 
 
 # increases the caused damage stat
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def cause_damage(executing_user: str, char_tag: str, dam: int, kills: int) -> str:
-    check_file_loaded(executing_user, raise_error=True)
     check_char_tag(executing_user, char_tag, raise_error=True)
     dam = abs(dam)
     kills = abs(kills)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     _char_name = _char_dic[char_tag].name
     undo_action = UndoActions.MultipleBaseAction(_char_dic[char_tag], ["damage_caused", "kills", "max_damage"])
     _char_dic[char_tag].cause_dam(dam, kills)
@@ -138,11 +136,11 @@ def cause_damage(executing_user: str, char_tag: str, dam: int, kills: int) -> st
 
 
 # adds Damage taken to a character
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def take_damage(executing_user: str, char_tag: str, dam: int, resisted: bool) -> str:
     check_char_tag(executing_user, char_tag, raise_error=True)
     dam = abs(dam)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     _char_name = _char_dic[char_tag].name
     undo_action = UndoActions.MultipleBaseAction(_char_dic[char_tag], ["damage_taken", "health", "faints"])
     fainted, dam = _char_dic[char_tag].take_dam(dam, resisted)
@@ -155,11 +153,11 @@ def take_damage(executing_user: str, char_tag: str, dam: int, resisted: bool) ->
 
 
 # character damage_taken increased without decreasing health
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def tank_damage(executing_user: str, char_tag: str, amount: int) -> str:
     check_char_tag(executing_user, char_tag, raise_error=True)
     amount = abs(amount)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     undo_action = UndoActions.MultipleBaseAction(_char_dic[char_tag], ["damage_taken"])
     _char_dic[char_tag].tank(amount)
     undo_action.update(_char_dic[char_tag])
@@ -168,9 +166,9 @@ def tank_damage(executing_user: str, char_tag: str, amount: int) -> str:
 
 
 # heals character to their health maximum, corresponds to a long rest in D&D
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def heal_max(executing_user: str, char_tag: str) -> str:
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     if char_tag == "all":
         for char in _char_dic.values():
             undo_action = UndoActions.MultipleBaseAction(char, ["health", "damage_healed"])
@@ -188,10 +186,10 @@ def heal_max(executing_user: str, char_tag: str) -> str:
 
 
 # heals by a certain amount
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def heal(executing_user: str, char_tag: str, healed: int) -> str:
     healed = abs(healed)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     if char_tag == "all":
         for char in _char_dic.values():
             undo_action = UndoActions.MultipleBaseAction(char, ["health", "damage_healed"])
@@ -210,11 +208,11 @@ def heal(executing_user: str, char_tag: str, healed: int) -> str:
 
 
 # command usage: set_max char_name amount
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def set_max_health(executing_user: str, char_tag: str, new_max: int) -> str:
     new_max = abs(new_max)
     check_char_tag(executing_user, char_tag, raise_error=True)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     undo_action = UndoActions.MultipleBaseAction(_char_dic[char_tag], ["health", "max_health"])
     _char_dic[char_tag].set_max_health(new_max)
     undo_action.update(_char_dic[char_tag])
@@ -223,51 +221,49 @@ def set_max_health(executing_user: str, char_tag: str, new_max: int) -> str:
     return "character " + _char_name + " health increased to " + str(new_max)
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def crit(executing_user: str, char_tag: str) -> str:
     check_char_tag(executing_user, char_tag, raise_error=True)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     crits = _char_dic[char_tag].crits
     Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + 1)
     _char_dic[char_tag].rolled_crit()
     return f"Crit of {char_tag} increased by 1"
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def dodge(executing_user: str, char_tag: str) -> str:
     check_char_tag(executing_user, char_tag, raise_error=True)
-    _char_dic = get_user_loaded_chars(executing_user)
+    _char_dic = get_loaded_chars(executing_user)
     _dodged = _char_dic[char_tag].dodged
     Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + 1)
     _char_dic[char_tag].dodge()
     return f"Character {char_tag}, dodged an attack"
 
 
-@check_file_save_file_wrapper
+@check_and_save_file_wrapper
 def session_increase(executing_user: str):
-    _file_dic = get_user_loaded_dict(executing_user)
+    _file_dic = get_loaded_dict(executing_user)
     _file_dic[session_tag] += 1
     return "finished session, increased by one"
 
 
 def undo_command(executing_user: str, amount: int):
-    check_file_loaded(executing_user, raise_error=True)
     if amount > 10:
         amount = 10
     ret_val = ""
     for _ in range(amount):
         ret_val += Undo.undo(executing_user) + "\n"
-        if not get_user_loaded_file_name(executing_user) == "":
+        if not get_loaded_filename(executing_user) == "":
             save_user_file(executing_user)
     return ret_val
 
 
 def redo_command(executing_user: str, amount: int) -> str:
-    check_file_loaded(executing_user, raise_error=True)
     ret_val = ""
     for _ in range(amount):
         ret_val += Undo.redo(executing_user) + "\n"
-        if not get_user_loaded_file_name(executing_user) == "":
+        if not get_loaded_filename(executing_user) == "":
             save_user_file(executing_user)
     return ret_val
 

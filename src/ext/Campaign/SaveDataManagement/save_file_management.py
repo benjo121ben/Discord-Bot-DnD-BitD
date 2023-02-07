@@ -8,6 +8,7 @@ from discord import File
 from ..Character import Character
 from ..campaign_exceptions import SaveFileNotFoundException, SaveFileImportException
 from ..packg_variables import get_save_folder_filepath, get_cache_folder_filepath
+from ...command_exceptions import CommandException
 
 save_files_suffix = '_save.json'
 save_type_version = '1.2'
@@ -92,7 +93,10 @@ def get_file_json_dict(_save_name):
 
 
 def save_data_to_file(_save_name: str, export_dic: dict):
-
+    if _save_name == "":
+        raise Exception("A file with an empty name cannot be saved to storage")
+    if export_dic is None:
+        raise Exception("Trying to save an empty dictionary as a save")
     save_path = get_savefile_path(_save_name)
     if not exists(save_path):
         logger.info("created savefile " + _save_name)

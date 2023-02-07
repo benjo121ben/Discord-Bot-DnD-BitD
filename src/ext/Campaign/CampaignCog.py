@@ -241,8 +241,8 @@ class CampaignCog(commands.Cog):
             chat_id = cmp_vars.cache_folder
             if chat_id is None:
                 raise ComExcept("No cloudsavechannel id assigned")
-            file_name = live_save.get_user_loaded_file_name(executing_user)
-            save_dic = live_save.get_user_loaded_dict(executing_user)
+            file_name = live_save.get_loaded_filename(executing_user)
+            save_dic = live_save.get_loaded_dict(executing_user)
             message = f"cache-{file_name}-session {save_dic[save_manager.session_tag]}-{save_dic[save_manager.version_tag]}"
             current_file = save_manager.get_savefile_as_discord_file(file_name)
             await cmp_hlp.get_bot().get_channel(chat_id).send(message, file=current_file)
@@ -285,7 +285,7 @@ class CampaignCog(commands.Cog):
         executing_user = str(ctx.author.id)
         try:
             live_save.check_file_loaded(executing_user, raise_error=True)
-            file_name = live_save.get_user_loaded_file_name(executing_user)
+            file_name = live_save.get_loaded_filename(executing_user)
             await ctx.respond("save file:", file=save_manager.get_savefile_as_discord_file(file_name))
         except ComExcept as err:
             await ctx.respond(str(err))
