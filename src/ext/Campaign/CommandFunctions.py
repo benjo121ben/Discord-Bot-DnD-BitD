@@ -95,7 +95,7 @@ def add_char(tag: str, char_name: str, max_health: int) -> str:
 
 
 @check_file_save_file_wrapper
-def retag_character(char_tag_old: str, char_tag_new: str)->str:
+def retag_character(char_tag_old: str, char_tag_new: str) -> str:
     check_char_tag(char_tag_old, raise_error=True)
     if check_char_tag(char_tag_new):
         raise CommandException("A Character of this name already exists")
