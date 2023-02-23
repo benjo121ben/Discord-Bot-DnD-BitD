@@ -106,7 +106,7 @@ def get_loaded_chars(user_id: str):
     return get_loaded_dict(user_id)[character_tag]
 
 
-def access_file_as_user(user_id: str, _save_name):
+def access_file_as_user(user_id: str, _save_name: str):
     global new_ID_dict
     check_file_player(user_id, _save_name, True)
     new_ID_dict.set(user_id, _save_name)
@@ -125,6 +125,12 @@ def load_file_into_memory(_file_name, replace=False):
         logger.info(f"{_file_name} WAS LOADED INTO MEMORY")
         new_file_dict.set(_file_name, parse_savefile_contents(_file_name))
         logger.info(f"{_file_name} WAS LOADED INTO MEMORY")
+
+
+def unload_all_files_and_users():
+    global new_file_dict, new_ID_dict
+    new_file_dict.clear()
+    new_ID_dict.clear()
 
 
 def new_save(executing_user: str, file_name: str):

@@ -72,6 +72,7 @@ def parse_savefile_contents(_save_name):
     returned_dict = {}
     for key, value in save_dict.items():
         returned_dict[key] = value
+    returned_dict[last_changed_tag] = parse_date_time(save_dict[last_changed_tag])
     returned_dict[character_tag] = {}
     for char_tag, char_data in save_dict[character_tag].items():
         returned_dict[character_tag][char_tag] = char_from_data(char_data)
@@ -115,7 +116,7 @@ def save_data_to_file(_save_name: str, export_dic: dict):
         json.dump(output, newfile, sort_keys=True, indent=4)
 
 
-def char_from_data(data: dict):
+def char_from_data(data: dict) -> Character:
     char = Character("debug", "debug", 0)
     for key, value in data.items():
         char.__dict__[key] = value

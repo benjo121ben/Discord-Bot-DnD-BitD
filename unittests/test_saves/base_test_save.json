@@ -1,4 +1,5 @@
 {
+    "admin": "0",
     "characters": {
         "test": {
             "crits": 0,
@@ -17,6 +18,9 @@
         }
     },
     "last_change": "0001-01-01 00:00:00",
+    "players": [
+        "0"
+    ],
     "session": 1,
-    "v": "1.1"
+    "v": "1.2"
 }
