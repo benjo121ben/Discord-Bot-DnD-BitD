@@ -7,9 +7,8 @@ from .unit_test_template_manager import get_template_path, move_template_save_to
 
 
 def compare_char_with_dic(character: Character, check_char_dic: dict):
-    check_char: Character = save_manager.char_from_data(check_char_dic)
     for tag, value in character.__dict__.items():
-        assert check_char.__dict__[tag] == value
+        assert check_char_dic[tag] == value
 
 
 class TestCampaignSaveManager:
