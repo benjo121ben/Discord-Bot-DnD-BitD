@@ -1,8 +1,5 @@
 import logging
-import os
-import random
-from PIL import Image
-from discord import slash_command, File
+from discord import slash_command
 from discord.ext import commands
 from discord.ext import bridge
 

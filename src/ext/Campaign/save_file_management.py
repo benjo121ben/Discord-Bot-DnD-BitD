@@ -112,24 +112,24 @@ def parse_date_time(time_string: str) -> datetime:
 
 
 def compare_savefile_novelty(path1, path2):
-    try:
-        with open(path1) as file1:
-            path1_dic = json.load(file1)
-        with open(path2) as file2:
-            path2_dic = json.load(file2)
+    if not exists(path1) or not exists(path2):
+        logger.error("tried to compare savefile paths, one did not exist")
+        raise CommandException("Fatal Error, savefile novelty comparison is broken. Contact the Developer")
+    with open(path1) as file1:
+        path1_dic = json.load(file1)
+    with open(path2) as file2:
+        path2_dic = json.load(file2)
 
-        first_time = parse_date_time(path1_dic[last_changed_tag])
-        second_time = parse_date_time(path2_dic[last_changed_tag])
-        first_version = float(path1_dic[version_tag])
-        second_version = float(path2_dic[version_tag])
-        if first_version < second_version or first_time < second_time:
-            return -1
-        elif first_version == second_version or first_time == second_time:
-            return 0
-        else:
-            return 1
-    finally:
-        path1_dic
+    first_time = parse_date_time(path1_dic[last_changed_tag])
+    second_time = parse_date_time(path2_dic[last_changed_tag])
+    first_version = float(path1_dic[version_tag])
+    second_version = float(path2_dic[version_tag])
+    if first_version < second_version or first_time < second_time:
+        return -1
+    elif first_version == second_version or first_time == second_time:
+        return 0
+    else:
+        return 1
 
 
 def check_savefile_existence(_save_name):

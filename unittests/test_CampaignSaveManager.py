@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import pytest
 from src.ext.Campaign import save_file_management as save_manager, packg_variables as cvars
+from src.ext.Campaign.Character import Character
 from .test_const_vars import template_save_folder_relative_path, save_folder_relative_path, unit_test_save_file_name
 
 this_file_folder_path = pathlib.Path(__file__).parent.resolve()
@@ -17,6 +18,9 @@ def get_save_path(save_name):
     return f"{os.path.join(this_file_folder_path, save_folder_relative_path)}{os.sep}{save_name}{save_manager.save_files_suffix}"
 
 
+def compare_char_with_dic(character: Character, check_char_dic: dict):
+    for tag, value in character.__dict__.items():
+        assert check_char_dic[tag] == value
 
 
 def move_template_save_to_save_folder(template_name):

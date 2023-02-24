@@ -1,5 +1,5 @@
 from discord.ext.bridge import BridgeExtContext
-from src import GlobalVariables
+from . import GlobalVariables
 
 
 def check_admin(ctx: BridgeExtContext) -> bool:

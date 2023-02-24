@@ -1,8 +1,6 @@
 import json
-import logging
 import os
 import pathlib
-from typing import TypeVar, Generic
 
 from discord import Embed
 

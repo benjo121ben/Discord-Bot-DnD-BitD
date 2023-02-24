@@ -1,14 +1,11 @@
-import asyncio
 import logging
 import time
 
 import discord
-from src.ext.Campaign import packg_variables as c_var
-from aiohttp import ClientConnectorError
 from discord.ext import bridge
-
-import src.ext.Campaign.packg_variables
-from src import GlobalVariables, command_helper_functions as hlp_f
+from aiohttp import ClientConnectorError
+from .ext.Campaign import packg_variables as c_var
+from . import GlobalVariables, command_helper_functions as hlp_f
 
 ext_base_path = "src.ext."
 logger: logging.Logger = None

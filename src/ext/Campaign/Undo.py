@@ -1,5 +1,4 @@
-import src.ext.Campaign.save_file_management
-from . import campaign_helper as cmp_hlp
+from . import save_file_management as saves
 from . import packg_variables as pkg_var
 from collections import deque
 import abc
@@ -58,11 +57,11 @@ class FileChangeUndoAction(BaseUndoAction):
         return f"{{filechange}}=({self.old_file}->{self.new_file})"
 
     def undo(self) -> str:
-        src.ext.Campaign.save_versioning.load(self.old_file)
+        saves.load(self.old_file)
         return f"Undid load of {self.new_file}. Returned to {self.old_file}."
 
     def redo(self):
-        src.ext.Campaign.save_versioning.load(self.new_file)
+        saves.load(self.new_file)
         return f"Reapplied load of {self.new_file}."
 
 
@@ -75,11 +74,15 @@ class ReTagCharUndoAction(BaseUndoAction):
         return f"{{char_retag}}=({self.old_tag}->{self.new_tag})"
 
     def undo(self) -> str:
-        cmp_hlp.rename_char_tag(self.new_tag, self.old_tag)
+        pkg_var.charDic[self.old_tag] = pkg_var.charDic[self.new_tag]
+        pkg_var.charDic[self.old_tag].tag = self.old_tag
+        del pkg_var.charDic[self.new_tag]
         return f"Undid rentag of {self.old_tag} to {self.new_tag}. Returned to {self.old_tag}."
 
     def redo(self):
-        cmp_hlp.rename_char_tag(self.old_tag, self.new_tag)
+        pkg_var.charDic[self.new_tag] = pkg_var.charDic[self.old_tag]
+        pkg_var.charDic[self.new_tag].tag = self.new_tag
+        del pkg_var.charDic[self.old_tag]
         return f"Reapplied retag of {self.old_tag} to {self.new_tag}."
 
 
