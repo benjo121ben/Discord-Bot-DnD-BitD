@@ -5,10 +5,10 @@ from .EntryLabels import NAME_LABEL, DESCRIPTION_LABEL
 
 class WikiEntry:
     def __init__(self, info=None):
-        self.name = ""
-        self.description = ""
+        self.name: str = ""
+        self.description: str = ""
         if info is not None:
-            self.name = info[NAME_LABEL]
+            self.name: str = info[NAME_LABEL]
             if DESCRIPTION_LABEL not in info:
                 return
             self.description = info[DESCRIPTION_LABEL]
