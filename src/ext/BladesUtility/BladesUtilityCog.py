@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext import bridge
 
 from .BladesCommandException import BladesCommandException
-from .DevilsBargainDeck import db_functionality, db_single_functionality, check_devils_bargain_assets
+from .DevilsBargainDeck import db_functionality, check_devils_bargain_assets
 from .EntanglementFunctions import entanglement_functionality, check_entanglement_assets
 from .Dice import blades_roll_command, all_size_roll
 from .ItemWiki import setup_wiki, wiki_search
