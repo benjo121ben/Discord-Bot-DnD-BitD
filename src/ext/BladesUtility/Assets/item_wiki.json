@@ -400,43 +400,43 @@
   "playbooks": [
     {
       "name": "Cutter",
-      "description": "Cutters are good at winning fights, with violence and with intimidation. Play a Cutter if you want to get your way.\n+2 **SKIRMISH**\n+1 **COMMAND**",
+      "description": "In the underworld of the Dusk, there are scoundrels who take what they want at the bloody edge of a blade or with a threatening presence that can stop a man cold. They are the enforcers, the debt collectors, the killers, the leg-breakers, and the thugs, commonly known as Cutters.\nWhere subtlety fails, swift brutality-and the threat of worse to come-can solve the problem. Or at least turn it into a different kind of problem.\nWhen you play a Cutter, **you earn xp when you address a challenge with violence or coercion.** Go ahead and get up in everyone's smug faces and tell them who's boss, then let your blades do the talking if they don't get the message.\n\n_Do you have a personal code or a line you won't cross? Do you want to be the boss or do you want to be the enforcer for the boss? How did you acquire your taste for violence and coercion?_\n\n**+2 SKIRMISH\n+1 COMMAND**",
       "items": ["Fine hand weapon", "Fine heavy weapon", "Scary weapon or tool", "Manacles & chain", "Rage essence vial"],
       "friends_and_enemies": ["Marlane, a pugilist", "Chael, a vicious thug", "Mercy, a cold killer", "Grace, an extortionist", "Sawtooth, a physicker"]
     },
     {
       "name": "Hound",
-      "description": "Hounds are good at tracking things down and also long-distance combat. Play a Hound if you want to choose your battles.\n+2 **HUNT**\n+1 **SURVEY**",
+      "description": "There's always a need for scoundrels who can find what others want to keep hidden. Whether that's a deadbeat gambler trying to skip out on their debts, a treacherous informant or witness who's going to squeal to the Bluecoats, or the trail to a treasure squirreled away in a secret vault, it's the Hounds that ferret them out.\nWhy have a fair fight, when you can stalk and ambush your prey on your terms? The underworld is your hunting ground.\n**When you play a Hound, you earn xp when you address a challenge with tracking or violence.** Take the initiative to hunt down opportunities and targets for a score and be willing to hurt whoever stands in your way.\n\n_Do you see the whole world as potential prey, or do you still care about people? Which target in the past gave you the most trouble? Why?_\n\n**+2 HUNT\n+1 SURVEY**",
       "items": ["Fine pair of pistols", "Fine long rifle", "Electroplasmic ammunition", "A trained hunting pet", "Spyglass"],
       "friends_and_enemies": ["Steiner, an assassin", "Celene, a sentinel", "Melvir, a physicker", "Veleris, a spy", "Casta, a bounty hunter"]
     },
     {
       "name": "Leech",
-      "description": "Leeches are good at using alchemy and wrecking stuff with sabotage. Play a Leech if you want to be creative with weird tools.\n+2 **TINKER**\n+1 **WRECK**",
+      "description": "The world is built on industry, and the underworld is no different. Leeches are the scoundrels who distill the drugs, refine the arcane essences, build the bombs, bandage the wounds, and forge the tools of the criminal trades and knowing how to make things also means knowing how to break them.\n**When you play a Leech, you earn xp when you address a challenge with technical skill or mayhem.** Duskwall is a city full of industrial machinery, spark-crafts, plumbing, and electrical systems for you to bend to your purposes or sabotage. Get out your tools and get your hands dirty.\n\n_The extensive training that makes a Leech is rare and strange among the disenfranchised underworld class. How did you learn your arts? Which side of the coin do you prefer, the side of creation and restoration, or the side of mayhem and destruction?_\n\n**+2 TINKER\n+1 WRECK**",
       "items": ["Fine tinkering tools", "Fine wrecking tools", "Blowgun & darts, syringes", "Bandolier", "Gadgets"],
       "friends_and_enemies": ["Stazia, an apothecary", "Veldren, a psychonaut", "Eckerd, a corpse thief", "Jul, a blood dealer", "Malista, a priestess"]
     },
     {
       "name": "Lurk",
-      "description": "Lurks are good at sneaking around and breaking into places. Play a Lurk if you want to slink around in the shadows.\n+2 **PROWL**\n+1 **FINESSE**",
+      "description": "There is no longer any sunlight the world is plunged into eternal night. There are scoundrels who live in the darkness, who prowl the underworld unseen, trespassing where they will. They are the burglars, the spies, the infiltrators, the cut-throats commonly called Lurks.\n**When you play a Lurk, you earn xp when you address a challenge with stealth or evasion.** Stay out of sight, sneak past your enemies, and strike from the shadows. If things go wrong, there's no shame in disappearing into the darkness... for now. Your greatest ally is the dark and twisting city, its ink-dark streets, its rooftop pathways.\n\n_How did you learn the stealthy arts of the Lurk? Which aspect are you drawn to most? The invisible watcher, spying on the unwary? The adroit acrobat, racing across rooftops? The deadly ambush predator, waiting for a victim in the darkness?_\n\n**+2 PROWL\n+1 FINESSE**",
       "items": ["Fine lockpicks", "Fine shadow cloak", "Light climbing gear", "Silence potion vial", "Dark-sight goggles"],
       "friends_and_enemies": ["Telda, a beggar", "Darmot, a Bluecoat", "Frake, a locksmith", "Roslyn Kellis, a noble", "Petra, a city clerk"]
     },
     {
       "name": "Slide",
-      "description": "Slides are good at social situations and subterfuge. Play a Slide if you want to manipulate and deceive people.\n+2 **SWAY**\n+1 **SLIDE**",
+      "description": "It's said that the primal substance of the world is not mere matter or strange plasms, it's lies. Everything we do, everything we care about, everything we value, all lies we tell each other and ourselves. The world is a fabrication, a convenient fiction, a story and the storytellers are Slides.\n**When you play a Slide, you earn xp when you address a challenge with deception or influence.** Talk your way into trouble, then talk your way out again. Pretend to be someone you're not. Bluff, lie, and manipulate to get your way. Every problem is ultimately a problem because of people and people are the instrument upon which you play your music.\n\n_Is there anything true about you, at your core? Or are you whatever you need to be, day to day? Are all of your relationships merely gambits that you play for your advantage?_\n\n**+2 SWAY\n+1 CONSORT**",
       "items": ["Fine clothes & jewelry", "Fine disguise kit", "Fine loaded dice, trick cards", "Trance powder", "A cane-sword"],
       "friends_and_enemies": ["Bryl, a drug dealer", "Bazso Baz, a gang leader", "Klyra, a tavern owner", "Nyryx, a prostitute", "Harker, a jail bird"]
     },
     {
       "name": "Spider",
-      "description": "Spiders are good at masterminding maneuvers. Play a Spider if you want to assist teammates and deal with other factions.\n+2 **CONSORT**\n+1 **STUDY**",
+      "description": "The underworld may appear on the surface to be a chaotic array of warring factions and bloody deeds, but it has a beautiful order to those who are able to see it. This pattern is the web of connections, favors, vendettas, and secrets that bind the criminal world together. The scoundrels who pluck the strands of this web are known as Spiders.\n**When you play a Spider, you earn xp when you address a challenge with calculation or conspiracy.** Reach out to your contacts, friends, and associates to set your crew up for success. Use your downtime activities and flashbacks wisely to prepare for trouble and to calculate the angles of success. When things go wrong, don't panic, and remember: you planned for this.\n\n_Are you enmeshed in the network of favors and debts that you exploit as a Spider, or do you scrupulously hold yourself apart, as a cold predator upon the web?_\n\n**+2 CONSORT\n+1 STUDY**",
       "items": ["Fine cover identity", "Fine bottle of whiskey", "Blueprints", "Vial of slumber essence", "Concealed palm pistol"],
       "friends_and_enemies": ["Salia, an information broker", "Augus, a master architect", "Jennah, a servant", "Riven, a chemist", "Jeren, a Bluecoat archivist"]
     },
     {
       "name": "Whisper",
-      "description": "Whispers are good at magical stuff and dealing with ghosts. Play a Whisper if you want to meddle with arcane powers.\n+2 **ATTUNE**\n+1 **STUDY**",
+      "description": "Duskwall is a haunted place, plagued by rogue spirits consumed by vengeance, by cunning demons manipulating humans for their own inscrutable purposes, and by even stranger horrors lurking in the space just beyond sight and reason. To go into this shadowy world without knowledge of the arcane and the occult is to walk unarmed into the lair of the enemy. The Whispers are the sentinels who watch the greater darkness-staring into the void so others don't have to.\n**When you play a Whisper, you earn xp when you address a challenge with knowledge or arcane power.** Seek out the strange and dark forces and bend them to your will. By being willing to face the trauma from the stress-intensive abilities of the arcane, you'll slowly remove parts of yourself, and replace them with power.\n\n_Why did you pursue the path of the Whisper? How did you develop your abilities? Are you a natural, did you study and practice on your own, or did you have a mentor?_\n\n**+2 ATTUNE\n+1 STUDY**",
       "items": ["Fine lightning hook", "Fine spirit mask", "Spirit bottles (2)", "Ghost key", "Demonbane charm"],
       "friends_and_enemies": ["Nyryx, a possessor ghost", "Scurlock, a vampire", "Setarra, a demon", "Quellyn, a witch", "Flint, a spirit trafficker"]
     }
