@@ -18,15 +18,15 @@ class BladesUtilityCog(commands.Cog):
     async def devils_bargain(self, ctx, nr: int = 1):
         await db_functionality(ctx, nr)
 
-    @slash_command(name="db_by_nr", description="Returns the Devils Bargain Card with with this number")
-    async def devils_bargain_by_nr(self, ctx, nr: int):
-        await db_single_functionality(ctx, nr)
+    # @slash_command(name="db_by_nr", description="Returns the Devils Bargain Card with with this number")
+    # async def devils_bargain_by_nr(self, ctx, nr: int):
+    #     await db_single_functionality(ctx, nr)
 
     @slash_command(name="entanglement", description="Prints out the entanglement choices for the given rolled value and heat")
     async def entanglements(self, ctx, rolled: int, heat: int):
         await entanglement_functionality(ctx, rolled, heat)
 
-    @slash_command(name="b_roll", description="tests the blades roll")
+    @slash_command(name="bladeroll", description="Make a d6 roll using the Blades in the Dark rules")
     async def blades_roll(self, ctx, dice_amount: int):
         try:
             await blades_roll_command(ctx, dice_amount)
