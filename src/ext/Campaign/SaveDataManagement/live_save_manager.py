@@ -1,7 +1,7 @@
 import logging
-import threading
 
 from .TempEntryDict import TempEntryDict
+from ..Character import Character
 from ..campaign_exceptions import NotFileAdminException, NoAssignedSaveException, UserNotPlayerException
 from .save_file_management import parse_savefile_contents, save_data_to_file, players_tag, character_tag, \
     get_fresh_save, setup_save_folders, admin_tag
@@ -21,7 +21,7 @@ def setup_live_save_data():
     new_file_dict.clear()
 
 
-def check_file_loaded(user_id: str, raise_error: bool = False):
+def check_file_loaded(user_id: str, raise_error: bool = False) -> bool:
     """
     Checks if a save file is currently assigned to a user
     :param user_id: the id of the user trying to access the file
@@ -36,7 +36,7 @@ def check_file_loaded(user_id: str, raise_error: bool = False):
         return False
 
 
-def get_loaded_filename(user_id: str):
+def get_loaded_filename(user_id: str) -> str:
     global new_ID_dict
     """
     Gets the filename assigned to a user
@@ -46,7 +46,7 @@ def get_loaded_filename(user_id: str):
     return new_ID_dict.get(user_id)
 
 
-def get_loaded_dict(user_id: str):
+def get_loaded_dict(user_id: str) -> dict:
     global new_ID_dict, new_file_dict
     """
     Gets the savefile dictionary assigned to a user, or None if the user does not have an assigned savefile. If the
@@ -93,7 +93,7 @@ def check_file_admin(user_id: str, raise_error=False) -> bool:
         return False
 
 
-def get_loaded_chars(user_id: str):
+def get_loaded_chars(user_id: str) -> dict[str, Character]:
     """
     Gets the character dictionary assigned to a user's save, or None if the user does not have an assigned savefile.\n
     If the file is not in memory, it will attempt to load the file from the drive.
@@ -106,7 +106,7 @@ def get_loaded_chars(user_id: str):
     return get_loaded_dict(user_id)[character_tag]
 
 
-def access_file_as_user(user_id: str, _save_name: str):
+def access_file_as_user(user_id: str, _save_name: str) -> str:
     global new_ID_dict
     check_file_player(user_id, _save_name, True)
     new_ID_dict.set(user_id, _save_name)
@@ -133,7 +133,7 @@ def unload_all_files_and_users():
     new_ID_dict.clear()
 
 
-def new_save(executing_user: str, file_name: str):
+def new_save(executing_user: str, file_name: str) -> str:
     global new_file_dict, new_ID_dict
     logger.info("new save called")
     new_file_dict.set(file_name, get_fresh_save(executing_user))

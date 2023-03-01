@@ -1,5 +1,6 @@
 from .live_save_manager import check_file_loaded, get_loaded_chars, get_loaded_dict
 from .save_file_management import character_tag
+from ..Character import Character
 from ...command_exceptions import CommandException
 
 
@@ -36,19 +37,28 @@ def get_char_tag_by_id(executing_user: str, search_user_id: str = None) -> str:
     raise CommandException("This user does not have an assigned character")
 
 
-def get_char_name_by_id(executing_user: str, search_user_id: str):
-    if not check_if_user_has_char(executing_user, search_user_id):
-        raise CommandException("This user does not have an assigned character")
+def get_char_name_by_id(executing_user: str, search_user_id: str) -> str:
     for char in get_loaded_chars(executing_user).values():
         if char.player == str(search_user_id):
             return char.name
+    raise CommandException("This user does not have an assigned character")
 
 
-def retag_char(executing_user: str, char_tag_old: str, char_tag_new: str):
-    save_dic = get_loaded_dict(executing_user)
-    save_dic[character_tag][char_tag_new] = save_dic[character_tag][char_tag_old]
-    save_dic[character_tag][char_tag_new].tag = char_tag_new
-    del save_dic[character_tag][char_tag_old]
+def get_char(user_id: str, char_tag: str) -> Character:
+    """
+    Gets a character from a loaded savefile
+
+    :param user_id: the user_id of the user trying to access
+    :param char_tag: the character tag associated with the appropriate character
+    :return: the save file dictionary
+    :raises UserNotPlayerException: If the user is not authorized to access the file
+    :raises SaveFileNotFoundException: If the savefile is not in memory and was deleted from the hardware
+    """
+    _char_dict: dict[str, Character] = get_loaded_chars(user_id)
+    if char_tag not in _char_dict:
+        raise CommandException("Character doesn't exist")
+    else:
+        return _char_dict[char_tag]
 
 
 def check_if_user_has_char(executing_user: str, search_user_id: str) -> bool:

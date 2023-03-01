@@ -21,7 +21,7 @@ class TestCommandFunctions:
         print("teardown done")
 
     def test_log(self):
-        print(commands.add_char(test_user_id, "test", "test", 20))
+        print(commands.add_char(test_user_id, "test", "test"))
         print(commands.log(test_user_id))
         assert save_manager.check_savefile_existence(unit_test_save_file_name)
 

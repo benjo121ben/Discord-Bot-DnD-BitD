@@ -5,21 +5,22 @@ from ..Character import Character
 
 class MultipleBaseAction(BaseUndoAction):
     def __init__(self, char: Character, stats: list[str]):
-        self.character_tag = char.tag
+        self.character_tag: str = char.tag
+        self.char: Character = char
         self.old_vals = []
         self.actions = []
         self.stats = stats
         for stat in stats:
             self.old_vals.append(char.__dict__[stat])
 
-    def update(self, char: Character):
+    def update(self):
         for i in range(0, len(self.stats)):
             self.actions.append(
                 StatUndoAction(
                     self.character_tag,
                     self.stats[i],
                     self.old_vals[i],
-                    char.__dict__[self.stats[i]]
+                    self.char.__dict__[self.stats[i]]
                 )
             )
 

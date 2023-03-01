@@ -111,13 +111,13 @@ def save_data_to_file(_save_name: str, export_dic: dict):
         output[last_changed_tag] = change_time.strftime(date_time_save_format)
         output[players_tag] = export_dic[players_tag]
         for char in export_dic[character_tag].values():
-            temp = char.to_json()
+            temp = char.__dict__
             output[character_tag][temp['tag']] = temp
         json.dump(output, newfile, sort_keys=True, indent=4)
 
 
 def char_from_data(data: dict) -> Character:
-    char = Character("debug", "debug", 0)
+    char = Character("debug", "debug")
     for key, value in data.items():
         char.__dict__[key] = value
     for key, value in char.__dict__.items():

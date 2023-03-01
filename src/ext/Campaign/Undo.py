@@ -1,6 +1,4 @@
-import threading
 from collections import deque
-from typing import Optional
 
 from .UndoActions.BaseUndoAction import BaseUndoAction
 from .UndoActions.StatUndoAction import StatUndoAction
@@ -12,7 +10,7 @@ pointer_tag = "pointer"
 timer_tag = "timer"
 
 
-def get_action_queue(executing_user: str) -> Optional[deque[BaseUndoAction]]:
+def get_action_queue(executing_user: str) -> deque[BaseUndoAction]:
     check_user_undo(executing_user)
     return undo_dict[executing_user][queue_tag]
 
@@ -53,7 +51,7 @@ def queue_basic_action(executing_user: str, char_tag, stat, old_val, new_val):
     queue_undo_action(executing_user, StatUndoAction(char_tag, stat, old_val, new_val))
 
 
-def undo(executing_user: str):
+def undo(executing_user: str) -> str:
     pointer = get_pointer(executing_user)
     action_queue = get_action_queue(executing_user)
     if pointer > -1:
@@ -65,7 +63,7 @@ def undo(executing_user: str):
         return "No actions to undo"
 
 
-def redo(executing_user: str):
+def redo(executing_user: str) -> str:
     pointer = get_pointer(executing_user)
     action_queue = get_action_queue(executing_user)
     if pointer < len(action_queue) - 1:

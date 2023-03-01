@@ -273,6 +273,7 @@ class CampaignCog(commands.Cog):
                 os.remove(local_save_path)
                 os.rename(cache_save_path, local_save_path)
                 live_save.load_file_into_memory(filename, replace=True)
+                CFuncs.session_increase(str(ctx.author.id))
                 await ctx.respond("replaced")
             else:
                 os.remove(cache_save_path)
@@ -280,7 +281,7 @@ class CampaignCog(commands.Cog):
         except ComExcept as err:
             await ctx.respond(str(err))
 
-    @slash_command(name="download", description="Downloads the selectedsavefile")
+    @slash_command(name="download", description="Downloads the loaded savefile")
     async def download(self, ctx: BridgeExtContext):
         executing_user = str(ctx.author.id)
         try:

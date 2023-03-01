@@ -4,14 +4,13 @@
         "test": {
             "crits": 0,
             "damage_caused": 0,
+            "damage_resisted": 0,
             "damage_healed": 0,
             "damage_taken": 0,
             "dodged": 0,
             "faints": 0,
-            "health": 0,
             "kills": 0,
             "max_damage": 0,
-            "max_health": 10,
             "name": "test_name",
             "player": "",
             "tag": "test"

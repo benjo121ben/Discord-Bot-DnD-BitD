@@ -1,22 +1,18 @@
 class Character:
 
-    def __init__(self, tag, name, max_health):
-        self.player = ""
-        self.name = name
-        self.tag = tag
-        self.health = max_health
-        self.max_health = max_health
-        self.damage_taken = 0
-        self.damage_caused = 0
-        self.damage_healed = 0
-        self.max_damage = 0
-        self.kills = 0
-        self.crits = 0
-        self.faints = 0
-        self.dodged = 0
-
-    def to_json(self):
-        return self.__dict__
+    def __init__(self, tag, name):
+        self.player: str = ""
+        self.name: str = name
+        self.tag: str = tag
+        self.damage_taken: int = 0
+        self.damage_resisted: int = 0
+        self.damage_caused: int = 0
+        self.damage_healed: int = 0
+        self.max_damage: int = 0
+        self.kills: int = 0
+        self.crits: int = 0
+        self.faints: int = 0
+        self.dodged: int = 0
 
     def set_player(self, player):
         self.player = str(player)
@@ -33,46 +29,25 @@ class Character:
         if dam > self.max_damage:
             self.max_damage = dam
 
-    def take_dam(self, dam: int, resisted: bool = False):
+    def take_dam(self, dam: int, resisted: bool = False) -> int:
         dam_after_res = int(dam / 2) if resisted else dam
-        fainted = False
-        if dam_after_res >= self.health > 0:
-            self.faints += 1
-            fainted = True
-        self.damage_taken += dam
-        self.health = max(self.health - dam_after_res, 0)
-        return fainted, dam_after_res
+        resisted_dam: int = dam - dam_after_res
+        self.damage_taken += dam_after_res
+        self.damage_resisted += resisted_dam
+        return dam_after_res
 
-    def tank(self, dam):
-        self.damage_taken += dam
+    def heal(self, health: int):
+        self.damage_healed += health
 
-    def heal_dam(self, health: int):
-        healing_amount = min(self.max_health - self.health, health)
-        self.damage_healed += healing_amount
-        self.health = min(self.max_health, self.health + healing_amount)
-
-    def heal_max(self):
-        diff = self.max_health - self.health
-        self.damage_healed += diff
-        self.health = self.max_health
-
-    def set_max_health(self, new_max: int):
-        old_max = self.max_health
-        self.max_health = new_max
-        self.health = \
-            max(
-                min(
-                    self.health + (new_max - old_max),
-                    new_max
-                ),
-                0
-            )
+    def faint(self):
+        self.faints += 1
 
     def __str__(self):
         return f"------------------\n" \
                f"**{self.name}** / _{self.tag}_\n" \
-               f"health: {self.health}/{self.max_health}    damage taken/caused/max: " \
-               f"{self.damage_taken}/{self.damage_caused}/{self.max_damage}    healed: {self.damage_healed}\n" \
+               f"damage caused/taken/healed: " \
+               f"{self.damage_caused}/{self.damage_taken}/{self.damage_healed}\n" \
+               f"max damage in one round: {self.max_damage}\n" \
                f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
                f"dodges: {self.dodged}"
 
