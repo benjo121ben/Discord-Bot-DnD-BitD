@@ -6,11 +6,11 @@ from ..campaign_exceptions import NotFileAdminException, NoAssignedSaveException
 from .save_file_management import parse_savefile_contents, save_data_to_file, players_tag, character_tag, \
     get_fresh_save, setup_save_folders, admin_tag
 
-USER_ID_DELETION_TIME = 120
-FILE_DELETION_TIME = 60
+USER_ID_DELETION_SECONDS = 18000
+FILE_DELETION_SECONDS = 3600
 
-new_ID_dict = TempEntryDict(USER_ID_DELETION_TIME, "ID")
-new_file_dict = TempEntryDict(FILE_DELETION_TIME, "File")
+new_ID_dict = TempEntryDict(USER_ID_DELETION_SECONDS, "ID")
+new_file_dict = TempEntryDict(FILE_DELETION_SECONDS, "File")
 logger = logging.getLogger('bot')
 
 
@@ -115,7 +115,10 @@ def access_file_as_user(user_id: str, _save_name: str) -> str:
 
 def save_user_file(user_id: str):
     file_name = get_loaded_filename(user_id)
-    save_data_to_file(file_name, new_file_dict.get(file_name))
+    if file_name is not None:
+        save_data_to_file(file_name, new_file_dict.get(file_name))
+    else:
+        raise Exception("save_user_file was called for a user that had no savefile assigned")
 
 
 def load_file_into_memory(_file_name, replace=False):

@@ -1,13 +1,17 @@
 import decohints
 from functools import wraps
 
+from discord.ext.bridge import BridgeExtContext
+
 from .Character import Character
-from .SaveDataManagement.save_file_management import session_tag, character_tag, check_savefile_existence
+from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, check_savefile_existence, \
+    get_savefile_as_discord_file
 from .SaveDataManagement.live_save_manager import save_user_file, check_file_loaded, get_loaded_dict, \
     get_loaded_chars, check_file_admin, access_file_as_user, new_save, get_loaded_filename
 from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, check_if_user_has_char, get_char
 from .campaign_exceptions import CommandException
-from . import Undo, UndoActions
+from .campaign_helper import check_bot_admin, get_bot
+from . import Undo, UndoActions, packg_variables as cmp_vars
 
 
 @decohints.decohints
@@ -85,9 +89,9 @@ def unclaim_char(executing_user: str, char_tag: str):
         raise CommandException("This Character was never claimed")
     if _char.player != executing_user and not check_file_admin(executing_user):
         raise CommandException("Only file creators can use this command on other people's characters")
-
-    Undo.queue_basic_action(executing_user, char_tag, "player", _char.player, "")
+    old_player = _char.player
     get_loaded_chars(executing_user)[char_tag].set_player("")
+    Undo.queue_basic_action(executing_user, char_tag, "player", old_player, "")
     return f"Character {char_tag} unassigned"
 
 
@@ -119,6 +123,16 @@ def retag_character(executing_user: str, char_tag_old: str, char_tag_new: str) -
 
     Undo.queue_undo_action(executing_user, UndoActions.RetagCharUndoAction(char_tag_old, char_tag_new))
     return f"Character {char_tag_old} has been renamed to {char_tag_new}"
+
+
+@check_and_save_file_wrapper
+def rename_character(executing_user: str, char_tag: str, new_char_name: str) -> str:
+    _char = get_char(executing_user, char_tag)
+    old_val = _char.name
+    _char.name = new_char_name
+    Undo.queue_basic_action(executing_user, char_tag, "name", old_val, new_char_name)
+
+    return f"Character {old_val} has been renamed to {new_char_name}"
 
 
 # increases the caused damage stat
@@ -166,8 +180,8 @@ def heal(executing_user: str, char_tag: str, healed: int) -> str:
 def crit(executing_user: str, char_tag: str) -> str:
     _char = get_char(executing_user, char_tag)
     crits = _char.crits
-    Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + 1)
     _char.rolled_crit()
+    Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + 1)
     return f"Crit of {char_tag} increased by 1"
 
 
@@ -175,15 +189,39 @@ def crit(executing_user: str, char_tag: str) -> str:
 def dodge(executing_user: str, char_tag: str) -> str:
     _char = get_char(executing_user, char_tag)
     _dodged = _char.dodged
-    Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + 1)
     _char.dodge()
+    Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + 1)
     return f"Character {char_tag}, dodged an attack"
 
 
 @check_and_save_file_wrapper
 def session_increase(executing_user: str):
+    check_file_admin(executing_user, raise_error=True)
     get_loaded_dict(executing_user)[session_tag] += 1
     return "finished session, increased by one"
+
+
+async def cache_file(ctx: BridgeExtContext, executing_user: str):
+    """
+    Sends the current savefile into the discord chat with the ID assigned in the campaign environment file
+    :param ctx: Discord context
+    :param executing_user: user_id of executing user
+    :raises NoSaveFileException if no savefile is present
+    :raises NotBotAdminException if user is not the bots admin
+    """
+    check_file_loaded(executing_user, raise_error=True)
+    check_bot_admin(ctx, raise_error=True)
+    check_file_admin(executing_user, raise_error=True)
+
+    chat_id = cmp_vars.cache_folder
+    if chat_id is None:
+        raise CommandException("No cloudsavechannel id assigned")
+    file_name = get_loaded_filename(executing_user)
+    save_dic = get_loaded_dict(executing_user)
+    message = f"cache-{file_name}-session {save_dic[session_tag]}-{save_dic[version_tag]}"
+    current_file = get_savefile_as_discord_file(file_name)
+    await get_bot().get_channel(chat_id).send(message, file=current_file)
+    await ctx.respond("cached")
 
 
 def undo_command(executing_user: str, amount: int):
@@ -191,19 +229,27 @@ def undo_command(executing_user: str, amount: int):
         amount = 10
     ret_val = ""
     for _ in range(amount):
-        ret_val += f'{Undo.undo(executing_user)}\n'
-        if not get_loaded_filename(executing_user) == "":
+        keep_going, text = Undo.undo(executing_user)
+        ret_val += f'{text}\n'
+        if get_loaded_filename(executing_user) is not None:
             save_user_file(executing_user)
+        if not keep_going:
+            return ret_val
     return ret_val
 
 
 def redo_command(executing_user: str, amount: int) -> str:
     ret_val = ""
+
     for _ in range(amount):
-        ret_val += Undo.redo(executing_user) + "\n"
-        if not get_loaded_filename(executing_user) == "":
+        keep_going, text = Undo.redo(executing_user)
+        ret_val += f'{text}\n'
+        if get_loaded_filename(executing_user) is not None:
             save_user_file(executing_user)
+        if not keep_going:
+            return ret_val
     return ret_val
+
 
 
 # def setup_commands():

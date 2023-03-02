@@ -43,7 +43,7 @@ class TempEntryDict:
             logger.info(f"{key}: {self.entry_name} was cleared from memory")
 
     def clear(self):
-        while(len(self.temp_entries) > 0):
+        while len(self.temp_entries) > 0:
             key, val = self.temp_entries.popitem()
             val.cancel()
 
