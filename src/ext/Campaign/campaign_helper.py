@@ -2,7 +2,6 @@ import logging
 
 from dotenv import load_dotenv
 import os
-from os import mkdir
 from os.path import exists
 from typing import Optional
 import pathlib
@@ -131,9 +130,9 @@ def check_base_setup():
 
     if not exists(get_save_folder_filepath()):
         logger.debug("SAVE_FILEPATH_CREATED")
-        mkdir(get_save_folder_filepath())
+        os.mkdir(get_save_folder_filepath())
     if not exists(get_cache_folder_filepath()):
         logger.debug("CACHE_FILEPATH_CREATED")
-        mkdir(get_cache_folder_filepath())
+        os.mkdir(get_cache_folder_filepath())
 
 
