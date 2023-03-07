@@ -8,7 +8,6 @@ from discord import File
 from ..Character import Character
 from ..campaign_exceptions import SaveFileNotFoundException, SaveFileImportException
 from ..packg_variables import get_save_folder_filepath, get_cache_folder_filepath
-from ...command_exceptions import CommandException
 
 save_files_suffix = '_save.json'
 save_type_version = '1.2'
