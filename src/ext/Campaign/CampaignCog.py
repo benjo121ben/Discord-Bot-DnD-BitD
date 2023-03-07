@@ -68,7 +68,7 @@ class CampaignCog(commands.Cog):
     async def cause(self, ctx: BridgeExtContext, amount: int, kills: int = 0, char_tag: str = None):
         await catch_and_respond_char_action(ctx,
                                             char_tag,
-                                            lambda executing_user, tag: CFuncs.cause_damage(executing_user, char_tag, amount, kills))
+                                            lambda executing_user, tag: CFuncs.cause_damage(executing_user, tag, amount, kills))
 
     @slash_command(name="take",
                    description="Character takes all damage")
@@ -76,7 +76,7 @@ class CampaignCog(commands.Cog):
         amount = abs(amount)
         await catch_and_respond_char_action(ctx,
                                             char_tag,
-                                            lambda executing_user, tag: CFuncs.take_damage(executing_user, char_tag, amount, False))
+                                            lambda executing_user, tag: CFuncs.take_damage(executing_user, tag, amount, False))
 
     @slash_command(name="taker",
                    description="Character takes reduced damage")
@@ -84,7 +84,7 @@ class CampaignCog(commands.Cog):
         amount = abs(amount)
         await catch_and_respond_char_action(ctx,
                                             char_tag,
-                                            lambda executing_user, tag: CFuncs.take_damage(executing_user, char_tag, amount, True))
+                                            lambda executing_user, tag: CFuncs.take_damage(executing_user, tag, amount, True))
 
     @slash_command(
         name="heal",
@@ -94,7 +94,7 @@ class CampaignCog(commands.Cog):
         amount = abs(amount)
         await catch_and_respond_char_action(ctx,
                                             char_tag,
-                                            lambda executing_user, tag: CFuncs.heal(executing_user, char_tag, amount))
+                                            lambda executing_user, tag: CFuncs.heal(executing_user, tag, amount))
 
     @slash_command(name="log", description="Outputs all current Character information")
     async def log(self, ctx: BridgeExtContext, adv=False):
@@ -187,14 +187,17 @@ class CampaignCog(commands.Cog):
             if not exists(local_save_path):
                 os.rename(cache_save_path, local_save_path)
                 await ctx.respond(f"No local version found. Save {filename} has been imported.")
+                await self.load_command(ctx, file_name=filename.split(save_manager.save_files_suffix)[0])
+                CFuncs.session_increase(str(ctx.author.id))
                 return
 
             if save_manager.compare_savefile_novelty(local_save_path, cache_save_path) == -1:
                 os.remove(local_save_path)
                 os.rename(cache_save_path, local_save_path)
                 live_save.load_file_into_memory(filename, replace=True)
-                CFuncs.session_increase(str(ctx.author.id))
                 await ctx.respond("replaced")
+                await self.load_command(ctx, file_name=filename)
+                CFuncs.session_increase(str(ctx.author.id))
             else:
                 os.remove(cache_save_path)
                 await ctx.respond("already up to date")

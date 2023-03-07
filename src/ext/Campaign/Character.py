@@ -47,6 +47,7 @@ class Character:
                f"**{self.name}** / _{self.tag}_\n" \
                f"damage caused/taken/healed: " \
                f"{self.damage_caused}/{self.damage_taken}/{self.damage_healed}\n" \
+               f"resisted: {self.damage_resisted}" \
                f"max damage in one round: {self.max_damage}\n" \
                f"kills: {self.kills}    crits: {self.crits}   fainted: {self.faints}\n" \
                f"dodges: {self.dodged}"

@@ -169,7 +169,7 @@ def take_damage(executing_user: str, char_tag: str, dam: int, resisted: bool) ->
 def heal(executing_user: str, char_tag: str, healed: int) -> str:
     healed = abs(healed)
     _char = get_char(executing_user, char_tag)
-    undo_action = UndoActions.MultipleBaseAction(_char, ["health", "damage_healed"])
+    undo_action = UndoActions.MultipleBaseAction(_char, ["damage_healed"])
     _char.heal(healed)
     undo_action.update()
     Undo.queue_undo_action(executing_user, undo_action)
