@@ -39,7 +39,7 @@ def setup_logging():
     logger.setLevel(logging.DEBUG)
 
     fhandler = logging.FileHandler(filename=os.path.join(main_path, f'{logpath}{os.sep}{datetime.now().replace(microsecond=0).strftime(date_time_save_format)}.log'), mode='w', encoding='utf-8')
-    fhandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d)\n%(message)s "))
+    fhandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d):    %(message)s "))
     logger.addHandler(fhandler)
 
     soutputhandler = logging.StreamHandler(stream=sys.stdout)

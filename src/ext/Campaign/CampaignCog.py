@@ -36,6 +36,14 @@ async def catch_and_respond_file_action(ctx: BridgeExtContext, func):
         await ctx.respond(err)
 
 
+async def catch_and_respond_async_file_action(ctx: BridgeExtContext, func):
+    executing_user = str(ctx.author.id)
+    try:
+        await func(executing_user)
+    except ComExcept as err:
+        await ctx.respond(err)
+
+
 class CampaignCog(commands.Cog):
 
     @slash_command(name="crit", description="Character has rollet a nat20")
@@ -43,6 +51,12 @@ class CampaignCog(commands.Cog):
         await catch_and_respond_char_action(ctx,
                                             char_tag,
                                             lambda executing_user, tag: CFuncs.crit(executing_user, tag))
+
+    @slash_command(name="faint", description="Character faints")
+    async def faint(self, ctx: BridgeExtContext, char_tag: str = None):
+        await catch_and_respond_char_action(ctx,
+                                            char_tag,
+                                            lambda executing_user, tag: CFuncs.faint(executing_user, tag))
 
     @slash_command(name="dodged", description="Character dodged an attack")
     async def dodged(self, ctx: BridgeExtContext, char_tag: str = None):
@@ -110,7 +124,6 @@ class CampaignCog(commands.Cog):
         description="Load an existing campaign save file or create a new one"
     )
     async def load_command(self, ctx: BridgeExtContext, file_name: str):
-        print("LOADED")
         await catch_and_respond_file_action(ctx,
                                             lambda executing_user: CFuncs.load_or_create_save(executing_user, file_name))
 
@@ -154,8 +167,8 @@ class CampaignCog(commands.Cog):
 
     @slash_command(name="cache", description="Admin command: caches the last save file into the provided server chat")
     async def cache(self, ctx: BridgeExtContext):
-        await catch_and_respond_file_action(ctx,
-                                            lambda executing_user: CFuncs.cache_file(ctx, executing_user))
+        await catch_and_respond_async_file_action(ctx,
+                                                  lambda executing_user: CFuncs.cache_file(ctx, executing_user))
 
     @slash_command(name="get_cache", description="Admin command: tries to download the latest save from cache server chat")
     async def get_cache(self, ctx: BridgeExtContext):

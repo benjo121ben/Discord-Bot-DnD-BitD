@@ -186,6 +186,15 @@ def crit(executing_user: str, char_tag: str) -> str:
 
 
 @check_and_save_file_wrapper
+def faint(executing_user: str, char_tag: str) -> str:
+    _char = get_char(executing_user, char_tag)
+    faints = _char.faints
+    _char.faint()
+    Undo.queue_basic_action(executing_user, char_tag, "faints", faints, faints + 1)
+    return f"{char_tag} went unconcious"
+
+
+@check_and_save_file_wrapper
 def dodge(executing_user: str, char_tag: str) -> str:
     _char = get_char(executing_user, char_tag)
     _dodged = _char.dodged

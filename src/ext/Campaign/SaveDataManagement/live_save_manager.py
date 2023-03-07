@@ -6,7 +6,7 @@ from ..campaign_exceptions import NotFileAdminException, NoAssignedSaveException
 from .save_file_management import parse_savefile_contents, save_data_to_file, players_tag, character_tag, \
     get_fresh_save, setup_save_folders, admin_tag
 
-USER_ID_DELETION_SECONDS = 18000
+USER_ID_DELETION_SECONDS = 10800
 FILE_DELETION_SECONDS = 3600
 
 new_ID_dict = TempEntryDict(USER_ID_DELETION_SECONDS, "ID")
@@ -110,7 +110,7 @@ def access_file_as_user(user_id: str, _save_name: str) -> str:
     global new_ID_dict
     check_file_player(user_id, _save_name, True)
     new_ID_dict.set(user_id, _save_name)
-    return f"Savefile exists.\nLoaded {_save_name} into memory."
+    return f"Savefile {_save_name} exists.\n Data loaded."
 
 
 def save_user_file(user_id: str):
@@ -123,11 +123,11 @@ def save_user_file(user_id: str):
 
 def load_file_into_memory(_file_name, replace=False):
     global new_file_dict
-
     if _file_name not in new_file_dict or replace:
-        logger.info(f"{_file_name} WAS LOADED INTO MEMORY")
         new_file_dict.set(_file_name, parse_savefile_contents(_file_name))
-        logger.info(f"{_file_name} WAS LOADED INTO MEMORY")
+        logger.info(f"Loaded {_file_name} into meomory")
+    else:
+        logger.info(f"{_file_name} already in meomory. Did not require loading")
 
 
 def unload_all_files_and_users():

@@ -10,7 +10,7 @@ from ..campaign_exceptions import SaveFileNotFoundException, SaveFileImportExcep
 from ..packg_variables import get_save_folder_filepath, get_cache_folder_filepath
 
 save_files_suffix = '_save.json'
-save_type_version = '1.2'
+save_type_version = 1.3
 date_time_save_format = "%Y-%m-%d %H:%M:%S"
 character_tag = 'characters'
 last_changed_tag = 'last_change'
@@ -66,7 +66,6 @@ def parse_savefile_contents(_save_name):
     :param _save_name: the name of the save file to be loaded
     :return: the interpreted save file dictionary
     """
-
     updated, save_dict = upgrade_savefile_dict(get_file_json_dict(_save_name))
     returned_dict = {}
     for key, value in save_dict.items():
@@ -77,8 +76,7 @@ def parse_savefile_contents(_save_name):
         returned_dict[character_tag][char_tag] = char_from_data(char_data)
     if updated:
         save_data_to_file(_save_name, returned_dict)
-        logger.info(f"Old save exists.\nLoaded {_save_name} into memory and updated to newest version.")
-    logger.info(f"Savefile exists.\nLoaded {_save_name} into memory.")
+        logger.info(f"Updated {_save_name} to newest version and loaded into memory.")
     return returned_dict
 
 
@@ -104,7 +102,6 @@ def save_data_to_file(_save_name: str, export_dic: dict):
     with open(save_path, 'w') as newfile:
         change_time = datetime.now().replace(microsecond=0)
         export_dic[last_changed_tag] = change_time
-        print(f"new time {change_time}")
         output = get_fresh_save(export_dic[admin_tag])
         output[session_tag] = export_dic[session_tag]
         output[last_changed_tag] = change_time.strftime(date_time_save_format)
@@ -142,7 +139,7 @@ def get_fresh_save(admin: str = ""):
 
 def upgrade_savefile_dict(save_file_data: dict) -> (bool, dict):
     global save_type_version, version_tag
-    if version_tag in save_file_data and save_file_data[version_tag] == save_type_version:
+    if version_tag in save_file_data and float(save_file_data[version_tag]) >= save_type_version:
         return False, save_file_data
     else:
         fresh_save = get_fresh_save()
