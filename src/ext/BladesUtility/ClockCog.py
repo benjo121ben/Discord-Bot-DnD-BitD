@@ -1,18 +1,23 @@
 import logging
-from discord.ext import commands
-from discord.ext import bridge
-from discord import slash_command
-from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks
+from discord.ext import commands, bridge
+from discord import Embed, File
+from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
 
 
 logger = logging.getLogger('bot')
 
 
-async def print_clock(ctx, clock):
+async def print_clock(ctx, clock: Clock):
+    embed = Embed(title=f'**{clock.name}**')
     try:
-        await ctx.respond(f"**{clock.name}**", file=clock.get_embed_info())
+
+        image_file: File = get_clock_image(clock)
+        embed.set_thumbnail(url=f'attachment://{image_file.filename}')
+        await ctx.respond(embed=embed, file=image_file)
     except NoClockImageException:
-        await ctx.respond(f"Clocks of this size have missing output images\n**{str(clock)}**")
+        embed.set_footer(text="Clocks of this size don't have output images")
+        embed.description = str(clock)
+        await ctx.respond(embed=embed)
         logger.debug(
             f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
         )

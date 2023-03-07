@@ -1,147 +1,17 @@
 import json
-import logging
 import os
 import pathlib
-from typing import TypeVar, Generic
 
-from discord import Embed
+from .WikiEntry import EntryLabels as eLabel
+from .WikiEntry.ClassItemEntry import ClassItemEntry
+from .WikiEntry.CompositeEntry import CompositeEntry
+from .WikiEntry.CraftedItemEntry import CraftedItemEntry
+from .WikiEntry.ItemEntry import ItemEntry
+from .WikiEntry.PlaybookEntry import PlaybookEntry
+from .WikiEntry.StatEntry import StatEntry
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki = {}
-
-# property labels
-NAME_LABEL = 'name'
-DESCRIPTION_LABEL = 'description'
-EXAMPLE_LABEL = 'example'
-LOAD_LABEL = 'load'
-PLAYBOOK_LABEL = 'playbook'
-EXTRA_HEADER_LABEL = 'extra_header'
-EXTRA_LABEL = 'extra'
-LIST_LABEL = 'list'
-PLAYBOOK_ITEMS_LABEL = 'items'
-PLAYBOOK_FRIENDS_LABEL = 'friends_and_enemies'
-
-# properties unique to created items
-CREATION_TYPE_LABEL = 'type'
-CREATION_DRAWBACK_LABEL = 'drawback'
-CREATION_USES_LABEL = 'uses'
-CREATION_TIER_LABEL = 'tier'
-
-# wiki entry category labels
-CAT_ITEMS_LABEL = 'items'
-CAT_CLASS_ITEMS_LABEL = 'class_items'
-CAT_CREATIONS_LABEL = 'sample-creations'
-CAT_PLAYBOOKS_LABEL = 'playbooks'
-CAT_STATS_LABEL = 'stats'
-
-
-class WikiEntry:
-    def __init__(self, info=None):
-        self.name = ""
-        self.description = ""
-        if info is not None:
-            self.name = info[NAME_LABEL]
-            if DESCRIPTION_LABEL not in info:
-                return
-            self.description = info[DESCRIPTION_LABEL]
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'{self.name}', description=self.description)
-        await ctx.respond(embed=embed)
-
-
-class PlaybookEntry(WikiEntry):
-    def __init__(self, info=None):
-        super().__init__(info)
-        self.items = info[PLAYBOOK_ITEMS_LABEL]
-        self.friends = info[PLAYBOOK_FRIENDS_LABEL]
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'{self.name}', description=self.description)
-        embed.add_field(name="*Special Items*", value=''.join([f'> {value}\n'.replace("Fine", "**Fine**") for value in self.items]), inline=True)
-        embed.add_field(name="*Friends and Rivals*", value=''.join([f'> **{value.split(",")[0]}**, {value.split(",")[1]}\n' for value in self.friends]), inline=True)
-        await ctx.respond(embed=embed)
-
-
-class ItemEntry(WikiEntry):
-
-    def __init__(self, info):
-        super().__init__(info)
-        self.load = info[LOAD_LABEL]
-        self.extra_header = info[EXTRA_HEADER_LABEL] if EXTRA_HEADER_LABEL in info else ""
-        self.extra_info = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'**{self.name}**\nPlaybook: _All playbooks_\nItem  Load _{self.load}_', description=self.description)
-        if len(self.extra_header) > 0:
-            embed.add_field(name="*"+self.extra_header+"*", value=f'_{self.extra_info}_', inline=True)
-        await ctx.respond(embed=embed)
-
-
-class ClassItemEntry(WikiEntry):
-
-    def __init__(self, info):
-        super().__init__(info)
-        self.load = info[LOAD_LABEL]
-        self.playbook = info[PLAYBOOK_LABEL]
-        self.extra = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'**{self.name}**\nPlaybook: _{self.playbook}_\nItem  Load: _{self.load}_', description=self.description)
-        if len(self.extra) > 0:
-            embed.add_field(name="Also", value=f'_{self.extra}_', inline=True)
-        await ctx.respond(embed=embed)
-
-
-class CraftedItemEntry(WikiEntry):
-
-    def __init__(self, info):
-        super().__init__(info)
-        self.type = info[CREATION_TYPE_LABEL]
-        self.drawback = info[CREATION_DRAWBACK_LABEL]
-        self.uses = info[CREATION_USES_LABEL]
-        self.tier = info[CREATION_TIER_LABEL]
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'**{self.name}**', description=self.description)
-        embed.add_field(name="Type", value=f'_{self.type}_', inline=True)
-        embed.add_field(name="Uses / Ammo", value=f'{self.uses}', inline=True)
-        embed.add_field(name="Tier", value=f'{self.tier}', inline=True)
-        if self.drawback != "":
-            embed.add_field(name="Drawback", value=self.drawback, inline=False)
-        await ctx.respond(embed=embed)
-
-
-class CompositeEntry(WikiEntry):
-    def __init__(self, info):
-        super().__init__(info)
-        self.extra_header = info[EXTRA_HEADER_LABEL] if EXTRA_HEADER_LABEL in info else ""
-        self.extra = info[EXTRA_LABEL] if EXTRA_LABEL in info else ""
-        self.children = []
-        for listentry in info[LIST_LABEL]:
-            self.children.append(listentry)
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'**{self.name}**', description=self.description)
-        if not self.extra == "":
-            embed.add_field(name=f'**{self.extra_header}**', value=self.extra, inline=False)
-        for child in self.children:
-            embed.add_field(name=f'**{child[NAME_LABEL]}**', value=child[DESCRIPTION_LABEL])
-        await ctx.respond(embed=embed)
-
-
-class StatEntry(WikiEntry):
-
-    def __init__(self, info):
-        super().__init__(info)
-        self.example = info[EXAMPLE_LABEL] if EXAMPLE_LABEL in info else ""
-
-    async def send_info(self, ctx):
-        embed = Embed(title=f'**{self.name}**', description=self.description)
-        if self.example != "":
-            embed.add_field(name="**Example**", value=f'_{self.example}_', inline=True)
-
-        await ctx.respond(embed=embed)
 
 
 def levenshtein_distance(word1, word2):
@@ -178,23 +48,23 @@ def setup_wiki():
         imported_wiki = json.load(file)
 
         for name, entry in imported_wiki.items():
-            if name == CAT_ITEMS_LABEL:
+            if name == eLabel.CAT_ITEMS_LABEL:
                 insert_wiki_entry(entry, ItemEntry)
-            elif name == CAT_CLASS_ITEMS_LABEL:
+            elif name == eLabel.CAT_CLASS_ITEMS_LABEL:
                 insert_wiki_entry(entry, ClassItemEntry)
-            elif name == CAT_PLAYBOOKS_LABEL:
+            elif name == eLabel.CAT_PLAYBOOKS_LABEL:
                 insert_wiki_entry(entry, PlaybookEntry)
-            elif name == CAT_STATS_LABEL:
+            elif name == eLabel.CAT_STATS_LABEL:
                 composite_wiki_entry = insert_wiki_entry(entry, CompositeEntry)
                 for child in composite_wiki_entry.children:
                     insert_wiki_entry(child, StatEntry)
-            elif name == CAT_CREATIONS_LABEL:
+            elif name == eLabel.CAT_CREATIONS_LABEL:
                 for item_cat in entry:
-                    item_type = item_cat[CREATION_TYPE_LABEL]
-                    item_drawback = item_cat[CREATION_DRAWBACK_LABEL] if CREATION_DRAWBACK_LABEL in entry else ""
-                    for item in item_cat[LIST_LABEL]:
-                        item[CREATION_TYPE_LABEL] = item_type
-                        item[CREATION_DRAWBACK_LABEL] = item_drawback
+                    item_type = item_cat[eLabel.CREATION_TYPE_LABEL]
+                    item_drawback = item_cat[eLabel.CREATION_DRAWBACK_LABEL] if eLabel.CREATION_DRAWBACK_LABEL in entry else ""
+                    for item in item_cat[eLabel.LIST_LABEL]:
+                        item[eLabel.CREATION_TYPE_LABEL] = item_type
+                        item[eLabel.CREATION_DRAWBACK_LABEL] = item_drawback
                         insert_wiki_entry(item, CraftedItemEntry)
 
 
@@ -210,10 +80,10 @@ def insert_wiki_entry(checked_object, wiki_entry_class_type):
     obj = None
     if type(checked_object) is list:
         for list_entry in checked_object:
-            key = list_entry[NAME_LABEL].lower()
+            key = list_entry[eLabel.NAME_LABEL].lower()
             wiki[key] = wiki_entry_class_type(list_entry)
     else:
-        key = checked_object[NAME_LABEL].lower()
+        key = checked_object[eLabel.NAME_LABEL].lower()
         obj = wiki_entry_class_type(checked_object)
         wiki[key] = obj
     return obj

@@ -12,6 +12,7 @@ def compare_char_with_dic(character: Character, check_char_dic: dict):
 
 
 class TestCampaignSaveManager:
+
     @pytest.fixture(autouse=True)
     def setup_teardown(self):
         yield "setup"

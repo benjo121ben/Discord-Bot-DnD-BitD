@@ -36,10 +36,11 @@ class Clock:
     def __str__(self):
         return f'**{self.name}**: {{{self.ticks}/{self.size}}}'
 
-    def get_embed_info(self) -> (str, File):
-        if self.size not in clock_files_dic:
-            raise NoClockImageException("clocks of this size cannot be printed, missing files")
-        return File(clock_files_dic[self.size][self.ticks])
+
+def get_clock_image(clock: Clock) -> File:
+    if clock.size not in clock_files_dic:
+        raise NoClockImageException("clocks of this size cannot be printed, missing files")
+    return File(clock_files_dic[clock.size][clock.ticks])
 
 
 def clock_from_json(clock_data):
@@ -103,9 +104,13 @@ def load_single_clock_files(clock_folder: str):
     clock_sub_files_dic = {}
     for tick in range(0, clock_size + 1):
         file_name = str(clock_size) + "-" + str(tick) + ".png"
+        file_name_2 = str(clock_size) + "-" + str(tick) + ".jpg"
         file_path = get_clock_asset_folder_path() + os.sep.join([clock_folder, file_name])
+        file_path_2 = get_clock_asset_folder_path() + os.sep.join([clock_folder, file_name_2])
         if exists(file_path):
             clock_sub_files_dic[tick] = file_path
+        elif exists(file_path_2):
+            clock_sub_files_dic[tick] = file_path_2
         else:
             logger.info(f"Clock {clock_size} is missing files and has been deactivated")
             break
