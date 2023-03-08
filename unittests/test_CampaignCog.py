@@ -93,13 +93,59 @@ class TestCampaignCog:
     async def test_crit(self, create_own_char):
         cog, ctx = create_own_char
         assert str(ctx.author.id) == test_user_id
-        assert save_manager.save_file_to_parsed_dictionary(unit_test_save_file_name)[save_manager.character_tag][test_char_tag].player == test_user_id
         assert char_access.get_char(test_user_id, test_char_tag).crits == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).crits == 0
         await cog.crit(ctx, test_char_tag)
         assert char_access.get_char(test_user_id, test_char_tag).crits == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).crits == 1
         await cog.crit(ctx)
         assert char_access.get_char(test_user_id, test_char_tag).crits == 2
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).crits == 2
         await cog.undo(ctx)
         assert char_access.get_char(test_user_id, test_char_tag).crits == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).crits == 1
+        await cog.undo(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).crits == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).crits == 0
+
+    @pytest.mark.asyncio
+    async def test_faint(self, create_own_char):
+        cog, ctx = create_own_char
+        assert str(ctx.author.id) == test_user_id
+        assert char_access.get_char(test_user_id, test_char_tag).faints == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).faints == 0
+        await cog.faint(ctx, test_char_tag)
+        assert char_access.get_char(test_user_id, test_char_tag).faints == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).faints == 1
+        await cog.faint(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).faints == 2
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).faints == 2
+        await cog.undo(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).faints == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).faints == 1
+        await cog.undo(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).faints == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).faints == 0
+
+    @pytest.mark.asyncio
+    async def test_dodged(self, create_own_char):
+        cog, ctx = create_own_char
+        assert str(ctx.author.id) == test_user_id
+        assert char_access.get_char(test_user_id, test_char_tag).dodged == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).dodged == 0
+        await cog.dodged(ctx, test_char_tag)
+        assert char_access.get_char(test_user_id, test_char_tag).dodged == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).dodged == 1
+        await cog.dodged(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).dodged == 2
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).dodged == 2
+        await cog.undo(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).dodged == 1
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).dodged == 1
+        await cog.undo(ctx)
+        assert char_access.get_char(test_user_id, test_char_tag).dodged == 0
+        assert save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag).dodged == 0
+
+
 
 

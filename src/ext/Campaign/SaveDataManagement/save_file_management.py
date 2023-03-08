@@ -184,6 +184,22 @@ def str_to_datetime(time_string: str) -> datetime:
     return datetime.strptime(time_string, date_time_save_format)
 
 
+def character_from_save_file(_save_name, _char_tag) -> Character:
+    """
+    Should only be used during testing:
+
+    Opens a save_file and returns the character with the given tag as a Character object
+
+    :param _save_name: save_file name without suffix
+    :param _char_tag: tag of character
+    :return: the loaded Character object
+    """
+    file_dict = save_file_to_parsed_dictionary(_save_name)
+    if _char_tag not in file_dict[character_tag]:
+        raise Exception("Character not in this savefile")
+    return file_dict[character_tag][_char_tag]
+
+
 def create_fresh_save(admin: str = "") -> dict:
     """
     Creates a fresh save_file dictionary associated with the given admin ID

@@ -1,5 +1,4 @@
-from .live_save_manager import check_file_loaded, get_loaded_chars, get_loaded_dict
-from .save_file_management import character_tag
+from .live_save_manager import check_file_loaded, get_loaded_chars
 from ..Character import Character
 from ...command_exceptions import CommandException
 
