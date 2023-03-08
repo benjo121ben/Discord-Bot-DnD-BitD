@@ -6,7 +6,7 @@ from os.path import exists
 from os import mkdir
 from discord import File
 from ..Character import Character
-from ..campaign_exceptions import SaveFileNotFoundException, SaveFileImportException
+from ..campaign_exceptions import SaveFileNotFoundException
 from ..packg_variables import get_save_folder_filepath, get_cache_folder_filepath
 
 save_files_suffix = '_save.json'
@@ -23,6 +23,9 @@ logger = logging.getLogger('bot')
 
 
 def setup_save_folders():
+    """
+    Initializes the folders needed for the save system to work correctly
+    """
     if not exists(get_save_folder_filepath()):
         logger.debug("SAVE_FILEPATH_CREATED")
         mkdir(get_save_folder_filepath())
@@ -31,57 +34,90 @@ def setup_save_folders():
         mkdir(get_cache_folder_filepath())
 
 
-def get_savefile_as_discord_file(_save_name):
-    if not exists(build_savefile_path(_save_name)):
-        return None
-    return File(build_savefile_path(_save_name))
+def get_savefile_as_discord_file(_save_name) -> File:
+    """
+    Gets a File object pointing to a save_file on the hard drive
+
+    :param _save_name: the save_file name without suffix
+    :return: The file object
+    :raises SaveFileNotFoundException: if file by the given name is not found
+    """
+
+    file_path = build_savefile_path(_save_name)
+    if not exists(file_path):
+        raise SaveFileNotFoundException()
+    return File(file_path)
 
 
-def check_savefile_existence(_save_name):
-    global save_files_suffix
+def check_savefile_existence(_save_name) -> bool:
+    """
+    Checks if save_file of given name exists on the hard drive
+
+    :param _save_name: the save_file name without suffix
+    :return: True if save_file exists, False otherwise
+    """
     return exists(build_savefile_path(_save_name))
 
 
-def remove_file(_save_name):
+def remove_save_file(_save_name) -> None:
+    """
+    Removes the save_file with the given name from the hard drive
+
+    :param _save_name: The name of the save_file without suffix
+    :raises Exception: If save_file cannot be found
+    """
     if _save_name == "":
         raise Exception("cannot remove file with empty name")
     path = build_savefile_path(_save_name)
     if exists(path):
         logger.info("deleted savefile", _save_name)
         os.remove(path)
+    else:
+        raise Exception(f"cannot find file at this path {path}")
 
 
-def compare_savefile_novelty(path1, path2):
+def compare_savefile_novelty_by_path(path1: str, path2: str) -> int:
+    """
+    Compares two save_files on the hard drive via their respective paths.
+
+    :param path1: path of the first file
+    :param path2: path of the second file
+    :return: -1 if path1 is older, 0 if they are the same, 1 if path2 is older
+    """
+    if not exists(path1) or not exists(path2):
+        raise Exception(f"cannot compare files that don't exist: \npath1: {path1} \npath2: {path2}")
     with open(path1) as file1:
         path1_dic = json.load(file1)
     with open(path2) as file2:
         path2_dic = json.load(file2)
 
-    return compare_dict_novelty(path1_dic, path2_dic)
+    return compare_unparsed_dict_novelty(path1_dic, path2_dic)
 
 
-def parse_savefile_contents(_save_name):
-    """Loads the save file with the given name from the hard drive.
-    Raises a SaveFileNotFoundException if a file by that name cannot be found.
+def save_file_to_parsed_dictionary(_save_name) -> dict:
+    """
+    Loads the save file with the given name from the hard drive, parses it, and updates
+    it to the newest save_file version if necessary.
 
     :param _save_name: the name of the save file to be loaded
-    :return: the interpreted save file dictionary
+    :return: the parsed save_file dictionary
+    :raises SaveFileNotFoundException: if a file by given name does not exist on the hard drive
     """
-    updated, save_dict = check_file_version_and_update(get_file_json_dict(_save_name))
+    updated, save_dict = check_file_version_and_update(save_file_to_unparsed_dict(_save_name))
     returned_dict = {}
     for key, value in save_dict.items():
         returned_dict[key] = value
-    returned_dict[last_changed_tag] = parse_date_time(save_dict[last_changed_tag])
+    returned_dict[last_changed_tag] = str_to_datetime(save_dict[last_changed_tag])
     returned_dict[character_tag] = {}
     for char_tag, char_data in save_dict[character_tag].items():
-        returned_dict[character_tag][char_tag] = char_from_data(char_data)
+        returned_dict[character_tag][char_tag] = json_dict_to_character(char_data)
     if updated:
         save_data_to_file(_save_name, returned_dict)
         logger.info(f"Updated {_save_name} to newest version and loaded into memory.")
     return returned_dict
 
 
-def get_file_json_dict(_save_name):
+def save_file_to_unparsed_dict(_save_name) -> dict:
     """
     Gets the pure unparsed json dictionary from a save_file
 
@@ -116,7 +152,7 @@ def save_data_to_file(_save_name: str, export_dic: dict) -> None:
     with open(save_path, 'w') as newfile:
         change_time = datetime.now().replace(microsecond=0)
         export_dic[last_changed_tag] = change_time
-        output = get_fresh_save(export_dic[admin_tag])
+        output = create_fresh_save(export_dic[admin_tag])
         output[session_tag] = export_dic[session_tag]
         output[last_changed_tag] = change_time.strftime(date_time_save_format)
         output[players_tag] = export_dic[players_tag]
@@ -128,7 +164,7 @@ def save_data_to_file(_save_name: str, export_dic: dict) -> None:
             logger.info("created savefile " + _save_name)
 
 
-def char_from_data(char_dic: dict) -> Character:
+def json_dict_to_character(char_dic: dict) -> Character:
     """
     Turns a json dictionary loaded from a savefile into a Character object
 
@@ -141,11 +177,16 @@ def char_from_data(char_dic: dict) -> Character:
     return char
 
 
-def parse_date_time(time_string: str) -> datetime:
+def str_to_datetime(time_string: str) -> datetime:
+    """
+    Converts a string into datetime object, according to the format outlined in the save_file_management file
+    :param time_string: the string to be converted
+    :return: datetime object
+    """
     return datetime.strptime(time_string, date_time_save_format)
 
 
-def get_fresh_save(admin: str = ""):
+def create_fresh_save(admin: str = "") -> dict:
     """
     Creates a fresh save_file dictionary associated with the given admin ID
 
@@ -173,23 +214,23 @@ def check_file_version_and_update(save_file_data: dict) -> (bool, dict):
     if version_tag in save_file_data and float(save_file_data[version_tag]) >= save_type_version:
         return False, save_file_data
     else:
-        fresh_save = get_fresh_save()
+        fresh_save = create_fresh_save()
         for key in save_file_data.keys():
             fresh_save[key] = save_file_data[key]
 
     return True, fresh_save
 
 
-def compare_dict_novelty(dic1: dict, dic2: dict) -> int:
+def compare_unparsed_dict_novelty(dic1: dict, dic2: dict) -> int:
     """
     Compares which unparsed json-file dictionary is the more recently updated one. It first compares savefile version, then the last-changed timestamp
 
     :param dic1: The first unparsed json dictionary
     :param dic2: The second unparsed json dictionary
-    :return: -1 if dic1 is older, 0 if they are the same, 1 if dic1 is older
+    :return: -1 if dic1 is older, 0 if they are the same, 1 if dic2 is older
     """
-    first_time = parse_date_time(dic1[last_changed_tag])
-    second_time = parse_date_time(dic2[last_changed_tag])
+    first_time = str_to_datetime(dic1[last_changed_tag])
+    second_time = str_to_datetime(dic2[last_changed_tag])
     first_version = float(dic1[version_tag])
     second_version = float(dic2[version_tag])
     if first_version < second_version or first_time < second_time:
