@@ -16,7 +16,7 @@ def move_template_save_to_save_folder(template_name):
     source = get_template_path(template_name)
     if not os.path.exists(source):
         raise Exception("Invalid template path given")
-    destination = save_manager.get_savefile_path(unit_test_save_file_name)
+    destination = save_manager.build_savefile_path(unit_test_save_file_name)
     shutil.copyfile(source, destination)
     return destination
 
@@ -24,4 +24,4 @@ def move_template_save_to_save_folder(template_name):
 def cleanup_template():
     Undo.reset_undo()
     live_manager.unload_all_files_and_users()
-    save_manager.remove_file(unit_test_save_file_name)
+    save_manager.remove_save_file(unit_test_save_file_name)

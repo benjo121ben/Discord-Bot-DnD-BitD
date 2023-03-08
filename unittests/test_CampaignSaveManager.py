@@ -31,7 +31,7 @@ class TestCampaignSaveManager:
         loaded_dict = live_manager.get_loaded_dict(test_user_id)
         print(loaded_dict[save_manager.last_changed_tag])
         assert file_dic[save_manager.session_tag] == loaded_dict[save_manager.session_tag]
-        assert save_manager.parse_date_time(file_dic[save_manager.last_changed_tag]) \
+        assert save_manager.str_to_datetime(file_dic[save_manager.last_changed_tag]) \
                == loaded_dict[save_manager.last_changed_tag]
         # check character stats
         char_dic = live_manager.get_loaded_chars(test_user_id)
@@ -57,8 +57,8 @@ class TestCampaignSaveManager:
         live_data_dict = live_manager.get_loaded_dict(test_user_id)
         assert orig_file_dic[t_session] == new_file_dic[t_session]
         assert orig_file_dic[t_session] == live_data_dict[t_session]
-        assert not (save_manager.parse_date_time(orig_file_dic[t_last_change]) == live_data_dict[t_last_change])
-        assert save_manager.parse_date_time(new_file_dic[t_last_change]) == live_data_dict[t_last_change]
+        assert not (save_manager.str_to_datetime(orig_file_dic[t_last_change]) == live_data_dict[t_last_change])
+        assert save_manager.str_to_datetime(new_file_dic[t_last_change]) == live_data_dict[t_last_change]
 
         # check character stats
         new_file_chars = new_file_dic[save_manager.character_tag]

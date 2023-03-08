@@ -18,7 +18,7 @@ class TestCharacter:
 
     def test_set_player(self):
         c1 = Character("test", "test_name")
-        c1.set_player(20)
+        c1.set_player("20")
         assert c1.player == "20"
 
         c1.set_player("30")

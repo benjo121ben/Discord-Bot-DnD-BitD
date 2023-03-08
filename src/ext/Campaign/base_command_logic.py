@@ -1,8 +1,10 @@
+import logging
+
 import decohints
 from functools import wraps
 
 from discord.ext.bridge import BridgeExtContext
-
+import discord.errors as d_errors
 from .Character import Character
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, check_savefile_existence, \
     get_savefile_as_discord_file
@@ -12,6 +14,8 @@ from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by
 from .campaign_exceptions import CommandException
 from .campaign_helper import check_bot_admin, get_bot
 from . import Undo, UndoActions, packg_variables as cmp_vars
+
+logger = logging.getLogger('bot')
 
 
 @decohints.decohints
@@ -25,9 +29,30 @@ def check_and_save_file_wrapper(function_to_wrap):
     """
     @wraps(function_to_wrap)
     def wrapped_func(*args, **kwargs):
+        print(kwargs)
         user_id = args[0]
         check_file_loaded(user_id, raise_error=True)
         value = function_to_wrap(*args, **kwargs)
+        save_user_file(user_id)
+        return value
+    return wrapped_func
+
+
+@decohints.decohints
+def check_and_save_file_wrapper_async(function_to_wrap):
+    """
+    Decorator for all functions that require a savefile to be open when used and save the changes after being correctly
+    executed
+
+    :param function_to_wrap: the function that is called
+    :return: wrapped function
+    """
+    @wraps(function_to_wrap)
+    async def wrapped_func(*args, **kwargs):
+        print(kwargs)
+        user_id = args[0]
+        check_file_loaded(user_id, raise_error=True)
+        value = await function_to_wrap(*args, **kwargs)
         save_user_file(user_id)
         return value
     return wrapped_func
@@ -66,8 +91,10 @@ def log(executing_user: str, adv=False) -> str:
     return ret_string
 
 
-@check_and_save_file_wrapper
-def claim_character(executing_user: str, char_tag: str, assigned_user_id: str):
+@check_and_save_file_wrapper_async
+async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: str, assigned_user_id: str):
+    if assigned_user_id is None:
+        assigned_user_id = str(ctx.author.id)
     if check_if_user_has_char(executing_user, assigned_user_id):
         raise CommandException(
             f"this user already has character {get_char_tag_by_id(executing_user, assigned_user_id)} assigned")
@@ -79,7 +106,19 @@ def claim_character(executing_user: str, char_tag: str, assigned_user_id: str):
             "You are not authorized to assign this character. It has already been claimed by a user.")
     _character.set_player(assigned_user_id)
     Undo.queue_basic_action(executing_user, char_tag, "player", _current_player, assigned_user_id)
-    return f"character {char_tag} assigned to {assigned_user_id}"
+
+    user = None
+    try:
+        bot = get_bot()
+        user = await bot.fetch_user(user_id=int(assigned_user_id))
+    except d_errors.NotFound as err:
+        logger.error(err)
+        await ctx.respond("A user with this ID could not be found by the bot.\n"
+                          "Make sure the bot shares a server with the user that has this ID")
+        Undo.undo(executing_user)
+        Undo.discard_undo_queue_after_pointer(executing_user)
+        return
+    await ctx.respond(f"{char_tag} assigned to {user.name}")
 
 
 @check_and_save_file_wrapper
@@ -210,7 +249,7 @@ def session_increase(executing_user: str):
     return "finished session, increased by one"
 
 
-async def cache_file(ctx: BridgeExtContext, executing_user: str):
+async def cache_file(executing_user: str, ctx: BridgeExtContext):
     """
     Sends the current savefile into the discord chat with the ID assigned in the campaign environment file
     :param ctx: Discord context

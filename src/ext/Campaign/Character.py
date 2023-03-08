@@ -14,8 +14,8 @@ class Character:
         self.faints: int = 0
         self.dodged: int = 0
 
-    def set_player(self, player):
-        self.player = str(player)
+    def set_player(self, player: str):
+        self.player = player
 
     def rolled_crit(self):
         self.crits += 1

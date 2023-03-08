@@ -1,11 +1,11 @@
 import discord.ext.bridge
 import pytest
 import unittest.mock as mock
-from src.ext.Campaign import CommandFunctions as commands
+from src.ext.Campaign import base_command_logic as commands
 from src.ext.Campaign.SaveDataManagement import save_file_management as save_manager, live_save_manager as live_manager, char_data_access as char_access
 
-from .test_const_vars import unit_test_save_file_name, test_user_id, test_char_tag, test_discord_username, \
-    get_mocked_bot
+from .test_const_vars import unit_test_save_file_name, test_user_id, test_char_tag, test_discord_username
+from setup_mock_discord_objects import get_mocked_bot
 from .unit_test_template_manager import move_template_save_to_save_folder, cleanup_template
 
 
@@ -13,7 +13,7 @@ class TestCommandFunctions:
     @pytest.fixture
     def create_save_and_delete(self):
         if save_manager.check_savefile_existence(unit_test_save_file_name):
-            save_manager.remove_file(unit_test_save_file_name)
+            save_manager.remove_save_file(unit_test_save_file_name)
             cleanup_template()
             print("deleted existing unit test savefile")
         commands.load_or_create_save(test_user_id, unit_test_save_file_name)

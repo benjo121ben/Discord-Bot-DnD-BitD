@@ -72,8 +72,6 @@ def remove_save_file(_save_name) -> None:
     if exists(path):
         logger.info("deleted savefile", _save_name)
         os.remove(path)
-    else:
-        raise Exception(f"cannot find file at this path {path}")
 
 
 def compare_savefile_novelty_by_path(path1: str, path2: str) -> int:

@@ -1,5 +1,7 @@
 python-dotenv
 py-cord
+pytest
+pytest-asyncio
 pillow
 decohints
 

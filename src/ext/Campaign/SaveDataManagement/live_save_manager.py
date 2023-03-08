@@ -3,8 +3,8 @@ import logging
 from .TempEntryDict import TempEntryDict
 from ..Character import Character
 from ..campaign_exceptions import NotFileAdminException, NoAssignedSaveException, UserNotPlayerException
-from .save_file_management import parse_savefile_contents, save_data_to_file, players_tag, character_tag, \
-    get_fresh_save, setup_save_folders, admin_tag
+from .save_file_management import save_file_to_parsed_dictionary, save_data_to_file, players_tag, character_tag, \
+    create_fresh_save, setup_save_folders, admin_tag
 
 USER_ID_DELETION_SECONDS = 10800
 FILE_DELETION_SECONDS = 3600
@@ -124,7 +124,7 @@ def save_user_file(user_id: str):
 def load_file_into_memory(_file_name, replace=False):
     global new_file_dict
     if _file_name not in new_file_dict or replace:
-        new_file_dict.set(_file_name, parse_savefile_contents(_file_name))
+        new_file_dict.set(_file_name, save_file_to_parsed_dictionary(_file_name))
         logger.info(f"Loaded {_file_name} into meomory")
     else:
         logger.info(f"{_file_name} already in meomory. Did not require loading")
@@ -139,7 +139,7 @@ def unload_all_files_and_users():
 def new_save(executing_user: str, file_name: str) -> str:
     global new_file_dict, new_ID_dict
     logger.info("new save called")
-    new_file_dict.set(file_name, get_fresh_save(executing_user))
+    new_file_dict.set(file_name, create_fresh_save(executing_user))
 
     new_ID_dict.set(executing_user, file_name)
     return f"savefile name\n**{file_name}**\nhas not been claimed.\n" \
