@@ -257,21 +257,18 @@ class TestCampaignCog_valid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 25)
 
     @pytest.mark.asyncio
-    async def test_heal(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_retag(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
         cog, ctx = create_own_char
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 0)
-        await cog.heal(ctx, 10, test_char_tag)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 10)
-        await cog.heal(ctx, 10)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 20)
-        await cog.heal(ctx, 5)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 25)
-        await cog.undo(ctx, 2)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 10)
+        NEW_TAG = "new_tag"
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_TAG, test_char_tag)
+        await cog.retag_pc(ctx, test_char_tag, NEW_TAG)
+        with pytest.raises(Exception):
+            save_manager.character_from_save_file(unit_test_save_file_name, test_char_tag)
+        assert_char_value_base_save(NEW_TAG, char_file.LABEL_TAG, NEW_TAG)
         await cog.undo(ctx)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 0)
+        with pytest.raises(Exception):
+            save_manager.character_from_save_file(unit_test_save_file_name, NEW_TAG)
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_TAG, test_char_tag)
         await cog.redo(ctx)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 10)
-        await cog.redo(ctx, 2)
-        assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 25)
+        assert_char_value_base_save(NEW_TAG, char_file.LABEL_TAG, NEW_TAG)
 

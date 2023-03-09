@@ -38,7 +38,7 @@ def get_mocked_bot(cog_func) -> Bot:
     user = mock.MagicMock(discord.User)
     user.name = test_discord_username
     bot.add_cog = MagicMock(return_value=None, side_effect=lambda c: cog_func(c))
-    bot.fetch_user = AsyncMock(bot.fetch_user, return_value=mock.MagicMock(discord.User))
+    bot.fetch_user = AsyncMock(bot.fetch_user, return_value=user)
 
     bot.get_channel = MagicMock(discord.Bot.get_channel, return_value=MockChannel())
     return bot

@@ -65,3 +65,14 @@ def check_if_user_has_char(executing_user: str, search_user_id: str) -> bool:
         if char.player == search_user_id:
             return True
     return False
+
+
+def retag_char(executing_user: str, char_tag_old: str, char_tag_new: str):
+    check_char_tag(executing_user, char_tag_old, raise_error=True)
+    if check_char_tag(executing_user, char_tag_new):
+        raise CommandException("A Character of this name already exists")
+
+    _chardict = get_loaded_chars(executing_user)
+    _chardict[char_tag_new] = _chardict[char_tag_old]
+    _chardict[char_tag_new].tag = char_tag_new
+    del _chardict[char_tag_old]

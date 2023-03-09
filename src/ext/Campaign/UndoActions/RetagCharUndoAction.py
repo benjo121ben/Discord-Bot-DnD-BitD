@@ -1,4 +1,4 @@
-import src.ext.Campaign.SaveDataManagement.char_data_access
+from ..SaveDataManagement import char_data_access as char_acc
 from .BaseUndoAction import BaseUndoAction
 
 
@@ -11,9 +11,9 @@ class RetagCharUndoAction(BaseUndoAction):
         return f"{{char_retag}}=({self.old_tag}->{self.new_tag})"
 
     def undo(self, executing_user: str) -> str:
-        src.ext.Campaign.SaveDataManagement.char_data_access.retag_char(executing_user, self.new_tag, self.old_tag)
+        char_acc.retag_char(executing_user, self.new_tag, self.old_tag)
         return f"Undid rentag of {self.old_tag} to {self.new_tag}. Returned to {self.old_tag}."
 
     def redo(self, executing_user: str):
-        src.ext.Campaign.SaveDataManagement.char_data_access.retag_char(executing_user, self.old_tag, self.new_tag)
+        char_acc.retag_char(executing_user, self.old_tag, self.new_tag)
         return f"Reapplied retag of {self.old_tag} to {self.new_tag}."

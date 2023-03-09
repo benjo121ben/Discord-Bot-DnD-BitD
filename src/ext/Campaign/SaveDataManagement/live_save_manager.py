@@ -144,5 +144,3 @@ def new_save(executing_user: str, file_name: str) -> str:
     new_ID_dict.set(executing_user, file_name)
     return f"savefile name\n**{file_name}**\nhas not been claimed.\n" \
            "Create a character with the add_char command to claim it for yourself, make sure to write down the file's name"
-
-

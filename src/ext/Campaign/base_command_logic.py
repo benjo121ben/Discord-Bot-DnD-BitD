@@ -10,7 +10,8 @@ from .SaveDataManagement.save_file_management import session_tag, character_tag,
     get_savefile_as_discord_file
 from .SaveDataManagement.live_save_manager import save_user_file, check_file_loaded, get_loaded_dict, \
     get_loaded_chars, check_file_admin, access_file_as_user, new_save, get_loaded_filename
-from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, check_if_user_has_char, get_char
+from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, check_if_user_has_char, get_char, \
+    retag_char
 from .campaign_exceptions import CommandException
 from .campaign_helper import check_bot_admin, get_bot
 from . import Undo, UndoActions, packg_variables as cmp_vars
@@ -149,15 +150,7 @@ def add_char(executing_user: str, tag: str, char_name: str) -> str:
 
 @check_and_save_file_wrapper
 def retag_character(executing_user: str, char_tag_old: str, char_tag_new: str) -> str:
-    check_char_tag(executing_user, char_tag_old, raise_error=True)
-    if check_char_tag(executing_user, char_tag_new):
-        raise CommandException("A Character of this name already exists")
-
-    _chardict = get_loaded_chars(executing_user)
-    _chardict[char_tag_new] = _chardict[char_tag_old]
-    _chardict[char_tag_new].tag = char_tag_new
-    del _chardict[char_tag_old]
-
+    retag_char(executing_user, char_tag_old, char_tag_new)
     Undo.queue_undo_action(executing_user, UndoActions.RetagCharUndoAction(char_tag_old, char_tag_new))
     return f"Character {char_tag_old} has been renamed to {char_tag_new}"
 
