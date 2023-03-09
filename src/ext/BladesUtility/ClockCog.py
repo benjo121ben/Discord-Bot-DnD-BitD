@@ -25,7 +25,7 @@ async def print_clock(ctx, clock: Clock):
 
 class ClockCog(commands.Cog):
 
-    @commands.slash_command(name="add_clock", description="Adds a new clock of a certain size.")
+    @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
     async def add_clock(self, ctx, clock_name: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
@@ -38,7 +38,7 @@ class ClockCog(commands.Cog):
             await ctx.respond("Clock created")
             await print_clock(ctx, clock_dic[clock_name])
 
-    @commands.slash_command(name="remove_clock", description="Removes the selected saved clock")
+    @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
     async def remove_clock(self, ctx, clock_name: str):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
@@ -49,7 +49,7 @@ class ClockCog(commands.Cog):
         else:
             await ctx.respond("Clock does not exist: " + clock_name)
 
-    @commands.slash_command(name="show_clock", description="Prints a saved clock, with picture if possible")
+    @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
     async def show_clock(self, ctx, clock_name):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
@@ -58,7 +58,7 @@ class ClockCog(commands.Cog):
         else:
             await ctx.respond("This clock does not exist")
 
-    @commands.slash_command(name="all_clocks", description="Prints out all saved clocks")
+    @commands.slash_command(name="clock_all", description="Prints out all saved clocks")
     async def all_clocks(self, ctx):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
@@ -71,7 +71,7 @@ class ClockCog(commands.Cog):
             all_c += str(clock) + "\n"
         await ctx.respond(all_c)
 
-    @commands.slash_command(name="tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
+    @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
     async def tick_clock(self, ctx, clock_name: str, ticks: int = 1):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
