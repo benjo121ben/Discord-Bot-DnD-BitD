@@ -29,7 +29,6 @@ def check_and_save_file_wrapper(function_to_wrap):
     """
     @wraps(function_to_wrap)
     def wrapped_func(*args, **kwargs):
-        print(kwargs)
         user_id = args[0]
         check_file_loaded(user_id, raise_error=True)
         value = function_to_wrap(*args, **kwargs)
@@ -49,7 +48,6 @@ def check_and_save_file_wrapper_async(function_to_wrap):
     """
     @wraps(function_to_wrap)
     async def wrapped_func(*args, **kwargs):
-        print(kwargs)
         user_id = args[0]
         check_file_loaded(user_id, raise_error=True)
         value = await function_to_wrap(*args, **kwargs)
@@ -216,29 +214,29 @@ def heal(executing_user: str, char_tag: str, healed: int) -> str:
 
 
 @check_and_save_file_wrapper
-def crit(executing_user: str, char_tag: str) -> str:
+def crit(executing_user: str, char_tag: str, amount: int = 1) -> str:
     _char = get_char(executing_user, char_tag)
     crits = _char.crits
-    _char.rolled_crit()
-    Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + 1)
+    _char.rolled_crit(amount)
+    Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + amount)
     return f"Crit of {char_tag} increased by 1"
 
 
 @check_and_save_file_wrapper
-def faint(executing_user: str, char_tag: str) -> str:
+def faint(executing_user: str, char_tag: str, amount: int = 1) -> str:
     _char = get_char(executing_user, char_tag)
     faints = _char.faints
-    _char.faint()
-    Undo.queue_basic_action(executing_user, char_tag, "faints", faints, faints + 1)
+    _char.faint(amount)
+    Undo.queue_basic_action(executing_user, char_tag, "faints", faints, faints + amount)
     return f"{char_tag} went unconcious"
 
 
 @check_and_save_file_wrapper
-def dodge(executing_user: str, char_tag: str) -> str:
+def dodge(executing_user: str, char_tag: str, amount: int = 1) -> str:
     _char = get_char(executing_user, char_tag)
     _dodged = _char.dodged
-    _char.dodge()
-    Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + 1)
+    _char.dodge(amount)
+    Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + amount)
     return f"Character {char_tag}, dodged an attack"
 
 

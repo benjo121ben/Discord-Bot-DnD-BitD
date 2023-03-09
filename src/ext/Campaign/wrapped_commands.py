@@ -10,7 +10,7 @@ from .SaveDataManagement import char_data_access as char_data, \
     live_save_manager as live_save, \
     save_file_management as save_manager
 from .campaign_exceptions import CommandException as ComExcept
-from . import base_command_logic as CFuncs, \
+from . import base_command_logic as bcom, \
     packg_variables as cmp_vars, \
     campaign_helper as cmp_hlp
 
@@ -43,92 +43,90 @@ async def catch_async_file_action(ctx: BridgeExtContext, func):
         await ctx.respond(err)
 
 
-async def crit(ctx: BridgeExtContext, char_tag: str = None):
+async def add_c(ctx: BridgeExtContext, char_tag: str, char_name: str, user_id: str = None):
+    await catch_and_respond_file_action(ctx,
+                                        lambda executing_user: bcom.add_char(executing_user, char_tag, char_name))
+    if user_id is not None:
+        await claim(ctx, char_tag, user_id)
+
+
+async def crit(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.crit(executing_user, tag))
+                                        lambda executing_user, tag: bcom.crit(executing_user, tag, amount))
 
 
-async def faint(ctx: BridgeExtContext, char_tag: str = None):
+async def faint(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.faint(executing_user, tag))
+                                        lambda executing_user, tag: bcom.faint(executing_user, tag, amount))
 
 
-async def dodged(ctx: BridgeExtContext, char_tag: str = None):
+async def dodged(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.dodge(executing_user, tag))
+                                        lambda executing_user, tag: bcom.dodge(executing_user, tag, amount))
 
 
 async def cause(ctx: BridgeExtContext, amount: int, kills: int = 0, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.cause_damage(executing_user, tag, amount, kills))
+                                        lambda executing_user, tag: bcom.cause_damage(executing_user, tag, amount, kills))
 
 
 async def take(ctx: BridgeExtContext, amount: int, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.take_damage(executing_user, tag, amount, False))
+                                        lambda executing_user, tag: bcom.take_damage(executing_user, tag, amount, False))
 
 
 async def take_reduced(ctx: BridgeExtContext, amount: int, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.take_damage(executing_user, tag, amount, True))
+                                        lambda executing_user, tag: bcom.take_damage(executing_user, tag, amount, True))
 
 
 async def heal(ctx: BridgeExtContext, amount: int, char_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         char_tag,
-                                        lambda executing_user, tag: CFuncs.heal(executing_user, tag, amount))
+                                        lambda executing_user, tag: bcom.heal(executing_user, tag, amount))
 
 
 async def log(ctx: BridgeExtContext, adv=False):
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.log(executing_user, adv))
-
-
-async def add_c(ctx: BridgeExtContext, char_tag: str, char_name: str, user_id: str = None):
-    await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.add_char(executing_user, char_tag, char_name))
-    if user_id is not None:
-        print("user_id =", user_id)
-        await claim(ctx, char_tag, user_id)
+                                        lambda executing_user: bcom.log(executing_user, adv))
 
 
 async def retag_pc(ctx: BridgeExtContext, char_tag_old: str, char_tag_new: str):
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.retag_character(executing_user, char_tag_old, char_tag_new))
+                                        lambda executing_user: bcom.retag_character(executing_user, char_tag_old, char_tag_new))
 
 
 async def load_command(ctx: BridgeExtContext, file_name: str):
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.load_or_create_save(executing_user, file_name))
+                                        lambda executing_user: bcom.load_or_create_save(executing_user, file_name))
 
 
 async def claim(ctx: BridgeExtContext, char_tag: str, user_id: str = None):
-    print("IN WRAPPED CLAIM")
     await catch_async_file_action(ctx,
-                                  lambda executing_user: CFuncs.claim_character(executing_user, ctx, char_tag, user_id))
+                                  lambda executing_user: bcom.claim_character(executing_user, ctx, char_tag, user_id))
 
 
 async def unclaim(ctx: BridgeExtContext, character_tag: str = None):
     await catch_and_respond_char_action(ctx,
                                         character_tag,
-                                        lambda executing_user, tag: CFuncs.unclaim_char(executing_user, tag))
+                                        lambda executing_user, tag: bcom.unclaim_char(executing_user, tag))
 
 
 async def session(ctx: BridgeExtContext):
     await cache(ctx)
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.session_increase(executing_user))
+                                        lambda executing_user: bcom.session_increase(executing_user))
 
 
 async def cache(ctx: BridgeExtContext):
     await catch_async_file_action(ctx,
-                                  lambda executing_user: CFuncs.cache_file(executing_user, ctx))
+                                  lambda executing_user: bcom.cache_file(executing_user, ctx))
 
 
 async def get_cache(ctx: BridgeExtContext):
@@ -148,7 +146,7 @@ async def get_cache(ctx: BridgeExtContext):
             os.rename(cache_save_path, local_save_path)
             await ctx.respond(f"No local version found. Save {filename} has been imported.")
             await load_command(ctx, file_name=filename.split(save_manager.save_files_suffix)[0])
-            CFuncs.session_increase(str(ctx.author.id))
+            bcom.session_increase(str(ctx.author.id))
             return
 
         if save_manager.compare_savefile_novelty_by_path(local_save_path, cache_save_path) == -1:
@@ -157,7 +155,7 @@ async def get_cache(ctx: BridgeExtContext):
             live_save.load_file_into_memory(filename, replace=True)
             await ctx.respond("replaced")
             await load_command(ctx, file_name=filename)
-            CFuncs.session_increase(str(ctx.author.id))
+            bcom.session_increase(str(ctx.author.id))
         else:
             os.remove(cache_save_path)
             await ctx.respond("already up to date")
@@ -177,9 +175,9 @@ async def download(ctx: BridgeExtContext):
 
 async def undo(ctx: BridgeExtContext, amount: int = 1):
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.undo_command(executing_user, amount))
+                                        lambda executing_user: bcom.undo_command(executing_user, amount))
 
 
 async def redo(ctx: BridgeExtContext, amount: int = 1):
     await catch_and_respond_file_action(ctx,
-                                        lambda executing_user: CFuncs.redo_command(executing_user, amount))
+                                        lambda executing_user: bcom.redo_command(executing_user, amount))

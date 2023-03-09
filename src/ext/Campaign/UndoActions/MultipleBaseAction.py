@@ -8,7 +8,7 @@ class MultipleBaseAction(BaseUndoAction):
         self.character_tag: str = char.tag
         self.char: Character = char
         self.old_vals = []
-        self.actions = []
+        self.actions: list[BaseUndoAction] = []
         self.stats = stats
         for stat in stats:
             self.old_vals.append(char.__dict__[stat])
@@ -30,7 +30,7 @@ class MultipleBaseAction(BaseUndoAction):
     def undo(self, executing_user: str):
         if len(self.actions) == 0:
             raise Exception("A multiple stat is empty")
-        return f"Undid changes:\n" + "\n".join(action.undo() for action in self.actions)
+        return f"Undid changes:\n" + "\n".join(action.undo(executing_user) for action in self.actions)
 
     def redo(self, executing_user: str):
-        return f"Reapplied changes\n" + "\n".join(action.redo() for action in self.actions)
+        return f"Reapplied changes\n" + "\n".join(action.redo(executing_user) for action in self.actions)

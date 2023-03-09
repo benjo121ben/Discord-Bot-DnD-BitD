@@ -17,11 +17,17 @@ class Character:
     def set_player(self, player: str):
         self.player = player
 
-    def rolled_crit(self):
-        self.crits += 1
+    def rolled_crit(self, value: int = 1):
+        value = abs(value)
+        self.crits += value
 
-    def dodge(self):
-        self.dodged += 1
+    def dodge(self, value: int = 1):
+        value = abs(value)
+        self.dodged += value
+
+    def faint(self, value: int = 1):
+        value = abs(value)
+        self.faints += value
 
     def cause_dam(self, dam: int, kills: int = 0):
         self.damage_caused += dam
@@ -39,9 +45,6 @@ class Character:
     def heal(self, health: int):
         self.damage_healed += health
 
-    def faint(self):
-        self.faints += 1
-
     def __str__(self):
         return f"------------------\n" \
                f"**{self.name}** / _{self.tag}_\n" \
@@ -53,3 +56,15 @@ class Character:
                f"dodges: {self.dodged}"
 
 
+LABEL_PLAYER = "player"
+LABEL_NAME = "name"
+LABEL_TAG = "tag"
+LABEL_TAKEN = "damage_taken"
+LABEL_RESISTED = "damage_resisted"
+LABEL_CAUSED = "damage_caused"
+LABEL_HEALED = "damage_healed"
+LABEL_MAXDAM = "max_damage"
+LABEL_KILLS = "kills"
+LABEL_CRITS = "crits"
+LABEL_FAINTS = "faints"
+LABEL_DODGE = "dodged"
