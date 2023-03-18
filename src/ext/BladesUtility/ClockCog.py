@@ -29,8 +29,12 @@ class ClockCog(commands.Cog):
     async def add_clock(self, ctx, clock_name: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
+        if len(clock_dic) == 30:
+            await ctx.respond("You already have 30 clocks, please remove one.")
+            return
+        
         if clock_name in clock_dic:
-            await ctx.respond(content="This clock already exists!\n")
+            await ctx.respond(content="This clock already exists!")
             await print_clock(ctx, clock_dic[clock_name])
         else:
             clock_dic[clock_name] = Clock(clock_name, clock_size, clock_ticks)
