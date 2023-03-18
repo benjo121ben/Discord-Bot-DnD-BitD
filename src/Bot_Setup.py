@@ -17,14 +17,14 @@ class MyInternetException(Exception):
         super().__init__(msg)
 
 
-async def start_bot(_command_prefix, _bot_token):
+async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bool]):
     global logger, retry_connection
     logger = logging.getLogger('bot')
     intents = discord.Intents.default()
     intents.message_content = True
     GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents)
     c_var.bot = GlobalVariables.bot
-    load_extensions(GlobalVariables.bot)
+    load_extensions(GlobalVariables.bot, modules_list)
 
     def stop_retrying():
         global retry_connection
@@ -66,7 +66,7 @@ async def start_bot(_command_prefix, _bot_token):
     logger.warning("Bot start has somehow completed")
 
 
-def load_extensions(_bot, reload=False):
+def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
     def load_ext(extension):
         if reload:
             _bot.reload_extension(ext_base_path + extension)
@@ -75,8 +75,16 @@ def load_extensions(_bot, reload=False):
 
     global logger
     logger.info("\n---------------------LOADING EXTENSIONS---------------------\n")
-    load_ext("Campaign.CampaignCog")
-    load_ext("BladesUtility.BladesUtilityCog")
-    load_ext("BladesUtility.ClockCog")
+    if modules_list is None:
+        load_ext("Campaign.CampaignCog")
+        load_ext("BladesUtility.BladesUtilityCog")
+        load_ext("BladesUtility.ClockCog")
+    else:
+        if modules_list[0]:
+            load_ext("Campaign.CampaignCog")
+        if modules_list[1]:
+            load_ext("BladesUtility.BladesUtilityCog")
+            load_ext("BladesUtility.ClockCog")
+
     logger.info("---------------------EXTENSIONS LOADED---------------------\n")
 

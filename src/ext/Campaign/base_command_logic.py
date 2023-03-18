@@ -144,6 +144,8 @@ def add_char(executing_user: str, tag: str, char_name: str) -> str:
 
     if check_char_tag(executing_user, tag):
         return "a character with this tag already exists"
+    if len(get_loaded_chars(executing_user)) == 10:
+        return "You already have 10 characters, this is the maximum amount"
     get_loaded_chars(executing_user)[tag] = Character(tag, char_name)
     return "character " + char_name + " added"
 

@@ -9,20 +9,17 @@ from src.Bot_Setup import start_bot
 from src.logging import setup_logging
 
 
-def check_env_var_int(environment_tag: str) -> Optional[int]:
+def get_env(environment_tag: str) -> bool:
     """
-    This is a wrapper for environ.get, that returns an int with None instead of ""
+    This is a wrapper for environ.get, that returns a boolean
     if the tag was written down but not assigned.
 
     :param environment_tag: the tag used in the environment file
     :return: returns the value if assigned, otherwise None
     """
-    if os.environ.get(environment_tag) == "":
-        return None
-    elif os.environ.get(environment_tag) is None:
-        return None
-    else:
-        return int(os.environ.get(environment_tag))
+    value = os.environ.get(environment_tag)
+    if value is not None:
+        return value == "1"
 
 
 def main():
@@ -32,6 +29,7 @@ def main():
     main_path = pathlib.Path(__file__).parent.resolve()
     load_dotenv(os.path.join(main_path, GlobalVariables.env_file_rel_path))
     GlobalVariables.admin_id = os.environ.get("ADMIN_ID")
+    modules = []
     token = os.environ.get("DISCORD_TOKEN")
     if token is None or token == "":
         input(
@@ -39,9 +37,9 @@ def main():
         return
 
     loop = asyncio.new_event_loop()
-
+    modules = [get_env("DND"), get_env("BLADES")]
     try:
-        loop.run_until_complete(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN")))
+        loop.run_until_complete(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"), modules))
     except KeyboardInterrupt:
         logger.info("Keyboard Interrupt")
 
