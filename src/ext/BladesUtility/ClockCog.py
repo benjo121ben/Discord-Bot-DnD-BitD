@@ -32,7 +32,7 @@ class ClockCog(commands.Cog):
         if len(clock_dic) == 30:
             await ctx.respond("You already have 30 clocks, please remove one.")
             return
-        
+
         if clock_name in clock_dic:
             await ctx.respond(content="This clock already exists!")
             await print_clock(ctx, clock_dic[clock_name])
