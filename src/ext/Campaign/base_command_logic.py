@@ -66,7 +66,7 @@ def load_or_create_save(executing_user: str, file_name: str) -> str:
         ret_str = access_file_as_user(executing_user, file_name)
     else:
         ret_str = new_save(executing_user, file_name)
-    Undo.queue_undo_action(executing_user, UndoActions.FileChangeUndoAction(old_file_name, file_name))
+    Undo.queue_undo_action(executing_user, UndoActions.LoadFileUndoAction(old_file_name, file_name))
     return ret_str
 
 
@@ -236,7 +236,9 @@ def dodge(executing_user: str, char_tag: str, amount: int = 1) -> str:
 @check_and_save_file_wrapper
 def session_increase(executing_user: str):
     check_file_admin(executing_user, raise_error=True)
+    current_session = get_loaded_dict(executing_user)[session_tag]
     get_loaded_dict(executing_user)[session_tag] += 1
+    Undo.queue_undo_action(executing_user, UndoActions.ChangeFileDataUndoAction(session_tag, current_session, current_session + 1))
     return "finished session, increased by one"
 
 

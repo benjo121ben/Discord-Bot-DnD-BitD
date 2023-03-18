@@ -1,18 +1,18 @@
 import asyncio
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 from discord.ext.bridge import BridgeExtContext
-
 from src.ext.Campaign.CampaignCog import CampaignCog
-from src.ext.Campaign import Character as char_file
+from src.ext.Campaign import Character as char_file, packg_variables as packg_vars
 from src.ext.Campaign.SaveDataManagement import \
     save_file_management as save_manager, \
     live_save_manager as live_manager, \
     char_data_access as char_access
 
 from .test_const_vars import unit_test_save_file_name, test_user_id, test_char_tag, test_discord_username, \
-    test_user_id_int
+    test_user_id_int, test_discord_username2
 from .setup_mock_discord_objects import get_mocked_context, get_mocked_bot, setup_bot_and_cog_campaign
 
 from .unit_test_template_manager import move_template_save_to_save_folder, cleanup_template
@@ -37,7 +37,16 @@ def assert_char_value_base_save(char_tag: str, attribute_name: str, value: Any):
     assert save_manager.character_from_save_file(unit_test_save_file_name, char_tag).__dict__[attribute_name] == value
 
 
-class TestCampaignCog_valid:
+def assert_save_value_base_save(attribute_name: str, value: Any):
+    assert live_manager.get_loaded_dict(test_user_id)[attribute_name] == value
+    assert save_manager.save_file_to_parsed_dictionary(unit_test_save_file_name)[attribute_name] == value
+
+
+def assert_ctx_any_respond(ctx, *args, **kwargs):
+    ctx.respond.assert_any_call(*args, **kwargs)
+
+
+class TestCampaignCogValid:
     @pytest.fixture
     def create_cog_and_load(self):
         cog, ctx = setup()
@@ -271,4 +280,41 @@ class TestCampaignCog_valid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_TAG, test_char_tag)
         await cog.redo(ctx)
         assert_char_value_base_save(NEW_TAG, char_file.LABEL_TAG, NEW_TAG)
+
+    @pytest.mark.asyncio
+    async def test_session(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+        cog, ctx = create_own_char
+        assert_save_value_base_save(save_manager.session_tag, 1)
+        await cog.session(ctx)
+        assert_save_value_base_save(save_manager.session_tag, 2)
+        await cog.undo(ctx)
+        assert_save_value_base_save(save_manager.session_tag, 1)
+        await cog.redo(ctx)
+        assert_save_value_base_save(save_manager.session_tag, 2)
+
+    @pytest.mark.asyncio
+    async def test_session_admin(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+        cog, ctx = create_char
+        packg_vars.bot_admin_id = ctx.author.id
+        assert_save_value_base_save(save_manager.session_tag, 1)
+        await cog.session(ctx)
+        assert_save_value_base_save(save_manager.session_tag, 2)
+        assert_ctx_any_respond(ctx, 'cached')
+
+    @pytest.mark.asyncio
+    async def test_claim_unclaim(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+        cog, ctx = create_char
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, "")
+        await cog.claim(ctx, test_char_tag)
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, test_user_id)
+        assert_ctx_any_respond(ctx, f'test assigned to {test_discord_username}')
+        await cog.unclaim(ctx)
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, "")
+        await cog.claim(ctx, test_char_tag)
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, test_user_id)
+        assert_ctx_any_respond(ctx, f'test assigned to {test_discord_username}')
+        await cog.claim(ctx, test_char_tag, "3")
+        assert_ctx_any_respond(ctx, f'test assigned to {test_discord_username2}')
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, "3")
+
 

@@ -6,9 +6,8 @@ import discord
 from discord.ext.bridge import BridgeExtContext, Bot
 
 from src.ext.Campaign import CampaignCog as camp_cog, packg_variables as p_vars
-from src.ext.Campaign.SaveDataManagement import save_file_management as save_manager
 
-from test_const_vars import test_discord_username, unit_test_save_file_name, test_user_id
+from test_const_vars import test_discord_username, test_discord_username2, test_user_id
 
 
 def get_mocked_context(author_id: int) -> BridgeExtContext:
@@ -18,7 +17,7 @@ def get_mocked_context(author_id: int) -> BridgeExtContext:
 
     ctx = mock.MagicMock(BridgeExtContext)
     ctx.author = MockedAuthor(author_id)
-    ctx.respond = AsyncMock(side_effect=lambda message: print(f"mock_respond:{{\n{message}\n}}"))
+    ctx.respond = AsyncMock(discord.ext.bridge.BridgeExtContext.respond, side_effect=lambda *args, **kwargs: print(f"mock_respond:{{\n{args[0]}\n}}"))
     ctx.send = AsyncMock(side_effect=lambda message: print(f"mock_send:{{\n{message}\n}}"))
     return ctx
 
@@ -37,8 +36,10 @@ def get_mocked_bot(cog_func) -> Bot:
     bot = mock.MagicMock(Bot)
     user = mock.MagicMock(discord.User)
     user.name = test_discord_username
+    user2 = mock.MagicMock(discord.User)
+    user2.name = test_discord_username2
     bot.add_cog = MagicMock(return_value=None, side_effect=lambda c: cog_func(c))
-    bot.fetch_user = AsyncMock(bot.fetch_user, return_value=user)
+    bot.fetch_user = AsyncMock(bot.fetch_user, side_effect=lambda user_id: user if str(user_id) == test_user_id else user2)
 
     bot.get_channel = MagicMock(discord.Bot.get_channel, return_value=MockChannel())
     return bot

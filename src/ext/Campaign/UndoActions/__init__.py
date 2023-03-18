@@ -1,5 +1,6 @@
 from .BaseUndoAction import BaseUndoAction
-from .FileChangeUndoAction import FileChangeUndoAction
+from .LoadFileUndoAction import LoadFileUndoAction
 from .MultipleBaseAction import MultipleBaseAction
 from .RetagCharUndoAction import RetagCharUndoAction
 from .StatUndoAction import StatUndoAction
+from .ChangeFileDataUndoActions import ChangeFileDataUndoAction

@@ -2,6 +2,7 @@
 import logging
 import os
 from os.path import exists
+from typing import Callable, Awaitable
 
 from discord.ext.bridge import BridgeExtContext
 
@@ -17,7 +18,15 @@ from . import base_command_logic as bcom, \
 logger = logging.getLogger('bot')
 
 
-async def catch_and_respond_char_action(ctx: BridgeExtContext, char_tag: str, func):
+async def catch_and_respond_char_action(ctx: BridgeExtContext, char_tag: str, func: Callable[[str, str], str]) -> None:
+    """
+    Wraps a character specific command function, executing it with the user_id gained from the context.
+    Also if char_tag is None, it will try to load the character name from the current file
+
+    :param func: the function executed
+    :param ctx: The message context
+    :param char_tag: the char_tag of the character that the command applies to
+    """
     executing_user = str(ctx.author.id)
     try:
         if char_tag is None:
@@ -27,7 +36,13 @@ async def catch_and_respond_char_action(ctx: BridgeExtContext, char_tag: str, fu
         await ctx.respond(err)
 
 
-async def catch_and_respond_file_action(ctx: BridgeExtContext, func):
+async def catch_and_respond_file_action(ctx: BridgeExtContext, func: Callable[[str], str]) -> None:
+    """
+    Wraps a file specific command function, executing it with the user_id gained from the context.
+
+    :param func: the function executed
+    :param ctx: The message context
+    """
     executing_user = str(ctx.author.id)
     try:
         await ctx.respond(func(executing_user))
@@ -35,7 +50,14 @@ async def catch_and_respond_file_action(ctx: BridgeExtContext, func):
         await ctx.respond(err)
 
 
-async def catch_async_file_action(ctx: BridgeExtContext, func):
+async def catch_async_file_action(ctx: BridgeExtContext, func: Callable[[str], Awaitable[None]]) -> None:
+    """
+        Wraps a file specific command function, executing it with the user_id gained from the context.
+        This is the async version
+
+        :param func: the function executed
+        :param ctx: The message context
+        """
     executing_user = str(ctx.author.id)
     try:
         await func(executing_user)
@@ -119,7 +141,11 @@ async def unclaim(ctx: BridgeExtContext, character_tag: str = None):
 
 
 async def session(ctx: BridgeExtContext):
-    await cache(ctx)
+    executing_user = str(ctx.author.id)
+    try:
+        await bcom.cache_file(executing_user, ctx)
+    except ComExcept:
+        pass
     await catch_and_respond_file_action(ctx,
                                         lambda executing_user: bcom.session_increase(executing_user))
 

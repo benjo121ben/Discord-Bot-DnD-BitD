@@ -2,7 +2,7 @@ from .BaseUndoAction import BaseUndoAction
 from ..SaveDataManagement import live_save_manager as lsave
 
 
-class FileChangeUndoAction(BaseUndoAction):
+class LoadFileUndoAction(BaseUndoAction):
     def __init__(self, old_file: str, new_file: str):
         self.old_file = old_file
         self.new_file = new_file
