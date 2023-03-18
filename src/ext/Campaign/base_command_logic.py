@@ -109,11 +109,10 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
     user = None
     try:
         bot = get_bot()
-        user = await bot.fetch_user(user_id=int(assigned_user_id))
-    except d_errors.NotFound as err:
+        user = await bot.fetch_user(int(assigned_user_id))
+    except Exception as err:
         logger.error(err)
-        await ctx.respond("A user with this ID could not be found by the bot.\n"
-                          "Make sure the bot shares a server with the user that has this ID")
+        await ctx.respond("An error has occurred while fetching the user with this ID.\n")
         Undo.undo(executing_user)
         Undo.discard_undo_queue_after_pointer(executing_user)
         return
