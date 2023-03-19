@@ -13,6 +13,7 @@ async def print_clock(ctx, clock: Clock):
 
         image_file: File = get_clock_image(clock)
         embed.set_thumbnail(url=f'attachment://{image_file.filename}')
+        embed.description = f"_Tag: {clock.tag}_"
         await ctx.respond(embed=embed, file=image_file)
     except NoClockImageException:
         embed.set_footer(text="Clocks of this size don't have output images")
@@ -28,6 +29,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
     async def add_clock(self, ctx, clock_tag: str, clock_name: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
+        clock_tag = clock_tag.lower()
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 40:
             await ctx.respond("You already have 40 clocks, please remove one.")
@@ -45,6 +47,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
     async def remove_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
+        clock_tag = clock_tag.lower()
         clock_dic = load_clocks(user_id)
         if clock_tag in clock_dic:
             del clock_dic[clock_tag]
@@ -56,6 +59,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
     async def show_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
+        clock_tag = clock_tag.lower()
         clock_dic = load_clocks(user_id)
         if clock_tag in clock_dic:
             await print_clock(ctx, clock_dic[clock_tag])
@@ -78,6 +82,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
     async def tick_clock(self, ctx, clock_tag: str, ticks: int = 1):
         user_id = str(ctx.author.id)
+        clock_tag = clock_tag.lower()
         clock_dic = load_clocks(user_id)
         clock = clock_dic.get(clock_tag)
         if clock:
