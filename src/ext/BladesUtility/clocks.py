@@ -19,7 +19,8 @@ class NoClockImageException(Exception):
 
 
 class Clock:
-    def __init__(self, _name: str, _size: int, _ticks: int = 0):
+    def __init__(self, _tag: str, _name: str, _size: int, _ticks: int = 0):
+        self.tag: str = _tag
         self.name: str = _name
         self.size: int = _size
         self.ticks: int = max(0, min(_size, _ticks))
@@ -34,7 +35,7 @@ class Clock:
         return self
 
     def __str__(self):
-        return f'**{self.name}**: {{{self.ticks}/{self.size}}}'
+        return f'**{self.name}**/Tag:_{self.tag}_: {{{self.ticks}/{self.size}}}'
 
 
 def get_clock_image(clock: Clock) -> File:
@@ -44,7 +45,7 @@ def get_clock_image(clock: Clock) -> File:
 
 
 def clock_from_json(clock_data):
-    return Clock("TEMP", 4).assign_dic(clock_data)
+    return Clock("TEMP", "TEMP_NAME", 4).assign_dic(clock_data)
 
 
 def get_clock_save_filepath(user_id: str):
@@ -67,11 +68,12 @@ def load_clocks(user_id: str):
             except JSONDecodeError as e:
                 logger.error(str(e))
                 logger.error(f"user_id: {user_id}")
+                raise Exception("An error has occured trying to parse JSON clock file")
         for clock_data in imported_dic.values():
-            clocks_save_dic[clock_data["name"]] = clock_from_json(clock_data)
+            clocks_save_dic[clock_data["tag"]] = clock_from_json(clock_data)
         return clocks_save_dic
     else:
-        logger.info("Clock savefile doesn't exist, will create new savefile")
+        logger.info(f"Clock savefile doesn't exist, will create new savefile. User ID={user_id}")
         return {}
 
 
@@ -86,7 +88,7 @@ def save_clocks(user_id: str, clocks_save_dic):
     with open(get_clock_save_filepath(user_id), 'w') as newfile:
         output = {}
         for clock in clocks_save_dic.values():
-            output[clock.name] = clock.__dict__
+            output[clock.tag] = clock.__dict__
         json.dump(output, newfile, sort_keys=True, indent=4)
 
 

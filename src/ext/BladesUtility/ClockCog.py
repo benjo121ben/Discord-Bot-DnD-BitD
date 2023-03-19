@@ -26,39 +26,39 @@ async def print_clock(ctx, clock: Clock):
 class ClockCog(commands.Cog):
 
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
-    async def add_clock(self, ctx, clock_name: str, clock_size: int, clock_ticks: int = 0):
+    async def add_clock(self, ctx, clock_tag: str, clock_name: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
-        if len(clock_dic) == 30:
-            await ctx.respond("You already have 30 clocks, please remove one.")
+        if len(clock_dic) == 40:
+            await ctx.respond("You already have 40 clocks, please remove one.")
             return
 
-        if clock_name in clock_dic:
+        if clock_tag in clock_dic:
             await ctx.respond(content="This clock already exists!")
-            await print_clock(ctx, clock_dic[clock_name])
+            await print_clock(ctx, clock_dic[clock_tag])
         else:
-            clock_dic[clock_name] = Clock(clock_name, clock_size, clock_ticks)
+            clock_dic[clock_tag] = Clock(clock_tag, clock_name, clock_size, clock_ticks)
             save_clocks(user_id, clock_dic)
             await ctx.respond("Clock created")
-            await print_clock(ctx, clock_dic[clock_name])
+            await print_clock(ctx, clock_dic[clock_tag])
 
     @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
-    async def remove_clock(self, ctx, clock_name: str):
+    async def remove_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
-        if clock_name in clock_dic:
-            del clock_dic[clock_name]
+        if clock_tag in clock_dic:
+            del clock_dic[clock_tag]
             save_clocks(user_id, clock_dic)
             await ctx.respond(content="The clock has been deleted!\n")
         else:
-            await ctx.respond("Clock does not exist: " + clock_name)
+            await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!")
 
     @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
-    async def show_clock(self, ctx, clock_name):
+    async def show_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
-        if clock_name in clock_dic:
-            await print_clock(ctx, clock_dic[clock_name])
+        if clock_tag in clock_dic:
+            await print_clock(ctx, clock_dic[clock_tag])
         else:
             await ctx.respond("This clock does not exist")
 
@@ -70,22 +70,22 @@ class ClockCog(commands.Cog):
             await ctx.respond("You have no existing clock. use the add command to create clocks.")
             return
 
-        all_c = "These are the clocks that exist:\n"
+        all_c = "These are the clocks that you have created:\n"
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
         await ctx.respond(all_c)
 
     @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
-    async def tick_clock(self, ctx, clock_name: str, ticks: int = 1):
+    async def tick_clock(self, ctx, clock_tag: str, ticks: int = 1):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
-        clock = clock_dic.get(clock_name)
+        clock = clock_dic.get(clock_tag)
         if clock:
             clock.tick(ticks)
             save_clocks(user_id, clock_dic)
             await print_clock(ctx, clock)
         else:
-            await ctx.respond(f"No clock by the name {clock_name} was found.")
+            await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!")
 
 
 def setup(bot: bridge.Bot):
