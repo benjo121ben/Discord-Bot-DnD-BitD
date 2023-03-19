@@ -7,7 +7,7 @@ from discord.ext.bridge import BridgeExtContext, Bot
 
 from src.ext.Campaign import CampaignCog as camp_cog, packg_variables as p_vars
 
-from test_const_vars import test_discord_username, test_discord_username2, test_user_id
+from .test_const_vars import test_discord_username, test_discord_username2, test_user_id
 
 
 def get_mocked_context(author_id: int) -> BridgeExtContext:
