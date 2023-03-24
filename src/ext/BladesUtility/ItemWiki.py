@@ -61,7 +61,7 @@ def setup_wiki():
             elif name == eLabel.CAT_CREATIONS_LABEL:
                 for item_cat in entry:
                     item_type = item_cat[eLabel.CREATION_TYPE_LABEL]
-                    item_drawback = item_cat[eLabel.CREATION_DRAWBACK_LABEL] if eLabel.CREATION_DRAWBACK_LABEL in entry else ""
+                    item_drawback = item_cat[eLabel.CREATION_DRAWBACK_LABEL] if eLabel.CREATION_DRAWBACK_LABEL in item_cat else ""
                     for item in item_cat[eLabel.LIST_LABEL]:
                         item[eLabel.CREATION_TYPE_LABEL] = item_type
                         item[eLabel.CREATION_DRAWBACK_LABEL] = item_drawback
