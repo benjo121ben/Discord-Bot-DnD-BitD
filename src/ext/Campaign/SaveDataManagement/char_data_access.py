@@ -30,7 +30,7 @@ def get_char_tag_by_id(executing_user: str, search_user_id: str = None) -> str:
     if search_user_id is None:
         search_user_id = executing_user
     check_file_loaded(executing_user, raise_error=True)
-    for char in get_loaded_chars(search_user_id).values():
+    for char in get_loaded_chars(executing_user).values():
         if char.player == search_user_id:
             return char.tag
     raise CommandException("This user does not have an assigned character")

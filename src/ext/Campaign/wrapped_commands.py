@@ -134,6 +134,11 @@ async def load_command(ctx: BridgeExtContext, file_name: str):
                                         lambda executing_user: bcom.load_or_create_save(executing_user, file_name))
 
 
+async def rem_player(ctx: BridgeExtContext, user_id: str):
+    await catch_and_respond_file_action(ctx,
+                                        lambda executing_user: bcom.remove_player(executing_user, user_id))
+
+
 async def claim(ctx: BridgeExtContext, char_tag: str, user_id: str = None):
     await catch_async_file_action(ctx,
                                   lambda executing_user: bcom.claim_character(executing_user, ctx, char_tag, user_id))

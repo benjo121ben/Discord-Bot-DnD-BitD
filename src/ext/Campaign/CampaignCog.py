@@ -89,6 +89,10 @@ class CampaignCog(Cog):
     async def unclaim(self, ctx: BridgeExtContext, character_tag: str = None):
         await commands.unclaim(ctx, character_tag)
 
+    @slash_command(name="player_rem", description="Remove player from this savefile")
+    async def rem_player(self, ctx: BridgeExtContext, user_id: str):
+        await commands.rem_player(ctx, user_id)
+
     @slash_command(name="cache", description="Admin command: caches the last save file into the provided server chat")
     async def cache(self, ctx: BridgeExtContext):
         await commands.cache(ctx)

@@ -9,16 +9,16 @@ from .save_file_management import save_file_to_parsed_dictionary, save_data_to_f
 USER_ID_DELETION_SECONDS = 10800
 FILE_DELETION_SECONDS = 3600
 
-new_ID_dict = TempEntryDict(USER_ID_DELETION_SECONDS, "ID")
-new_file_dict = TempEntryDict(FILE_DELETION_SECONDS, "File")
+ID_dict = TempEntryDict(USER_ID_DELETION_SECONDS, "ID")
+file_dict = TempEntryDict(FILE_DELETION_SECONDS, "File")
 logger = logging.getLogger('bot')
 
 
 def setup_live_save_data():
-    global new_ID_dict, new_file_dict
+    global ID_dict, file_dict
     setup_save_folders()
-    new_ID_dict.clear()
-    new_file_dict.clear()
+    ID_dict.clear()
+    file_dict.clear()
 
 
 def check_file_loaded(user_id: str, raise_error: bool = False) -> bool:
@@ -37,17 +37,17 @@ def check_file_loaded(user_id: str, raise_error: bool = False) -> bool:
 
 
 def get_loaded_filename(user_id: str) -> str:
-    global new_ID_dict
+    global ID_dict
     """
     Gets the filename assigned to a user
     :param user_id: the id of the user trying to access their savefile
     :return: The filename assigned to the user or None if no file was assigned
     """
-    return new_ID_dict.get(user_id)
+    return ID_dict.get(user_id)
 
 
 def get_loaded_dict(user_id: str) -> dict:
-    global new_ID_dict, new_file_dict
+    global ID_dict, file_dict
     """
     Gets the savefile dictionary assigned to a user, or None if the user does not have an assigned savefile. If the
     file is not in memory, it will attempt to load the file from the drive, which may cause a SaveFileNotFoundException.
@@ -58,24 +58,27 @@ def get_loaded_dict(user_id: str) -> dict:
     :raises SaveFileNotFoundException
     :raises NoAssignedSaveException
     """
-    _save_name = new_ID_dict.get(user_id)
+    _save_name = ID_dict.get(user_id)
     if _save_name is None:
+        print(f"here {user_id}")
+        for entry in ID_dict.temp_entries:
+            print(entry)
         raise NoAssignedSaveException()
 
     try:
         access_file_as_user(user_id, _save_name)
     except UserNotPlayerException:
-        new_ID_dict.remove(user_id)
+        ID_dict.remove(user_id)
         raise UserNotPlayerException("It seems you had your access rights to this savefile removed.\n"
                                      "Please contact the admin of the savefile you are trying to access")
 
-    return new_file_dict.get(_save_name)
+    return file_dict.get(_save_name)
 
 
 def check_file_player(user_id: str, _save_name: str, raise_error=False) -> bool:
-    global new_file_dict
+    global file_dict
     load_file_into_memory(_save_name)
-    if user_id in new_file_dict.get(_save_name)[players_tag]:
+    if user_id in file_dict.get(_save_name)[players_tag]:
         return True
     elif raise_error:
         raise UserNotPlayerException()
@@ -107,40 +110,86 @@ def get_loaded_chars(user_id: str) -> dict[str, Character]:
 
 
 def access_file_as_user(user_id: str, _save_name: str) -> str:
-    global new_ID_dict
+    global ID_dict
     check_file_player(user_id, _save_name, True)
-    new_ID_dict.set(user_id, _save_name)
+    ID_dict.set(user_id, _save_name)
     return f"Savefile {_save_name} exists.\n Data loaded."
 
 
 def save_user_file(user_id: str):
     file_name = get_loaded_filename(user_id)
     if file_name is not None:
-        save_data_to_file(file_name, new_file_dict.get(file_name))
+        save_data_to_file(file_name, file_dict.get(file_name))
     else:
         raise Exception("save_user_file was called for a user that had no savefile assigned")
 
 
 def load_file_into_memory(_file_name, replace=False):
-    global new_file_dict
-    if _file_name not in new_file_dict or replace:
-        new_file_dict.set(_file_name, save_file_to_parsed_dictionary(_file_name))
-        logger.info(f"Loaded {_file_name} into meomory")
+    """
+    Loads a file into memory if it was not already there
+
+    :param _file_name: the save_name without suffix of the file that should be loaded
+    :param replace:
+    :return:
+    """
+    global file_dict
+    if _file_name not in file_dict or replace:
+        file_dict.set(_file_name, save_file_to_parsed_dictionary(_file_name))
+        logger.debug(f"Loaded {_file_name} into meomory")
     else:
-        logger.info(f"{_file_name} already in meomory. Did not require loading")
+        logger.debug(f"{_file_name} accessed")
 
 
 def unload_all_files_and_users():
-    global new_file_dict, new_ID_dict
-    new_file_dict.clear()
-    new_ID_dict.clear()
+    global file_dict, ID_dict
+    file_dict.clear()
+    ID_dict.clear()
 
 
-def new_save(executing_user: str, file_name: str) -> str:
-    global new_file_dict, new_ID_dict
+def create_new_save(executing_user: str, file_name: str) -> str:
+    """
+    Creates a new save file in memory, which will be saved once the first character is added
+
+    :param executing_user: the executing users id
+    :param file_name: the save_name without suffix of the new save
+    :return: The text that should be shown to the user
+    """
+    global file_dict, ID_dict
     logger.info("new save called")
-    new_file_dict.set(file_name, create_fresh_save(executing_user))
+    file_dict.set(file_name, create_fresh_save(executing_user))
 
-    new_ID_dict.set(executing_user, file_name)
+    ID_dict.set(executing_user, file_name)
     return f"savefile name\n**{file_name}**\nhas not been claimed.\n" \
            "Create a character with the add_char command to claim it for yourself, make sure to write down the file's name"
+
+
+def add_player_to_save(executing_user: str, new_user: str) -> str:
+    check_file_admin(executing_user, raise_error=True)
+    _dict = get_loaded_dict(executing_user)
+    players: list[str] = _dict[players_tag]
+    if new_user in players:
+        return f"player {new_user} is already part of save_file {get_loaded_filename(executing_user)}"
+
+    players.append(new_user)
+    _dict[players_tag] = players
+    ret = f"player {new_user} added to save_file {get_loaded_filename(executing_user)}"
+    logger.info(ret)
+    return ret
+
+
+def rem_player_from_save(executing_user: str, rem_user: str) -> str:
+    check_file_admin(executing_user, raise_error=True)
+    _dict = get_loaded_dict(executing_user)
+    players: list[str] = _dict[players_tag]
+    if rem_user not in players:
+        return f"player {rem_user} is not part of savefile {get_loaded_filename(executing_user)}"
+
+    players.remove(rem_user)
+    for char in get_loaded_chars(executing_user).values():
+        if char.player == rem_user:
+            char.set_player("")
+    _dict[players_tag] = players
+    ret = f"player {rem_user} removed from save_file {get_loaded_filename(executing_user)}"
+    logger.info(ret)
+    return ret
+

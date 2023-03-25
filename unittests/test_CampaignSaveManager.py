@@ -23,7 +23,7 @@ class TestCampaignSaveManager:
         move_template_save_to_save_folder(template_file_name)
         live_manager.access_file_as_user(test_user_id, unit_test_save_file_name)
         assert live_manager.get_loaded_filename(test_user_id) == unit_test_save_file_name
-        assert unit_test_save_file_name in live_manager.new_file_dict
+        assert unit_test_save_file_name in live_manager.file_dict
         with open(get_template_path(template_file_name)) as file:
             file_dic = json.load(file)
 
