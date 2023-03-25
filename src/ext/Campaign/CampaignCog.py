@@ -10,7 +10,7 @@ logger = logging.getLogger('bot')
 
 class CampaignCog(Cog):
     @slash_command(
-        name="char_add",
+        name="add",
         description="Add Character to save file. If user_id is provided, it tries to claim the character for that user"
     )
     async def add_c(self, ctx: BridgeExtContext, char_tag: str, char_name: str, user_id: str = None):
@@ -55,10 +55,17 @@ class CampaignCog(Cog):
 
     @slash_command(
         name="retag",
-        description="Retag a character on the current save file."
+        description="Change the tag of a character on the current save file."
     )
     async def retag_pc(self, ctx: BridgeExtContext, char_tag_old: str, char_tag_new: str):
         await commands.retag_pc(ctx, char_tag_old, char_tag_new)
+
+    @slash_command(
+        name="rename",
+        description="Change the name of a character on the current save file."
+    )
+    async def rename_pc(self, ctx: BridgeExtContext, char_tag: str, char_name_new: str):
+        await commands.rename_pc(ctx, char_tag, char_name_new)
 
     @slash_command(name="session", description="increase session counter by 1")
     async def session(self, ctx: BridgeExtContext):

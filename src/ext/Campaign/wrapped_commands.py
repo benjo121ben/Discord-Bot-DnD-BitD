@@ -124,6 +124,11 @@ async def retag_pc(ctx: BridgeExtContext, char_tag_old: str, char_tag_new: str):
                                         lambda executing_user: bcom.retag_character(executing_user, char_tag_old, char_tag_new))
 
 
+async def rename_pc(ctx: BridgeExtContext, char_tag: str, new_char_name: str):
+    await catch_and_respond_file_action(ctx,
+                                        lambda executing_user: bcom.rename_character(executing_user, char_tag, new_char_name))
+
+
 async def load_command(ctx: BridgeExtContext, file_name: str):
     await catch_and_respond_file_action(ctx,
                                         lambda executing_user: bcom.load_or_create_save(executing_user, file_name))

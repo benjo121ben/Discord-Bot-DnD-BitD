@@ -20,6 +20,9 @@ def get_asset_folder_filepath():
 
 
 async def blades_roll_command(ctx, dice_amount: int):
+    if dice_amount < 0:
+        ctx.respond("Please input a positive number for dice")
+        return
     erg, rolled_array = get_blades_roll(dice_amount)
     spritesheet = Image.open(get_spritesheet_filepath()).convert('RGBA')
     dice_sprite_size = get_sprite_size()
@@ -51,6 +54,9 @@ async def blades_roll_command(ctx, dice_amount: int):
 
 
 async def all_size_roll(ctx, dice_amount, dice_type):
+    if dice_amount < 0 or dice_type < 0:
+        ctx.respond("Please input a positive number for dice amount and size")
+        return
     rolled_array = get_roll(dice_amount, dice_type)
     base_image = Image.open(get_die_base_image_filepath(dice_type)).convert('RGBA')
     new_dice_size = base_image.size

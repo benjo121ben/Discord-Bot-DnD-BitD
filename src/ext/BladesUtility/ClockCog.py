@@ -27,7 +27,7 @@ async def print_clock(ctx, clock: Clock):
 class ClockCog(commands.Cog):
 
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
-    async def add_clock(self, ctx, clock_tag: str, clock_name: str, clock_size: int, clock_ticks: int = 0):
+    async def add_clock(self, ctx, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
         clock_tag = clock_tag.lower()
         clock_dic = load_clocks(user_id)
@@ -39,7 +39,7 @@ class ClockCog(commands.Cog):
             await ctx.respond(content="This clock already exists!")
             await print_clock(ctx, clock_dic[clock_tag])
         else:
-            clock_dic[clock_tag] = Clock(clock_tag, clock_name, clock_size, clock_ticks)
+            clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
             save_clocks(user_id, clock_dic)
             await ctx.respond("Clock created")
             await print_clock(ctx, clock_dic[clock_tag])

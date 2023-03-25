@@ -34,13 +34,13 @@ class BladesUtilityCog(commands.Cog):
             await ctx.respond(str(e))
 
     @slash_command(name="roll", description="tests the all roll")
-    async def types_roll(self, ctx, dice_amount: int, dice_type: int):
-        await all_size_roll(ctx, dice_amount, dice_type)
+    async def types_roll(self, ctx, dice_amount: int, dice_size: int):
+        await all_size_roll(ctx, dice_amount, dice_size)
 
     @slash_command(name="wiki",
                    description="Prints out the item description for the selected item")
-    async def wiki(self, ctx, item_name: str):
-        await wiki_search(ctx, item_name)
+    async def wiki(self, ctx, entry_name: str):
+        await wiki_search(ctx, entry_name)
 
 
 def setup(bot: bridge.Bot):
