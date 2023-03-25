@@ -101,7 +101,7 @@ There are entries for
 * Playbook Items
 * Created Items/Leech Alchemicals
 * Playbook overviews
-* Action Ratings
+* Actions
 
 ---
 
