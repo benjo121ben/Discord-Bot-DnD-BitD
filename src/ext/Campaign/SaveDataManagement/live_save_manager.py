@@ -60,9 +60,6 @@ def get_loaded_dict(user_id: str) -> dict:
     """
     _save_name = ID_dict.get(user_id)
     if _save_name is None:
-        print(f"here {user_id}")
-        for entry in ID_dict.temp_entries:
-            print(entry)
         raise NoAssignedSaveException()
 
     try:

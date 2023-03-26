@@ -29,7 +29,6 @@ class TestCampaignSaveManager:
 
         # check file stats
         loaded_dict = live_manager.get_loaded_dict(test_user_id)
-        print(loaded_dict[save_manager.last_changed_tag])
         assert file_dic[save_manager.session_tag] == loaded_dict[save_manager.session_tag]
         assert save_manager.str_to_datetime(file_dic[save_manager.last_changed_tag]) \
                == loaded_dict[save_manager.last_changed_tag]

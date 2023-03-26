@@ -92,17 +92,12 @@ def log(executing_user: str, adv=False) -> str:
 
 @check_and_save_file_wrapper_async
 async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: str, assigned_user_id: str):
-    print(f"exec {executing_user}")
-    print(f"assigned {assigned_user_id}")
     if assigned_user_id is None:
         assigned_user_id = str(ctx.author.id)
     if check_if_user_has_char(executing_user, assigned_user_id):
-        print("ERRPR")
         raise CommandException(
             f"this user already has character {get_char_tag_by_id(executing_user, assigned_user_id)} assigned")
-    print("here2")
     _character = get_char(executing_user, char_tag)
-    print("here2.1")
     _current_player = _character.player
 
     if _current_player != "" and _current_player != executing_user and not check_file_admin(executing_user):
@@ -110,7 +105,6 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
             "You are not authorized to assign this character. It has already been claimed by a user.")
     _character.set_player(assigned_user_id)
     Undo.queue_basic_action(executing_user, char_tag, "player", _current_player, assigned_user_id)
-    print("here3")
 
     user = None
     try:
@@ -121,11 +115,8 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
         await ctx.respond("An error has occurred while fetching the user with this ID.\n")
         Undo.undo(executing_user)
         Undo.discard_undo_queue_after_pointer(executing_user)
-        print("here4")
         return
-    print("here5")
     add_player_to_save(executing_user, assigned_user_id)
-    print("here6")
     await ctx.respond(f"{char_tag} assigned to {user.name}")
 
 
