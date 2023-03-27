@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Coroutine
+from typing import Any, Coroutine, Callable
 
 import pytest
 from discord.ext.bridge import BridgeExtContext
@@ -53,6 +53,14 @@ async def assert_command(value: Coroutine):
 async def assert_failed_command(value: Coroutine, undo_len: int):
     assert not await value
     assert len(Undo.get_action_queue(test_user_id)) == undo_len
+
+
+async def undo_redo(cog: CampaignCog, ctx: BridgeExtContext, pre_undo_assert: Callable, post_undo_assert: Callable):
+    pre_undo_assert()
+    await assert_command(cog.undo(ctx))
+    post_undo_assert()
+    await assert_command(cog.redo(ctx))
+    pre_undo_assert()
 
 
 class TestCampaignCogInvalid:
