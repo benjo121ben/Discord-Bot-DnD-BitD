@@ -1,15 +1,17 @@
+import copy
 import logging
 
 import decohints
 from functools import wraps
 
 from discord.ext.bridge import BridgeExtContext
-import discord.errors as d_errors
-from .Character import Character
-from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, check_savefile_existence, \
+from .Character import Character, LABEL_PLAYER
+from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
+    check_savefile_existence, \
     get_savefile_as_discord_file
 from .SaveDataManagement.live_save_manager import save_user_file, check_file_loaded, get_loaded_dict, \
-    get_loaded_chars, check_file_admin, access_file_as_user, create_new_save, get_loaded_filename, add_player_to_save, rem_player_from_save
+    get_loaded_chars, check_file_admin, access_file_as_user, create_new_save, get_loaded_filename, add_player_to_save, \
+    rem_player_from_save
 from .SaveDataManagement.char_data_access import check_char_tag, get_char_tag_by_id, check_if_user_has_char, get_char, \
     retag_char
 from .campaign_exceptions import CommandException
@@ -28,6 +30,7 @@ def check_and_save_file_wrapper(function_to_wrap):
     :param function_to_wrap: the function that is called
     :return: wrapped function
     """
+
     @wraps(function_to_wrap)
     def wrapped_func(*args, **kwargs):
         user_id = args[0]
@@ -35,6 +38,7 @@ def check_and_save_file_wrapper(function_to_wrap):
         value = function_to_wrap(*args, **kwargs)
         save_user_file(user_id)
         return value
+
     return wrapped_func
 
 
@@ -47,6 +51,7 @@ def check_and_save_file_wrapper_async(function_to_wrap):
     :param function_to_wrap: the function that is called
     :return: wrapped function
     """
+
     @wraps(function_to_wrap)
     async def wrapped_func(*args, **kwargs):
         user_id = args[0]
@@ -54,6 +59,7 @@ def check_and_save_file_wrapper_async(function_to_wrap):
         value = await function_to_wrap(*args, **kwargs)
         save_user_file(user_id)
         return value
+
     return wrapped_func
 
 
@@ -104,7 +110,6 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
         raise CommandException(
             "You are not authorized to assign this character. It has already been claimed by a user.")
     _character.set_player(assigned_user_id)
-    Undo.queue_basic_action(executing_user, char_tag, "player", _current_player, assigned_user_id)
 
     user = None
     try:
@@ -116,7 +121,13 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
         Undo.undo(executing_user)
         Undo.discard_undo_queue_after_pointer(executing_user)
         return
+
+    old_player_list = copy.deepcopy(get_loaded_dict(executing_user)[players_tag])
     add_player_to_save(executing_user, assigned_user_id)
+    claim_undo = UndoActions.StatUndoAction(char_tag, LABEL_PLAYER, _current_player, assigned_user_id)
+    players_undo = UndoActions.FileDataUndoAction(players_tag, old_player_list,
+                                                  copy.deepcopy(get_loaded_dict(executing_user)[players_tag]))
+    Undo.queue_undo_action(executing_user, UndoActions.UndoActionGroup([claim_undo, players_undo]))
     await ctx.respond(f"{char_tag} assigned to {user.name}")
 
 
@@ -134,8 +145,25 @@ def unclaim_char(executing_user: str, char_tag: str):
 
 
 @check_and_save_file_wrapper
+def add_player(executing_user: str, user_id: str):
+    old_player_list = copy.deepcopy(get_loaded_dict(executing_user)[players_tag])
+    ret = add_player_to_save(executing_user, user_id)
+    Undo.queue_undo_action(executing_user,
+                           UndoActions.FileDataUndoAction(players_tag,
+                                                          old_player_list,
+                                                          copy.deepcopy(get_loaded_dict(executing_user)[players_tag])))
+    return ret
+
+
+@check_and_save_file_wrapper
 def remove_player(executing_user: str, user_id: str):
-    return rem_player_from_save(executing_user, user_id)
+    old_player_list = copy.deepcopy(get_loaded_dict(executing_user)[players_tag])
+    ret = rem_player_from_save(executing_user, user_id)
+    Undo.queue_undo_action(executing_user,
+                           UndoActions.FileDataUndoAction(players_tag,
+                                                          old_player_list,
+                                                          copy.deepcopy(get_loaded_dict(executing_user)[players_tag])))
+    return ret
 
 
 # adds new character to the roster
@@ -148,11 +176,27 @@ def add_char(executing_user: str, tag: str, char_name: str) -> str:
         )
 
     if check_char_tag(executing_user, tag):
-        return "a character with this tag already exists"
+        raise CommandException("a character with this tag already exists")
     if len(get_loaded_chars(executing_user)) == 10:
-        return "You already have 10 characters, this is the maximum amount"
-    get_loaded_chars(executing_user)[tag] = Character(tag, char_name)
+        raise CommandException("You already have 10 characters, this is the maximum amount")
+
+    _char = Character(tag, char_name)
+    get_loaded_chars(executing_user)[tag] = _char
+    Undo.queue_undo_action(executing_user, UndoActions.CharUndoAction(None, _char))
     return "character " + char_name + " added"
+
+
+# remove character from the roster
+@check_and_save_file_wrapper
+def rem_char(executing_user: str, tag: str) -> str:
+    check_char_tag(executing_user, tag, raise_error=True)
+    _char = get_char(executing_user, tag)
+    if _char.player == "" or _char.player == executing_user or check_file_admin(executing_user, True):
+        del get_loaded_chars(executing_user)[tag]
+        Undo.queue_undo_action(executing_user, UndoActions.CharUndoAction(_char, None))
+        return "character " + _char.name + " deleted"
+    else:
+        return "You are not authorized to delete " + _char.name
 
 
 @check_and_save_file_wrapper
@@ -245,7 +289,8 @@ def session_increase(executing_user: str):
     check_file_admin(executing_user, raise_error=True)
     current_session = get_loaded_dict(executing_user)[session_tag]
     get_loaded_dict(executing_user)[session_tag] += 1
-    Undo.queue_undo_action(executing_user, UndoActions.ChangeFileDataUndoAction(session_tag, current_session, current_session + 1))
+    Undo.queue_undo_action(executing_user,
+                           UndoActions.FileDataUndoAction(session_tag, current_session, current_session + 1))
     return "finished session, increased by one"
 
 
@@ -276,9 +321,9 @@ def undo_command(executing_user: str, amount: int):
     if amount > 10:
         amount = 10
     ret_val = ""
-    for _ in range(amount):
+    for nr in range(amount):
         keep_going, text = Undo.undo(executing_user)
-        ret_val += f'{text}\n'
+        ret_val += f'{text}\n' if (nr < amount-1) else text
         if get_loaded_filename(executing_user) is not None:
             save_user_file(executing_user)
         if not keep_going:
@@ -289,16 +334,14 @@ def undo_command(executing_user: str, amount: int):
 def redo_command(executing_user: str, amount: int) -> str:
     ret_val = ""
 
-    for _ in range(amount):
+    for nr in range(amount):
         keep_going, text = Undo.redo(executing_user)
-        ret_val += f'{text}\n'
+        ret_val += f'{text}\n' if (nr < amount-1) else text
         if get_loaded_filename(executing_user) is not None:
             save_user_file(executing_user)
         if not keep_going:
             return ret_val
     return ret_val
-
-
 
 # def setup_commands():
 #     def add_to_commands(com_name: str, command):

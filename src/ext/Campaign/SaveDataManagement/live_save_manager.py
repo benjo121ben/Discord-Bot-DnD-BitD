@@ -157,7 +157,7 @@ def create_new_save(executing_user: str, file_name: str) -> str:
 
     ID_dict.set(executing_user, file_name)
     return f"savefile name\n**{file_name}**\nhas not been claimed.\n" \
-           "Create a character with the add_char command to claim it for yourself, make sure to write down the file's name"
+           "Create a character with the add command to claim it for yourself, make sure to write down the file's name"
 
 
 def add_player_to_save(executing_user: str, new_user: str) -> str:

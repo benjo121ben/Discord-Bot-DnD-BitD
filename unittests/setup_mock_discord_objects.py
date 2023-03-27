@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Any
 from unittest import mock
 from unittest.mock import AsyncMock, MagicMock
 
@@ -10,6 +10,10 @@ from src.ext.Campaign import CampaignCog as camp_cog, packg_variables as p_vars
 from .test_const_vars import test_discord_username, test_discord_username2, test_user_id
 
 
+def mock_string_layout(value: Any) -> str:
+    return "    " + str(value).replace("\n", "\n    ")
+
+
 def get_mocked_context(author_id: int) -> BridgeExtContext:
     class MockedAuthor:
         def __init__(self, user_id: int):
@@ -17,8 +21,12 @@ def get_mocked_context(author_id: int) -> BridgeExtContext:
 
     ctx = mock.MagicMock(BridgeExtContext)
     ctx.author = MockedAuthor(author_id)
-    ctx.respond = AsyncMock(discord.ext.bridge.BridgeExtContext.respond, side_effect=lambda *args, **kwargs: print(f"mock_respond:{{\n{args[0]}\n}}"))
-    ctx.send = AsyncMock(side_effect=lambda message: print(f"mock_send:{{\n{message}\n}}"))
+    ctx.respond = AsyncMock(
+        discord.ext.bridge.BridgeExtContext.respond,
+        side_effect=lambda *args, **kwargs: print(f"mock_respond:{{\n{mock_string_layout(args[0])}\n}}"))
+    ctx.send = AsyncMock(
+        discord.ext.bridge.BridgeExtContext.send,
+        side_effect=lambda *args, **kwargs: print(f"mock_send:{{\n{mock_string_layout(args[0])}\n}}"))
     return ctx
 
 
