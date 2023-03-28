@@ -89,19 +89,27 @@ class TestCampaignCogInvalid:
     async def test_invalid_creation(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
         cog, ctx = create_cog_and_load
         assert str(ctx.author.id) == test_user_id
-        await assert_command(cog.add_c(ctx, test_char_tag, "test"))
+        await assert_command(cog.add_c(ctx, test_char_tag, "testName"))
         assert len(Undo.get_action_queue(test_user_id)) == 2
 
-        #repeated add
-        await assert_failed_command(cog.add_c(ctx, test_char_tag, "test"), 2)
+        # repeated add
+        await assert_failed_command(cog.add_c(ctx, test_char_tag, "testName"), 2)
 
-        #invalid add
-        await assert_failed_command(cog.add_c(ctx, "all", "test"), 2)
+        # invalid tag add
+        await assert_failed_command(cog.add_c(ctx, "all", "testName"), 2)
+
+        await assert_command(cog.claim(ctx, test_char_tag, test_user_id))
+
+        # valid creation but claim part doesn't work
+        await assert_failed_command(cog.add_c(ctx, "test2", "testName", test_user_id), 4)
+
+        assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, test_user_id)
+        assert_char_value_base_save("test2", char_file.LABEL_PLAYER, "")
 
         # add enough characters to fill up
-        for i in range(9):
+        for i in range(8):
             await assert_command(cog.add_c(ctx, str(i), "test"))
 
-        #failed cause too many characters
+        # failed cause too many characters
         await assert_failed_command(cog.add_c(ctx, "ttt", "test"), 10)
 

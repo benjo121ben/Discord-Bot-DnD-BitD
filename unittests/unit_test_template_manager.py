@@ -4,7 +4,7 @@ import shutil
 from .test_const_vars import template_save_folder_relative_path, unit_test_save_file_name
 from src.ext.Campaign.SaveDataManagement.save_file_management import save_files_suffix
 from src.ext.Campaign.SaveDataManagement import save_file_management as save_manager, live_save_manager as live_manager
-from src.ext.Campaign import Undo
+from src.ext.Campaign import Undo, packg_variables as packg_vars
 this_file_folder_path = pathlib.Path(__file__).parent.resolve()
 
 
@@ -25,3 +25,4 @@ def cleanup_template():
     Undo.reset_undo()
     live_manager.unload_all_files_and_users()
     save_manager.remove_save_file(unit_test_save_file_name)
+    packg_vars.bot_admin_id = None

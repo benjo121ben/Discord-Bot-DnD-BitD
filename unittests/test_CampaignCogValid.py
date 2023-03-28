@@ -456,3 +456,10 @@ class TestCampaignCogValid:
 
         await assert_command(cog.rem_player(ctx, "3"))
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
+
+    @pytest.mark.asyncio
+    async def test_cache_admin(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+        cog, ctx = create_char
+        packg_vars.bot_admin_id = ctx.author.id
+        await assert_command(cog.cache(ctx))
+
