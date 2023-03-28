@@ -4,6 +4,8 @@ import time
 import discord
 from discord.ext import bridge
 from aiohttp import ClientConnectorError
+from discord.ext.bridge import BridgeExtContext
+
 from .ext.Campaign import packg_variables as c_var
 from . import GlobalVariables, command_helper_functions as hlp_f
 
@@ -37,17 +39,17 @@ async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bo
                     f"We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.command(name="r")
-    async def reload(ctx):
+    async def reload(ctx: BridgeExtContext):
         if not hlp_f.check_admin(ctx):
             await ctx.send("you are not authorized to use this command")
-            logger.info(f"user {ctx.user} attempted to use reload command")
+            logger.info(f"user {ctx.author.name} attempted to use reload command")
             return
         load_extensions(GlobalVariables.bot, reload=True)
         await ctx.send("reloaded")
-        logger.info(f"user {ctx.user} reloaded bot")
+        logger.info(f"user {ctx.author.name} reloaded bot")
 
     @GlobalVariables.bot.slash_command(name="ping")
-    async def ping(ctx):
+    async def ping(ctx: BridgeExtContext):
         await ctx.respond("pong")
 
     logger.info("attempting bot startup")
@@ -75,14 +77,20 @@ def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
 
     global logger
     logger.info("\n---------------------LOADING EXTENSIONS---------------------\n")
-    if modules_list is None:
+    if modules_list is not None:
+        GlobalVariables.modules_list = modules_list
+    if GlobalVariables.modules_list is None:
         load_ext("Campaign.CampaignCog")
+        load_ext("BladesUtility.RollUtilityCog")
         load_ext("BladesUtility.BladesUtilityCog")
         load_ext("BladesUtility.ClockCog")
     else:
-        if modules_list[0]:
+        if GlobalVariables.modules_list[0] or GlobalVariables.modules_list[1]:
+            load_ext("BladesUtility.RollUtilityCog")
+
+        if GlobalVariables.modules_list[0]:
             load_ext("Campaign.CampaignCog")
-        if modules_list[1]:
+        if GlobalVariables.modules_list[1]:
             load_ext("BladesUtility.BladesUtilityCog")
             load_ext("BladesUtility.ClockCog")
 
