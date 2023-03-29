@@ -53,36 +53,51 @@ async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int):
 
 
 async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
-    if dice_amount < 0 or dice_type < 0:
-        await ctx.respond()
-        return
     rolled_array = get_roll(dice_amount, dice_type)
+    logger.info("here1")
     if dice_amount <= 10 and dice_type <= 100:
+        logger.info("here2")
         # generate image
         max_columns = 5
         spritesheet = image_open(get_sized_dice_spritesheet_filepath()).convert('RGBA')
+        logger.info("here3")
         base_sprite_indx = get_base_sprite_indx(dice_type)
+        logger.info("here4")
         die_size = get_sided_die_sprite_size()
+        logger.info("here5")
         base_image = get_sprite_from_uniform_spritesheet(spritesheet, die_size, base_sprite_indx)
+        logger.info("here6")
         end_image = generate_end_image(dice_amount, die_size, max_columns, True)
+        logger.info("here7")
         # Combine image with numbers and paste onto the result
         index = 0
         for nr_rolled, amount_rolled in enumerate(rolled_array):
             for _ in range(amount_rolled):
+                logger.info(f"here8, {nr_rolled}")
                 paste_nr_image(spritesheet, end_image, base_image, index, max_columns, nr_rolled)
+                logger.info(f"here8, {nr_rolled}.2")
                 index += 1
+        logger.info(f"here9")
         merged_file_path = get_asset_folder_filepath() + "merged.png"
+        logger.info(f"here10")
         end_image.save(merged_file_path, "PNG")
+        logger.info(f"here11")
         await ctx.respond(file=File(merged_file_path))
+        logger.info(f"here12")
         os.remove(merged_file_path)
+        logger.info(f"here13")
     else:
+        logger.info(f"here14")
         sum_val = 0
         nr_attachment = "Numbers rolled:\n"
         for indx, val in enumerate(rolled_array):
             if val > 0:
+                logger.info(f"here15")
                 nr_attachment += f"**{indx + 1}**: {val} times\n"
                 sum_val += (indx + 1) * val
+        logger.info(f"here16")
         await ctx.respond(embed=Embed(title=f"**{dice_amount}d{dice_type}= {sum_val}**", description=nr_attachment))
+        logger.info(f"here17")
 
 
 def paste_nr_image(spritesheet: Image, end_image: Image, base_image: Image, index: int, max_columns: int,

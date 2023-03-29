@@ -1,4 +1,4 @@
-from src.ext.command_exceptions import CommandException
+from ..command_exceptions import CommandException
 
 
 class NotFileAdminException(CommandException):
