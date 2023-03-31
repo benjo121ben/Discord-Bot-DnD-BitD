@@ -54,6 +54,15 @@ async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int):
 
 async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
     rolled_array = get_roll(dice_amount, dice_type)
+    merged_file_path = get_asset_folder_filepath() + "merged.png"
+
+    sum_val = 0
+    nr_attachment = "Numbers rolled:\n"
+    for indx, val in enumerate(rolled_array):
+        if val > 0:
+            nr_attachment += f"**{indx + 1}**: {val}x = {(indx+1) * val}\n"
+            sum_val += (indx + 1) * val
+    embed = Embed(title=f"**{dice_amount}d{dice_type}= {sum_val}**")
     if dice_amount <= 10 and dice_type <= 100:
         # generate image
         max_columns = 5
@@ -66,22 +75,16 @@ async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int)
         index = 0
         for nr_rolled, amount_rolled in enumerate(rolled_array):
             for _ in range(amount_rolled):
-                logger.info(f"here8, {nr_rolled}")
                 paste_nr_image(spritesheet, end_image, base_image, index, max_columns, nr_rolled)
-                logger.info(f"here8, {nr_rolled}.2")
                 index += 1
-        merged_file_path = get_asset_folder_filepath() + "merged.png"
         end_image.save(merged_file_path, "PNG")
-        await ctx.respond(file=File(merged_file_path))
+        image_file = File(merged_file_path)
+        embed.set_image(url=f"attachment://{image_file.filename}")
+        await ctx.respond(file=image_file, embed=embed)
         os.remove(merged_file_path)
     else:
-        sum_val = 0
-        nr_attachment = "Numbers rolled:\n"
-        for indx, val in enumerate(rolled_array):
-            if val > 0:
-                nr_attachment += f"**{indx + 1}**: {val} times\n"
-                sum_val += (indx + 1) * val
-        await ctx.respond(embed=Embed(title=f"**{dice_amount}d{dice_type}= {sum_val}**", description=nr_attachment))
+        embed.description = nr_attachment
+        await ctx.respond(embed=embed)
 
 
 def paste_nr_image(spritesheet: Image, end_image: Image, base_image: Image, index: int, max_columns: int,
