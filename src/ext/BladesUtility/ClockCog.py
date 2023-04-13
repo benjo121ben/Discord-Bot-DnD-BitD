@@ -29,7 +29,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
     async def add_clock(self, ctx, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
-        clock_tag = clock_tag.lower()
+        clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 40:
             await ctx.respond("You already have 40 clocks, please remove one.")
@@ -47,7 +47,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
     async def remove_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
-        clock_tag = clock_tag.lower()
+        clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
         if clock_tag in clock_dic:
             del clock_dic[clock_tag]
@@ -59,7 +59,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
     async def show_clock(self, ctx, clock_tag: str):
         user_id = str(ctx.author.id)
-        clock_tag = clock_tag.lower()
+        clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
         if clock_tag in clock_dic:
             await print_clock(ctx, clock_dic[clock_tag])
@@ -71,7 +71,7 @@ class ClockCog(commands.Cog):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 0:
-            await ctx.respond("You have no existing clock. use the add command to create clocks.")
+            await ctx.respond("You have no existing clock. use the clock_add command to create clocks.")
             return
 
         all_c = "These are the clocks that you have created:\n"
@@ -82,7 +82,7 @@ class ClockCog(commands.Cog):
     @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
     async def tick_clock(self, ctx, clock_tag: str, ticks: int = 1):
         user_id = str(ctx.author.id)
-        clock_tag = clock_tag.lower()
+        clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
         clock = clock_dic.get(clock_tag)
         if clock:
