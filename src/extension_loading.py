@@ -21,7 +21,9 @@ def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
         load_ext("BladesUtility.RollUtilityCog")
         load_ext("BladesUtility.BladesUtilityCog")
         load_ext("BladesUtility.ClockCog")
+        load_ext("DebugCog", "src.")
     else:
+        load_ext("DebugCog", "src.")
         if GlobalVariables.modules_list[0] or GlobalVariables.modules_list[1]:
             load_ext("BladesUtility.RollUtilityCog")
 
