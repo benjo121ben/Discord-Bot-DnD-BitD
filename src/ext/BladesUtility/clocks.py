@@ -77,7 +77,12 @@ def load_clocks(user_id: str):
         return {}
 
 
-def save_clocks(user_id: str, clocks_save_dic):
+def save_clocks(user_id: str, clocks_save_dic: dict):
+    if len(clocks_save_dic) == 0:
+        if exists(get_clock_save_filepath(user_id)):
+            os.remove(get_clock_save_filepath(user_id))
+        return
+
     if not exists(get_clock_save_filepath(user_id)):
         path = ""
         for path_part in get_clock_save_filepath(user_id).split(os.sep):
