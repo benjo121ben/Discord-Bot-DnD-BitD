@@ -22,9 +22,7 @@ class MyInternetException(Exception):
 async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bool]):
     global logger, retry_connection
     logger = logging.getLogger('bot')
-    intents = discord.Intents.default()
-    intents.message_content = True
-    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix, intents=intents)
+    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix)
     c_var.bot = GlobalVariables.bot
     load_extensions(GlobalVariables.bot, modules_list)
 
