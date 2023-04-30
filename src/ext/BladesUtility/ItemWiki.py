@@ -2,13 +2,10 @@ import json
 import os
 import pathlib
 
-from .WikiEntry import EntryLabels as eLabel
-from .WikiEntry.ClassItemEntry import ClassItemEntry
-from .WikiEntry.CompositeEntry import CompositeEntry
-from .WikiEntry.CraftedItemEntry import CraftedItemEntry
-from .WikiEntry.ItemEntry import ItemEntry
-from .WikiEntry.PlaybookEntry import PlaybookEntry
-from .WikiEntry.StatEntry import StatEntry
+from discord.ext.bridge import BridgeExtContext
+
+from . import EntryLabels as eLabel
+from .WikiEntry import WikiEntry
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki = {}
@@ -47,53 +44,68 @@ def setup_wiki():
     with open(wiki_path)as file:
         imported_wiki = json.load(file)
 
-        for name, entry in imported_wiki.items():
-            if name == eLabel.CAT_ITEMS_LABEL:
-                insert_wiki_entry(entry, ItemEntry)
-            elif name == eLabel.CAT_CLASS_ITEMS_LABEL:
-                insert_wiki_entry(entry, ClassItemEntry)
-            elif name == eLabel.CAT_PLAYBOOKS_LABEL:
-                insert_wiki_entry(entry, PlaybookEntry)
-            elif name == eLabel.CAT_STATS_LABEL:
-                composite_wiki_entry = insert_wiki_entry(entry, CompositeEntry)
-                for child in composite_wiki_entry.children:
-                    insert_wiki_entry(child, StatEntry)
-            elif name == eLabel.CAT_CREATIONS_LABEL:
-                for item_cat in entry:
-                    item_type = item_cat[eLabel.CREATION_TYPE_LABEL]
-                    item_drawback = item_cat[eLabel.CREATION_DRAWBACK_LABEL] if eLabel.CREATION_DRAWBACK_LABEL in item_cat else ""
-                    for item in item_cat[eLabel.LIST_LABEL]:
-                        item[eLabel.CREATION_TYPE_LABEL] = item_type
-                        item[eLabel.CREATION_DRAWBACK_LABEL] = item_drawback
-                        insert_wiki_entry(item, CraftedItemEntry)
+    for category in imported_wiki[eLabel.CATEGORIES_LABEL]:
+        if eLabel.CPROP_ENTRIES_LABEL in category:
+            handle_entries(category)
+        if eLabel.CPROP_SUPER_ENTRY_LABEL in category:
+            handle_super_entries(category)
+        if eLabel.CPROP_ENTRYGROUPS_LABEL in category:
+            handle_entrygroup(category)
 
 
-def insert_wiki_entry(checked_object, wiki_entry_class_type):
+
+def handle_entries(category: dict):
+    format_info = category[eLabel.CPROP_FORMATINFO_LABEL] if eLabel.CPROP_FORMATINFO_LABEL in category else {}
+    for entry in category[eLabel.CPROP_ENTRIES_LABEL]:
+        insert_wiki_entry(WikiEntry(entry, format_info))
+
+
+def handle_entrygroup(category: dict):
+    format_info = category[eLabel.CPROP_FORMATINFO_LABEL] if eLabel.CPROP_FORMATINFO_LABEL in category else {}
+    for group in category[eLabel.CPROP_ENTRYGROUPS_LABEL]:
+        for entry in group[eLabel.CPROP_ENTRIES_LABEL]:
+            w_entry = WikiEntry(entry, format_info)
+            for field in group[eLabel.ENTRYGROUP_VALUES_LABEL][eLabel.FIELD_LIST_LABEL]:
+                w_entry.add_field(
+                    field[eLabel.FIELD_HEADER_LABEL],
+                    field[eLabel.FIELD_TEXT_LABEL],
+                    field[eLabel.FIELD_INLINE_LABEL] if eLabel.FIELD_INLINE_LABEL in field else True
+                )
+            insert_wiki_entry(w_entry)
+
+
+def handle_super_entries(category: dict):
+    cat_format_info = category[eLabel.CPROP_FORMATINFO_LABEL] if eLabel.CPROP_FORMATINFO_LABEL in category else {}
+    sup_entry_info = category[eLabel.CPROP_SUPER_ENTRY_LABEL]
+    sup_format_info = sup_entry_info[eLabel.CPROP_FORMATINFO_LABEL] if eLabel.CPROP_FORMATINFO_LABEL in sup_entry_info else {}
+    super_entry = WikiEntry(sup_entry_info, cat_format_info)
+    for entry in sup_entry_info[eLabel.CPROP_ENTRIES_LABEL]:
+        super_entry.add_field(entry[eLabel.TITLE_LABEL], entry[eLabel.DESCRIPTION_LABEL])
+        insert_wiki_entry(WikiEntry(entry, sup_format_info))
+    insert_wiki_entry(super_entry)
+
+
+def insert_wiki_entry(wiki_entry: WikiEntry):
     """
         parses the values inside a list or object type from a json wiki and puts it into the wiki dictionary.
-
-        :param checked_object: The object or list entry
-        :param wiki_entry_class_type: the class that should be used to package the object
-
-        :returns: None if the checked object was a list otherwise it will return the created WikiEntry
+        :param wiki_entry: The wiki entry to be inserted
     """
-    obj = None
-    if type(checked_object) is list:
-        for list_entry in checked_object:
-            key = list_entry[eLabel.NAME_LABEL].lower()
-            wiki[key] = wiki_entry_class_type(list_entry)
+    wiki[wiki_entry.title.lower()] = wiki_entry
+
+
+async def send_wiki_entry(ctx: BridgeExtContext, entry: WikiEntry):
+    embed, file = entry.get_entry_embed()
+    if file is None:
+        await ctx.respond(embed=embed)
     else:
-        key = checked_object[eLabel.NAME_LABEL].lower()
-        obj = wiki_entry_class_type(checked_object)
-        wiki[key] = obj
-    return obj
+        await ctx.respond(embed=embed, file=file)
 
 
-async def wiki_search(ctx, search_term: str):
+async def wiki_search(ctx:BridgeExtContext, search_term: str):
     found = []
     term = search_term.lower()
     if term in wiki:
-        await wiki[term].send_info(ctx)
+        await send_wiki_entry(ctx, wiki[term])
     else:
         for key in wiki.keys():
             if term in key and len(term) >= 4:
@@ -106,7 +118,8 @@ async def wiki_search(ctx, search_term: str):
         found = found[:min(5, len(found))]
 
         if len(found) == 1:
-            await wiki[found[0]["key"]].send_info(ctx)
+            await send_wiki_entry(ctx, wiki[found[0]["key"]])
+
         elif len(found) > 1:
             await ctx.respond("Entry could not be found. Did you mean any of these?\n" +
                               ", ".join(

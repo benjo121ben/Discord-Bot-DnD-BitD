@@ -6,7 +6,7 @@ from os.path import exists
 
 from discord import Embed
 
-from .Entanglement_table import Entanglement_sorting_table
+from .Entanglement_table import entanglement_sorting_table
 
 logger = logging.getLogger('bot')
 imported_expanded_entanglements = {}
@@ -36,7 +36,7 @@ async def entanglement_functionality(ctx, rolled: int, heat: int):
         await ctx.respond("The number rolled has to be between 1 and 6")
         return
     rolled -= 1
-    ent_list = Entanglement_sorting_table[column][rolled]
+    ent_list = entanglement_sorting_table[column][rolled]
     embed = Embed(title="Entanglements", description="choose one!")
     for entanglement in ent_list:
         embed.add_field(name=entanglement, value=imported_expanded_entanglements[entanglement], inline=True)
@@ -56,7 +56,7 @@ def check_entanglement_assets():
     with open(expanded_entanglement_path)as file:
         imported_expanded_entanglements = json.load(file)
     logger.debug("looking for entanglements")
-    for column in Entanglement_sorting_table:
+    for column in entanglement_sorting_table:
         for roll in column:
             for entanglement in roll:
                 if entanglement not in imported_expanded_entanglements:

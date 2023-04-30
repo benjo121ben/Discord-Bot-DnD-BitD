@@ -128,7 +128,7 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
     players_undo = UndoActions.FileDataUndoAction(players_tag, old_player_list,
                                                   copy.deepcopy(get_loaded_dict(executing_user)[players_tag]))
     Undo.queue_undo_action(executing_user, UndoActions.UndoActionGroup([claim_undo, players_undo]))
-    await ctx.respond(f"{char_tag} assigned to {user.name}")
+    await ctx.respond(f"{char_tag} assigned to {user.title}")
 
 
 @check_and_save_file_wrapper
