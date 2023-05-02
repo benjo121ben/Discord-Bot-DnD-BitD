@@ -26,7 +26,8 @@ class WikiEntry:
         self.title = entry_info[TITLE_LABEL]
         self.image = bool(entry_info[IMAGE_LABEL]) if IMAGE_LABEL in entry_info else False
         self.fields = entry_info[FIELD_LIST_LABEL] if FIELD_LIST_LABEL in entry_info else []
-        self.description = entry_info[DESCRIPTION_LABEL] if DESCRIPTION_LABEL in entry_info else ""
+        if DESCRIPTION_LABEL not in entry_info:
+            entry_info[DESCRIPTION_LABEL] = ""
 
     def get_entry_embed(self) -> tuple[Embed, File]:
         embed = Embed(title=self.title_format.format(**self.entry_info), description=self.description_format.format(**self.entry_info))
