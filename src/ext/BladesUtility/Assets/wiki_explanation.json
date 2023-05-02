@@ -1,0 +1,136 @@
+// IMPORTANT:
+// Discord uses markdown for formatting:
+// **word** makes the word bold
+// _word_ or *word* makes a word cursive
+// __word__ makes word underlined
+
+
+{
+  "categories": [
+    {
+      //OPTIONAL: I just use this to be able to differentiate between categories. It has no use in the code
+      "category_name": "standard_items",
+      //OPTIONAL: this assigns how the text is set together for all entries in this category
+      /*HOW IT WORKS:
+      format variables are set for the title, description, field headers and field text of the embed sent back to the user
+      text beween swirly brackets {} are replaced with a variable from the entry. the brackets need to contain the exact
+      name of the variable
+      f.e:
+      {title} will work
+      {tittle} will not work and will lead to an error, not sending the entry
+
+      IMPORTANT:
+      format_title and format_description can only access variables from within entry. they can't access fields
+      format_field_header and format_field_text can only access variables defined within the field itself, nothing else
+      */
+      "format_info": {
+        //OPTIONAL: This defines how the header is built
+        //DEFAULT: "{title}"
+        "format_title": "**{title}**\nPlaybook: _All playbooks_\nItem  Load _{load}_",
+        //OPTIONAL: Defines how the description  is built
+        //DEFUAULT: "{description}"
+        "format_description": "{description}",
+        //OPTIONAL: Defines how the field headers are built
+        //DEFUAULT: "{field_header}"
+        "format_field_header": "**{field_header}**",
+        //OPTIONAL: Defines how the fields texts are built
+        //DEFUAULT: "{field_text}"
+        "format_field_text": "_{field_text}_"
+      },
+      //REQUIRED: contains the entries that will be converted to wiki entries
+      "entries": [
+        {
+          //REQUIRED: title sets the value that needs to be searched to find the entry though it is always converted
+          //to lowercase for searching
+          //It also sets the entry header per default if format_title was not definded for this category
+          "title": "A Blade or two",
+          //OPTIONAL: flags that an image with the same name as the title of the entry is available
+          //VALUES: 1 (image present) or 0 (no image)
+          //DEFAULT: 0
+          "image": 0,
+
+          //OPTIONAL: descriptions are used for the main body text per default if format_description was not given in the format info
+          "description": "Perhaps you carry a simple fighting knife. Or two curved swords. Or a rapier and stiletto. Or a heavy butcher's cleaver.",
+          //OPTIONAL: the fields attribute contains a list of information fields that can be presented inline
+          "fields": [
+            {
+              //REQUIRED: assigns the field header
+              "field_header": "Tip",
+              //REQUIRED: assigns the fields value
+              "field_text": "Your choice of blade might reflect your heritage:\nIn the North (**Akoros** and **Skovlan**) blades tend to be broad, heavy, and single-edged.\nIn **Severos**, the horse-lords favor spears in battle, but for personal combat they carry distinctive double-edged daggers with very wide blades, often intricately inscribed with family histories.\nIn the **Dagger Isles**, the corsairs often use narrow, light blades made for quick thrusts such as the rapier and stiletto.\nIn **Iruvia**, curved blades are common; sharpened on the outer edge like a saber, or sharpened on the inner edge, like a sickle.",
+              //OPTIONAL: sets whether the field is sent inline with other fields or is sent under the previous field
+              //VALUES: 1 (inlined) or 0 (not inlined)
+              //DEFAULT: 1
+              "field_inline": 1
+            }
+          ],
+          //OPTIONAL: it is possible to add as many other elements as needed, though they are only used in the entry
+          //if either the format_title or the format_description references them
+          "load": 1
+        },
+        // ... more entries
+      ],
+
+      //OPTIONAL: creates a super entry.
+      // Super entries are made up of other entries and also create the sub entries
+      // They contain a field for every sub-entry, using the entries title and description for
+      // their field header and field text respectively
+      "super_entry": {
+        //REQUIRED: same as entries. See above
+        "title": "Actions",
+        //OPTIONAL: same as above, but the format will only be used for the sub entries
+        //the super entry uses the format outlined in the category
+        "format_info": {
+          //... format info
+        },
+        //REQUIRED: works the same as normal entries, but title and description are REQUIRED
+        "entries": [
+          {
+            //REQUIRED here, otherwise works same as in normal entries
+            "title": "Attune",
+            //REQUIRED here, otherwise works same as in normal entries
+            "description": "When you Attune, you open your mind to the ghost field or other arcane power.",
+            //OPTIONAL: works same as in normal entries
+            "fields": [
+              // ... fields
+            ]
+          },
+          //... more entries
+        ]
+      },
+
+      //OPTIONAL: contains multiple groups of entries that share some fields
+      //fields are only shared within groups, not between groups
+      "entry_groups": [
+        {
+          //OPTIONAL: Contains the fields added at the end of every entry
+          //If you do not use group values, you should be making entries not an entry group
+          "group_values": {
+            //Works the same as normal fields, but are added to every entry within the entry group
+            "fields": [
+              //.. field info
+              //here the example is from crafted items that share categories and drawbacks
+              {
+                "field_header": "Type",
+                "field_text": "SPARK-CRAFT/ Bomb"
+              },
+              {
+                "field_header": "Drawback",
+                "field_text": "(Conspicuous): This creation doesn't go unnoticed. Take **+1 HEAT** if it's used any number of times on an operation.",
+                "field_inline": 0
+              },
+              //... more fields
+            ]
+          },
+          //REQUIRED: works same as above
+          "entries": [
+            {
+              //.. entry info
+            }
+          ]
+        },
+        //... more groups
+      ]
+    }
+  ]
+}
