@@ -15,7 +15,8 @@ class DebugCog(commands.Cog):
                           f"if you experience any issues "
                           f"Any bugs, issues or ideas for improvements? Contact me on the support discord or via email\n"
                           f"Discord: https://discord.gg/fcJ7tQW9Ps\n"
-                          f"Email: **{GlobalVariables.bot_host_email}**")
+                          f"Email: **{GlobalVariables.bot_host_email}**\n"
+                          f"Buy me a coffee: https://ko-fi.com/benjiwenger\n")
 
     # @commands.command(name="r")
     # async def reload(self, ctx: BridgeExtContext):
