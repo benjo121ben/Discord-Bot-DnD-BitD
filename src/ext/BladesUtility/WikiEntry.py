@@ -4,7 +4,7 @@ import pathlib
 
 from .EntryLabels import TITLE_LABEL, DESCRIPTION_LABEL, IMAGE_LABEL, FIELD_LIST_LABEL, \
     FIELD_HEADER_LABEL, FIELD_TEXT_LABEL, FIELD_INLINE_LABEL, FIELD_SUBLIST_LABEL, \
-    FORMAT_TITLE_LABEL, FORMAT_FIELD_HEADER_LABEL, FORMAT_FIELD_TEXT_LABEL
+    FORMAT_TITLE_LABEL, FORMAT_FIELD_HEADER_LABEL, FORMAT_FIELD_TEXT_LABEL, FORMAT_DESCRIPTION_LABEL
 
 
 def get_format_or_default(format_info, format_label, value_label) -> str:
@@ -19,6 +19,7 @@ def get_class_image_filepath(classname: str) -> str:
 class WikiEntry:
     def __init__(self, entry_info, format_info):
         self.title_format = get_format_or_default(format_info, FORMAT_TITLE_LABEL, TITLE_LABEL)
+        self.description_format = get_format_or_default(format_info, FORMAT_DESCRIPTION_LABEL, DESCRIPTION_LABEL)
         self.field_header_format = get_format_or_default(format_info, FORMAT_FIELD_HEADER_LABEL, FIELD_HEADER_LABEL)
         self.field_text_format = get_format_or_default(format_info, FORMAT_FIELD_TEXT_LABEL, FIELD_TEXT_LABEL)
         self.entry_info = entry_info
@@ -28,7 +29,7 @@ class WikiEntry:
         self.description = entry_info[DESCRIPTION_LABEL] if DESCRIPTION_LABEL in entry_info else ""
 
     def get_entry_embed(self) -> tuple[Embed, File]:
-        embed = Embed(title=self.title_format.format(**self.entry_info), description=self.description)
+        embed = Embed(title=self.title_format.format(**self.entry_info), description=self.description_format.format(**self.entry_info))
         file = None
         if self.image:
             file = File(get_class_image_filepath(self.title.lower()))

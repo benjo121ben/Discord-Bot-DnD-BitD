@@ -9,6 +9,7 @@ CPROP_FORMATINFO_LABEL = "format_info"
 
 # format labels
 FORMAT_TITLE_LABEL = "format_title"
+FORMAT_DESCRIPTION_LABEL = "format_description"
 FORMAT_FIELD_HEADER_LABEL = "format_field_header"
 FORMAT_FIELD_TEXT_LABEL = "format_field_text"
 
