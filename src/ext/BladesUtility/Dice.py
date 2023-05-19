@@ -1,6 +1,6 @@
 import logging
 import os
-from PIL.Image import open as image_open, Image, new as new_image
+from PIL.Image import open as image_open, Image, new as create_new_image
 import random
 import pathlib
 
@@ -23,21 +23,12 @@ def get_asset_folder_filepath():
     return os.path.join(this_file_folder_path, asset_folder_rel_path)
 
 
-async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int):
-    erg, rolled_array = get_blades_roll(dice_amount)
+async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int, sorted_dice=False):
+    erg, rolled_array = get_blades_roll(dice_amount, sorted_dice)
     spritesheet = image_open(get_blade_dice_spritesheet_filepath()).convert('RGBA')
     dice_sprite_size = get_blades_sprite_size()
     new_image = generate_end_image(dice_amount if dice_amount > 0 else 2, dice_sprite_size, 100, True)
-    # Read the two images
-    all_rolls_index = 0
-    for array_index, amount_rolled in enumerate(rolled_array):
-        nr_rolled = 6 - array_index
-        if nr_rolled == 6 and erg == 2:
-            nr_rolled = 7
-        nr_image = get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled - 1)
-        for _ in range(amount_rolled):
-            new_image.paste(nr_image, (dice_sprite_size * all_rolls_index, 0), nr_image)
-            all_rolls_index += 1
+    interpret_roll_info(dice_sprite_size, erg, new_image, rolled_array, spritesheet, sorted_dice=sorted_dice)
     success_file_path = get_asset_folder_filepath() + "success.png"
     merged_file_path = get_asset_folder_filepath() + "merged.png"
 
@@ -52,8 +43,28 @@ async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int):
     os.remove(merged_file_path)
 
 
-async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
-    rolled_array = get_roll(dice_amount, dice_type)
+def interpret_roll_info(dice_sprite_size, erg, new_image, rolled_array, spritesheet, sorted_dice=False):
+    if sorted_dice:
+        # Read the two images
+        all_rolls_index = 0
+        for array_index, amount_rolled in enumerate(rolled_array):
+            nr_rolled = 6 - array_index
+            if nr_rolled == 6 and erg == 2:
+                nr_rolled = 7
+            nr_image = get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled - 1)
+            for _ in range(amount_rolled):
+                new_image.paste(nr_image, (dice_sprite_size * all_rolls_index, 0), nr_image)
+                all_rolls_index += 1
+    else:
+        for array_index, nr_rolled in enumerate(rolled_array):
+            if nr_rolled == 6 and erg == 2:
+                nr_rolled = 7
+            nr_image = get_sprite_from_uniform_spritesheet(spritesheet, dice_sprite_size, nr_rolled - 1)
+            new_image.paste(nr_image, (dice_sprite_size * array_index, 0), nr_image)
+
+
+async def all_size_roll_sorted(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
+    rolled_array = get_roll_sorted(dice_amount, dice_type)
     merged_file_path = get_asset_folder_filepath() + "merged.png"
 
     sum_val = 0
@@ -87,6 +98,47 @@ async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int)
         await ctx.respond(embed=embed)
 
 
+async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
+    if dice_amount > 100 or dice_amount < 1:
+        raise BladesCommandException("cannot roll more than 100 dice or less than 1")
+    if dice_type < 0:
+        raise BladesCommandException("Please input a positive number for dice size")
+    merged_file_path = get_asset_folder_filepath() + "merged.png"
+
+    sum_val = 0
+    nr_attachment = "Numbers rolled:\n"
+    if dice_amount <= 10 and dice_type <= 100:
+        # generate image
+        max_columns = 5
+        spritesheet = image_open(get_sized_dice_spritesheet_filepath()).convert('RGBA')
+        base_sprite_indx = get_base_sprite_indx(dice_type)
+        die_size = get_sided_die_sprite_size()
+        base_image = get_sprite_from_uniform_spritesheet(spritesheet, die_size, base_sprite_indx)
+        end_image = generate_end_image(dice_amount, die_size, max_columns, True)
+        # Combine image with numbers and paste onto the result
+        for indx in range(dice_amount):
+            val = random.randint(1, dice_type)
+            nr_attachment += f"{val} + " if indx < dice_amount - 1 else f"{val}"
+            sum_val += val
+            paste_nr_image(spritesheet, end_image, base_image, indx, max_columns, val-1)
+
+        embed = Embed(title=f"**{dice_amount}d{dice_type}= {sum_val}**")
+        end_image.save(merged_file_path, "PNG")
+        image_file = File(merged_file_path)
+        embed.set_image(url=f"attachment://{image_file.filename}")
+        print(nr_attachment)
+        await ctx.respond(file=image_file, embed=embed)
+        os.remove(merged_file_path)
+    else:
+        for indx in range(dice_amount):
+            val = random.randint(1, dice_type)
+            nr_attachment += f"{val} + " if indx < dice_amount - 1 else f"{val}"
+            sum_val += val
+        embed = Embed(title=f"**{dice_amount}d{dice_type}= {sum_val}**")
+        embed.description = nr_attachment
+        await ctx.respond(embed=embed)
+
+
 def paste_nr_image(spritesheet: Image, end_image: Image, base_image: Image, index: int, max_columns: int,
                    nr_rolled_index: int):
     nr_offset = (15, 19)
@@ -114,7 +166,41 @@ def paste_nr_image(spritesheet: Image, end_image: Image, base_image: Image, inde
         sprite_table_paste_image(end_image, nr_image2, die_sprite_size, nr_offset, max_columns, index, 2, 1)
 
 
-def get_blades_roll(dice_amount: int):
+def get_blades_roll(dice_amount: int, sorted_dice: bool):
+    if sorted_dice:
+        return get_blades_roll_sorted(dice_amount)
+    rolled_max = 1
+    if dice_amount > 10 or dice_amount < 0:
+        raise BladesCommandException("please input a dice amount from 0 to 10")
+    rolled_array = [0, 0] if dice_amount == 0 else [0] * dice_amount  # in this rolled array, we track the number rolled instead of the amount numbers were rolled
+
+    if dice_amount == 0:  # user rolls with disadvantage for this
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
+        rolled_array[0] = roll1
+        rolled_array[1] += roll2
+        rolled_max = min(roll1, roll2)
+    else:
+        for i in range(dice_amount):
+            roll = random.randint(1, 6)
+            if rolled_max < 6:
+                rolled_max = max(rolled_max, roll)
+            elif roll == 6:
+                rolled_max = 7
+            rolled_array[i] += roll
+
+    if rolled_max <= 3:
+        result = -1  # fail
+    elif rolled_max <= 5:
+        result = 0  # partial success
+    elif rolled_max == 6:
+        result = 1  # success
+    else:
+        result = 2
+    return result, rolled_array
+
+
+def get_blades_roll_sorted(dice_amount: int):
     rolled_max = 1
     if dice_amount > 10 or dice_amount < 0:
         raise BladesCommandException("please input a dice amount from 0 to 10")
@@ -144,7 +230,7 @@ def get_blades_roll(dice_amount: int):
     return result, rolled_array
 
 
-def get_roll(amount: int, dice_size: int):
+def get_roll_sorted(amount: int, dice_size: int):
     if amount > 100 or amount < 1:
         raise BladesCommandException("cannot roll more than 100 dice or less than 1")
     if dice_size < 0:
@@ -180,9 +266,9 @@ def get_die_nr_image(spritesheet: Image, index: int):
 def generate_end_image(sprite_amount, sprite_size, max_columns: int, transparent=False) -> Image:
     end_image_length = sprite_size * sprite_amount if sprite_amount < max_columns else sprite_size * max_columns
     end_image_height = sprite_size * (int(sprite_amount / max_columns) + (1 if sprite_amount % max_columns != 0 else 0))
-    return new_image('RGBA',
-                     (end_image_length, end_image_height),
-                     (250, 250, 250, 0) if transparent else (250, 250, 250))
+    return create_new_image('RGBA',
+                            (end_image_length, end_image_height),
+                            (250, 250, 250, 0) if transparent else (250, 250, 250))
 
 
 def sprite_table_paste_image(parent_image: Image,
