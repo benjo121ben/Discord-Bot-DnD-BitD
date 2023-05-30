@@ -8,7 +8,7 @@ from . import EntryLabels as eLabel
 from .WikiEntry import WikiEntry
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
-wiki = {}
+wiki: dict[str, WikiEntry] = {}
 
 
 def levenshtein_distance(word1, word2):
@@ -79,9 +79,17 @@ def handle_super_entries(category: dict):
     sup_entry_info = category[eLabel.CPROP_SUPER_ENTRY_LABEL]
     sup_format_info = sup_entry_info[eLabel.CPROP_FORMATINFO_LABEL] if eLabel.CPROP_FORMATINFO_LABEL in sup_entry_info else {}
     super_entry = WikiEntry(sup_entry_info, cat_format_info)
-    for entry in sup_entry_info[eLabel.CPROP_ENTRIES_LABEL]:
-        super_entry.add_field(entry[eLabel.TITLE_LABEL], entry[eLabel.DESCRIPTION_LABEL])
-        insert_wiki_entry(WikiEntry(entry, sup_format_info))
+    if eLabel.CPROP_ENTRIES_LABEL in sup_entry_info:
+        for entry in sup_entry_info[eLabel.CPROP_ENTRIES_LABEL]:
+            super_entry.add_field(entry[eLabel.TITLE_LABEL], entry[eLabel.DESCRIPTION_LABEL])
+            insert_wiki_entry(WikiEntry(entry, sup_format_info))
+    elif eLabel.CPROP_REFERENCE_LABEL in sup_entry_info:
+        print("WIKI:", ".\nW:".join(wiki.keys()))
+        for entry in sup_entry_info[eLabel.CPROP_REFERENCE_LABEL]:
+            if entry.lower() not in wiki:
+                print(entry, "not found")
+            else:
+                super_entry.add_field(wiki[entry.lower()].title, wiki[entry.lower()].entry_info[eLabel.DESCRIPTION_LABEL])
     insert_wiki_entry(super_entry)
 
 

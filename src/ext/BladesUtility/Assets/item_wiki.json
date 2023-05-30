@@ -1039,7 +1039,7 @@
               ]
             },
             {
-              "title": "Eyeblind",
+              "title": "Eyeblind Poison",
               "description": "A powder that causes blindness for a moment.",
               "fields": [
                 {
@@ -1053,7 +1053,7 @@
               ]
             },
             {
-              "title": "Skullfire",
+              "title": "Skullfire Poison",
               "description": "Toxic fumes from overly heated leviathan blood. Causes incapacitating migraines.",
               "fields": [
                 {
@@ -1067,7 +1067,7 @@
               ]
             },
             {
-              "title": "Standstill",
+              "title": "Standstill Poison",
               "description": "A powder that causes temporary paralysis.",
               "fields": [
                 {
@@ -1163,6 +1163,36 @@
           ]
         }
       ]
+    },
+    {
+      "category_name": "Alchemicals",
+      "format_info": {
+        "format_title": "**{title}**",
+        "format_field_header": "**{field_header}**"
+      },
+      "super_entry": {
+        "title": "Alchemicals",
+        "format_info": {
+          "format_title": "**{title}**",
+          "format_field_header": "**{field_header}**",
+          "format_field_text": "_{field_text}_"
+        },
+        "reference_entries": [
+          "Alcahest",
+          "Binding Oil",
+          "Drift Oil",
+          "Drown Powder",
+          "Eyeblind Poison",
+          "Fire Oil",
+          "Grenade",
+          "Quicksilver",
+          "Skullfire Poison",
+          "Smoke Bomb",
+          "Spark",
+          "Standstill Poison",
+          "Trance Powder"
+        ]
+      }
     }
   ]
 }

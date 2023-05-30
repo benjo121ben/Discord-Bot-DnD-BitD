@@ -3,6 +3,7 @@ CATEGORIES_LABEL = 'categories'
 # category property labels
 CPROP_NAME_LABEL = 'category_name'
 CPROP_ENTRIES_LABEL = 'entries'
+CPROP_REFERENCE_LABEL = 'reference_entries'
 CPROP_SUPER_ENTRY_LABEL = 'super_entry'
 CPROP_ENTRYGROUPS_LABEL = 'entry_groups'
 CPROP_FORMATINFO_LABEL = "format_info"
