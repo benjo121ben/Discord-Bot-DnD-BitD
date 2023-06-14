@@ -12,7 +12,6 @@ class DebugCog(commands.Cog):
     @commands.slash_command(name="help", description="receive help with this bot")
     async def help(self, ctx: BridgeExtContext):
         await ctx.respond(f"See my commands here\nhttps://github.com/benjo121ben/Discord-Bot-DnD-BitD#commands\n\n"
-                          f"if you experience any issues "
                           f"Any bugs, issues or ideas for improvements? Contact me on the support discord or via email\n"
                           f"Discord: https://discord.gg/fcJ7tQW9Ps\n"
                           f"Email: **{GlobalVariables.bot_host_email}**\n"
