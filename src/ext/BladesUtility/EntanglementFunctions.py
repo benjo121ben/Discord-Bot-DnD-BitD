@@ -25,11 +25,9 @@ async def entanglement_wanted_functionality(ctx: BridgeExtContext, wanted: int, 
     erg, dice_array = get_blades_roll_sorted(wanted)
     for i in range(0, 6):
         if wanted > 0 and dice_array[i] > 0:  # search biggest number
-            print(6-i, dice_array)
             await entanglement_functionality(ctx, 6 - i, heat)
             return
         elif wanted == 0 and dice_array[5-i] > 0:  # search smallest number
-            print(1+i, dice_array)
             await entanglement_functionality(ctx, 1 + i, heat)
             return
 
