@@ -5,7 +5,9 @@ import logging
 from os.path import exists
 
 from discord import Embed
+from discord.ext.bridge import BridgeExtContext
 
+from .Dice import get_blades_roll_sorted
 from .Entanglement_table import entanglement_sorting_table
 
 logger = logging.getLogger('bot')
@@ -19,7 +21,20 @@ def get_asset_folder_filepath():
     return os.path.join(this_file_folder_path, asset_folder_rel_path)
 
 
-async def entanglement_functionality(ctx, rolled: int, heat: int):
+async def entanglement_wanted_functionality(ctx: BridgeExtContext, wanted: int, heat:int):
+    erg, dice_array = get_blades_roll_sorted(wanted)
+    for i in range(0, 6):
+        if wanted > 0 and dice_array[i] > 0:  # search biggest number
+            print(6-i, dice_array)
+            await entanglement_functionality(ctx, 6 - i, heat)
+            return
+        elif wanted == 0 and dice_array[5-i] > 0:  # search smallest number
+            print(1+i, dice_array)
+            await entanglement_functionality(ctx, 1 + i, heat)
+            return
+
+
+async def entanglement_functionality(ctx: BridgeExtContext, rolled: int, heat: int):
     if not entanglements_enabled:
         await ctx.respond("Entanglements are missing, therefore this command was automatically deactivated.")
         return

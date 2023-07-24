@@ -7,7 +7,8 @@ from discord.ext.bridge import BridgeExtContext
 
 from .BladesCommandException import BladesCommandException
 from .DevilsBargainDeck import db_functionality, check_devils_bargain_assets
-from .EntanglementFunctions import entanglement_functionality, check_entanglement_assets
+from .EntanglementFunctions import entanglement_functionality, check_entanglement_assets, \
+    entanglement_wanted_functionality
 from .Dice import blades_roll_command
 from .ItemWiki import setup_wiki, wiki_search
 
@@ -23,10 +24,18 @@ class BladesUtilityCog(commands.Cog):
         except BladesCommandException as e:
             await ctx.respond(str(e))
 
-    @slash_command(name="entanglement", description="Prints out the entanglement choices for the given rolled value and heat")
+    @slash_command(name="entanglement", description="Returns appropriate entanglement choices. Takes the value rolled in the wanted roll and crew heat")
     async def entanglements(self, ctx: BridgeExtContext, rolled: int, heat: int):
         try:
             await entanglement_functionality(ctx, rolled, heat)
+        except BladesCommandException as e:
+            await ctx.respond(str(e))
+
+    @slash_command(name="entanglement_wanted",
+                   description="Rolls for entanglement. Takes in the wanted level and crew heat.")
+    async def entanglements_wanted(self, ctx: BridgeExtContext, wanted: int, heat: int):
+        try:
+            await entanglement_wanted_functionality(ctx, wanted, heat)
         except BladesCommandException as e:
             await ctx.respond(str(e))
 

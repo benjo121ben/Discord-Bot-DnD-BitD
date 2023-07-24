@@ -12,7 +12,7 @@ logger = logging.getLogger('bot')
 
 class RollUtilityCog(commands.Cog):
 
-    @slash_command(name="roll", description="tests the all roll")
+    @slash_command(name="roll", description="rolls dice of any size")
     @option(name="dice_amount", description="the amount of dice you want to roll")
     @option(name="dice_size", description="the size of your dice")
     @option(name="sorted_dice", description="do you wish to sort your dice?")

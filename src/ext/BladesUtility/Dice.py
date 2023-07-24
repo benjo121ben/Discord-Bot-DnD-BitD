@@ -24,7 +24,7 @@ def get_asset_folder_filepath():
 
 
 async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int, sorted_dice=False):
-    erg, rolled_array = get_blades_roll(dice_amount, sorted_dice)
+    erg, rolled_array = get_blades_roll_sorted(dice_amount) if sorted_dice else get_blades_roll(dice_amount)
     spritesheet = image_open(get_blade_dice_spritesheet_filepath()).convert('RGBA')
     dice_sprite_size = get_blades_sprite_size()
     new_image = generate_end_image(dice_amount if dice_amount > 0 else 2, dice_sprite_size, 100, True)
@@ -166,9 +166,14 @@ def paste_nr_image(spritesheet: Image, end_image: Image, base_image: Image, inde
         sprite_table_paste_image(end_image, nr_image2, die_sprite_size, nr_offset, max_columns, index, 2, 1)
 
 
-def get_blades_roll(dice_amount: int, sorted_dice: bool):
-    if sorted_dice:
-        return get_blades_roll_sorted(dice_amount)
+def get_blades_roll(dice_amount: int):
+    """
+    makes a FITD style roll and returns the result and the dice that were rolled
+
+    :param dice_amount: amount of dice to be rolled
+    :return: a tuple containing the result (2 crit, 1 success, 0 partial, -1 fail) and all numbers rolled in an array
+    """
+
     rolled_max = 1
     if dice_amount > 10 or dice_amount < 0:
         raise BladesCommandException("please input a dice amount from 0 to 10")
@@ -201,6 +206,13 @@ def get_blades_roll(dice_amount: int, sorted_dice: bool):
 
 
 def get_blades_roll_sorted(dice_amount: int):
+    """
+    makes a FITD style roll and returns the result and the dice that were rolled
+
+    :param dice_amount: amount of dice to be rolled
+    :return: a tuple containing the result (2 crit, 1 success, 0 partial, -1 fail) and an integer array of size six, each position in the array outlining how
+    many times a number was rolled, starting with the number 6 at index 0
+    """
     rolled_max = 1
     if dice_amount > 10 or dice_amount < 0:
         raise BladesCommandException("please input a dice amount from 0 to 10")

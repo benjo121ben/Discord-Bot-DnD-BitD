@@ -84,10 +84,10 @@ def handle_super_entries(category: dict):
             super_entry.add_field(entry[eLabel.TITLE_LABEL], entry[eLabel.DESCRIPTION_LABEL])
             insert_wiki_entry(WikiEntry(entry, sup_format_info))
     elif eLabel.CPROP_REFERENCE_LABEL in sup_entry_info:
-        print("WIKI:", ".\nW:".join(wiki.keys()))
         for entry in sup_entry_info[eLabel.CPROP_REFERENCE_LABEL]:
             if entry.lower() not in wiki:
                 print(entry, "not found")
+                raise RuntimeError(entry + " not found")
             else:
                 super_entry.add_field(wiki[entry.lower()].title, wiki[entry.lower()].entry_info[eLabel.DESCRIPTION_LABEL])
     insert_wiki_entry(super_entry)
