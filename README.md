@@ -226,13 +226,14 @@ Commands that are always enabled
 ### Blades in the Dark Commands
 Commands that are enabled with setting `BLADES=1`
 #### Utility commands
-|  command name  |        parameters        | Use                                                                                                                                         |
-|:--------------:|:------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------|
- | devils_bargain |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**         |
- |  entanglement  | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                   |
-|      wiki      |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list. |
-|   bladeroll    |       dice_amount        | Makes a d6 roll using the Blades system. It recognizes success, partials, fails and crits and can handle 0 dice.                            |
-|      roll      |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 sice=8                                                                           |
+|    command name     |        parameters        | Use                                                                                                                                         |
+|:-------------------:|:------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------|
+ |   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**         |
+ |    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                   |
+ | entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                    |
+|        wiki         |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list. |
+|      bladeroll      |       dice_amount        | Makes a d6 roll using the Blades system. It recognizes success, partials, fails and crits and can handle 0 dice.                            |
+|        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 sice=8                                                                           |
 
 #### Progress Clock Commands
 | command name |                 parameters                 | Use                                                                                                                                                             |
