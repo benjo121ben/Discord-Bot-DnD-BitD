@@ -7,7 +7,7 @@ from os.path import exists
 from discord import Embed
 from discord.ext.bridge import BridgeExtContext
 
-from .Dice import get_blades_roll_sorted
+from ..Dice import get_blades_roll_sorted
 from .Entanglement_table import entanglement_sorting_table
 
 logger = logging.getLogger('bot')
@@ -36,7 +36,7 @@ async def entanglement_wanted_functionality(ctx: BridgeExtContext, wanted: int, 
 
 async def entanglement_functionality(ctx: BridgeExtContext, rolled: int, heat: int):
     if not entanglements_enabled:
-        await ctx.respond("Entanglements are missing, therefore this command was automatically deactivated.")
+        await ctx.respond("DevilsAndEntanglements are missing, therefore this command was automatically deactivated.")
         return
 
     column = -1
@@ -52,7 +52,7 @@ async def entanglement_functionality(ctx: BridgeExtContext, rolled: int, heat: i
         return
     rolled -= 1
     ent_list = entanglement_sorting_table[column][rolled]
-    embed = Embed(title="Entanglements", description="choose one!")
+    embed = Embed(title="DevilsAndEntanglements", description="choose one!")
     for entanglement in ent_list:
         embed.add_field(name=entanglement, value=imported_expanded_entanglements[entanglement], inline=True)
     await ctx.respond(embed=embed)
@@ -79,6 +79,6 @@ def check_entanglement_assets():
                     logger.debug("missing", entanglement)
 
     if not entanglements_enabled:
-        logger.warning("Entanglements disabled, due to entanglements missing in json file\n")
+        logger.warning("DevilsAndEntanglements disabled, due to entanglements missing in json file\n")
     else:
         logger.info("All Entanglement info present, feature enabled\n")

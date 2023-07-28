@@ -4,6 +4,7 @@ import logging
 import decohints
 from functools import wraps
 
+from discord import User
 from discord.ext.bridge import BridgeExtContext
 from .Character import Character, LABEL_PLAYER
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
@@ -111,7 +112,7 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
             "You are not authorized to assign this character. It has already been claimed by a user.")
     _character.set_player(assigned_user_id)
 
-    user = None
+    user: User = None
     try:
         bot = get_bot()
         user = await bot.fetch_user(int(assigned_user_id))
@@ -128,7 +129,7 @@ async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: 
     players_undo = UndoActions.FileDataUndoAction(players_tag, old_player_list,
                                                   copy.deepcopy(get_loaded_dict(executing_user)[players_tag]))
     Undo.queue_undo_action(executing_user, UndoActions.UndoActionGroup([claim_undo, players_undo]))
-    await ctx.respond(f"{char_tag} assigned to {user.title}")
+    await ctx.respond(f"{char_tag} assigned to {user.name}")
 
 
 @check_and_save_file_wrapper

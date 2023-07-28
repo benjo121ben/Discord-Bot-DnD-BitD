@@ -8,7 +8,7 @@ import pathlib
 
 
 clock_files_dic = {}
-clocks_rel_asset_folder_path = os.sep.join(['Assets', 'Clocks', ''])
+clocks_rel_asset_folder_path = os.sep.join(['Assets', ''])
 clocks_rel_save_path = os.sep.join(['..', '..', '..', 'saves', 'clock_saves'])
 clock_save_suffix = '_clsave.json'
 logger = logging.getLogger('bot')

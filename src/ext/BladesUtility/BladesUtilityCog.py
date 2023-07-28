@@ -6,11 +6,11 @@ from discord.ext import bridge
 from discord.ext.bridge import BridgeExtContext
 
 from .BladesCommandException import BladesCommandException
-from .DevilsBargainDeck import db_functionality, check_devils_bargain_assets
-from .EntanglementFunctions import entanglement_functionality, check_entanglement_assets, \
+from src.ext.BladesUtility.DevilsAndEntanglements.DevilsBargainDeck import db_functionality, check_devils_bargain_assets
+from src.ext.BladesUtility.DevilsAndEntanglements.EntanglementFunctions import entanglement_functionality, check_entanglement_assets, \
     entanglement_wanted_functionality
 from .Dice import blades_roll_command
-from .ItemWiki import setup_wiki, wiki_search
+from src.ext.BladesUtility.Wiki.ItemWiki import setup_wiki, wiki_search
 
 logger = logging.getLogger('bot')
 
