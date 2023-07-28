@@ -1,9 +1,7 @@
-import json
 import logging
-from typing import Any
+from typing import Union
 
 import requests
-from discord import Message, Interaction
 from discord.ext import commands, bridge
 from discord.ext.bridge import BridgeExtContext
 
@@ -14,7 +12,7 @@ kanka_id_tag = "id"
 kanka_token_tag = "token"
 
 
-def load_kanka_data(user_id: str) -> dict | None:
+def load_kanka_data(user_id: str) -> Union[dict, None]:
     user_dict = load_user_dict(user_id)
     if kanka_data_tag not in user_dict or len(user_dict[kanka_data_tag]) == 0:
         return None
