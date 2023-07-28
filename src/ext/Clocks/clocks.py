@@ -3,14 +3,14 @@ from os.path import exists
 from discord import File
 import os
 import json
-from json.decoder import JSONDecodeError
+
+from ...UserSaveDataManagement import load_user_dict, clocks_dict_tag, save_user_dict
 import pathlib
 
 
 clock_files_dic = {}
 clocks_rel_asset_folder_path = os.sep.join(['Assets', ''])
-clocks_rel_save_path = os.sep.join(['..', '..', '..', 'saves', 'clock_saves'])
-clock_save_suffix = '_clsave.json'
+
 logger = logging.getLogger('bot')
 
 
@@ -48,12 +48,6 @@ def clock_from_json(clock_data):
     return Clock("TEMP", "TEMP_NAME", 4).assign_dic(clock_data)
 
 
-def get_clock_save_filepath(user_id: str):
-    global clocks_rel_save_path, clock_save_suffix
-    this_file_folder_path = pathlib.Path(__file__).parent.resolve()
-    return os.path.join(this_file_folder_path, os.sep.join([clocks_rel_save_path, user_id + clock_save_suffix]))
-
-
 def get_clock_asset_folder_path():
     this_file_folder_path = pathlib.Path(__file__).parent.resolve()
     return os.path.join(this_file_folder_path, clocks_rel_asset_folder_path)
@@ -61,40 +55,25 @@ def get_clock_asset_folder_path():
 
 def load_clocks(user_id: str):
     clocks_save_dic = {}
-    if exists(get_clock_save_filepath(user_id)):
-        with open(get_clock_save_filepath(user_id)) as file:
-            try:
-                imported_dic = json.load(file)
-            except JSONDecodeError as e:
-                logger.error(str(e))
-                logger.error(f"user_id: {user_id}")
-                raise Exception("An error has occured trying to parse JSON clock file")
+    imported_dic = load_user_dict(user_id)
+    if "v" in imported_dic:
+        for clock_data in imported_dic["clocks"].values():
+            clocks_save_dic[clock_data["tag"]] = clock_from_json(clock_data)
+        return clocks_save_dic
+    elif len(imported_dic) > 0:
         for clock_data in imported_dic.values():
             clocks_save_dic[clock_data["tag"]] = clock_from_json(clock_data)
         return clocks_save_dic
     else:
-        logger.info(f"Clock savefile doesn't exist, will create new savefile. User ID={user_id}")
         return {}
 
 
 def save_clocks(user_id: str, clocks_save_dic: dict):
-    if len(clocks_save_dic) == 0:
-        if exists(get_clock_save_filepath(user_id)):
-            os.remove(get_clock_save_filepath(user_id))
-        return
-
-    if not exists(get_clock_save_filepath(user_id)):
-        path = ""
-        for path_part in get_clock_save_filepath(user_id).split(os.sep):
-            path += path_part + os.sep
-            if not exists(path) and ".json" not in path:
-                os.mkdir(path)
-        logger.info("created savefile")
-    with open(get_clock_save_filepath(user_id), 'w') as newfile:
-        output = {}
-        for clock in clocks_save_dic.values():
-            output[clock.tag] = clock.__dict__
-        json.dump(output, newfile, sort_keys=True, indent=4)
+    user_dict = load_user_dict(user_id)
+    user_dict[clocks_dict_tag] = {}
+    for clock in clocks_save_dic.values():
+        user_dict[clocks_dict_tag][clock.tag] = clock.__dict__
+    save_user_dict(user_id, user_dict)
 
 
 def load_clock_files():

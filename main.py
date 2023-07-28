@@ -30,13 +30,14 @@ def main():
     load_dotenv(os.path.join(main_path, GlobalVariables.env_file_rel_path))
     GlobalVariables.admin_id = os.environ.get("ADMIN_ID")
     GlobalVariables.bot_host_email = os.environ.get("HOST_EMAIL")
+    GlobalVariables.kanka_token = os.environ.get("KANKA_TOKEN")
     token = os.environ.get("DISCORD_TOKEN")
     if token is None or token == "":
         input("\nERROR:DISCORD_TOKEN IS EMPTY.\nrestart the bot after inserting a token into the .env file\npress ENTER")
         return
 
     loop = asyncio.new_event_loop()
-    modules = [get_env_bool("DND"), get_env_bool("BLADES")]
+    modules = [get_env_bool("DND"), get_env_bool("BLADES"), get_env_bool("KANKA")]
     try:
         loop.run_until_complete(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"), modules))
     except KeyboardInterrupt:
