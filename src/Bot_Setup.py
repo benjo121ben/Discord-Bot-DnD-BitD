@@ -2,9 +2,9 @@ import logging
 import time
 
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
+from discord import ApplicationContext
 from aiohttp import ClientConnectorError
-from discord.ext.bridge import BridgeExtContext
 
 from .ext.Campaign import packg_variables as c_var
 from .extension_loading import load_extensions
@@ -22,7 +22,7 @@ class MyInternetException(Exception):
 async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bool]):
     global logger, retry_connection
     logger = logging.getLogger('bot')
-    GlobalVariables.bot = bridge.Bot(command_prefix=_command_prefix)
+    GlobalVariables.bot = commands.Bot(command_prefix=_command_prefix)
     c_var.bot = GlobalVariables.bot
     load_extensions(GlobalVariables.bot, modules_list)
 
@@ -37,7 +37,7 @@ async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bo
                     f"We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.slash_command(name="ping", description="Tests whether the bot is active")
-    async def ping(ctx: BridgeExtContext):
+    async def ping(ctx: ApplicationContext):
         await ctx.respond("pong")
 
     logger.info("attempting bot startup")

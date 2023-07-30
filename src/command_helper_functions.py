@@ -1,8 +1,8 @@
-from discord.ext.bridge import BridgeExtContext
+from discord import ApplicationContext
 from . import GlobalVariables
 
 
-def check_admin(ctx: BridgeExtContext) -> bool:
+def check_admin(ctx: ApplicationContext) -> bool:
     if GlobalVariables.admin_id is None:
         return True
     else:

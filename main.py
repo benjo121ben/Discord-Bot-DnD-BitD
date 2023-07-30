@@ -2,7 +2,6 @@ import asyncio
 import os
 import pathlib
 
-from typing import Optional
 from src import GlobalVariables
 from dotenv import load_dotenv
 from src.Bot_Setup import start_bot

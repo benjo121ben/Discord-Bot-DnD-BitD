@@ -4,8 +4,7 @@ import logging
 import decohints
 from functools import wraps
 
-from discord import User
-from discord.ext.bridge import BridgeExtContext
+from discord import User, ApplicationContext
 from .Character import Character, LABEL_PLAYER
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
     check_savefile_existence, \
@@ -98,7 +97,7 @@ def log(executing_user: str, adv=False) -> str:
 
 
 @check_and_save_file_wrapper_async
-async def claim_character(executing_user: str, ctx: BridgeExtContext, char_tag: str, assigned_user_id: str):
+async def claim_character(executing_user: str, ctx: ApplicationContext, char_tag: str, assigned_user_id: str):
     if assigned_user_id is None:
         assigned_user_id = str(ctx.author.id)
     if check_if_user_has_char(executing_user, assigned_user_id):
@@ -295,7 +294,7 @@ def session_increase(executing_user: str):
     return "finished session, increased by one"
 
 
-async def cache_file(executing_user: str, ctx: BridgeExtContext):
+async def cache_file(executing_user: str, ctx: ApplicationContext):
     """
     Sends the current savefile into the discord chat with the ID assigned in the campaign environment file
     :param ctx: Discord context

@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 
-from discord.ext.bridge import BridgeExtContext
+from discord import ApplicationContext
 
 from . import EntryLabels as eLabel
 from .WikiEntry import WikiEntry
@@ -101,7 +101,7 @@ def insert_wiki_entry(wiki_entry: WikiEntry):
     wiki[wiki_entry.title.lower()] = wiki_entry
 
 
-async def send_wiki_entry(ctx: BridgeExtContext, entry: WikiEntry):
+async def send_wiki_entry(ctx: ApplicationContext, entry: WikiEntry):
     embed, file = entry.get_entry_embed()
     if file is None:
         await ctx.respond(embed=embed)
@@ -109,7 +109,7 @@ async def send_wiki_entry(ctx: BridgeExtContext, entry: WikiEntry):
         await ctx.respond(embed=embed, file=file)
 
 
-async def wiki_search(ctx:BridgeExtContext, search_term: str):
+async def wiki_search(ctx: ApplicationContext, search_term: str):
     found = []
     term = search_term.lower()
     if term in wiki:

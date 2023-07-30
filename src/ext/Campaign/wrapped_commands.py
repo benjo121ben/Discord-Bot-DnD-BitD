@@ -3,7 +3,8 @@ import os
 from os.path import exists
 from typing import Callable, Awaitable
 
-from discord.ext.bridge import BridgeExtContext
+from discord.ui import View, button, Button
+from discord import ButtonStyle as Bstyle, Interaction, ApplicationContext
 
 from . import packg_variables
 from .SaveDataManagement import char_data_access as char_data, \
@@ -17,7 +18,17 @@ from . import base_command_logic as bcom, \
 logger = logging.getLogger('bot')
 
 
-async def catch_and_respond_char_action(ctx: BridgeExtContext, char_tag: str, func: Callable[[str, str], str]) -> bool:
+class TestView(View):
+    def __init__(self, char_tag: str):
+        super().__init__()
+        self.char_tag = char_tag
+
+    @button(label="crit", style=Bstyle.primary)
+    async def button_callback(self, buttonInfo: Button, interaction: Interaction):
+        await interaction.response.send_message(buttonInfo.view.char_tag)
+
+
+async def catch_and_respond_char_action(ctx: ApplicationContext, char_tag: str, func: Callable[[str, str], str]) -> bool:
     """
     Wraps a character specific command function, executing it with the user_id gained from the context.
     Also if char_tag is None, it will try to load the character name from the current file
@@ -31,13 +42,14 @@ async def catch_and_respond_char_action(ctx: BridgeExtContext, char_tag: str, fu
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
         await ctx.respond(func(executing_user, char_tag))
+        await ctx.respond("ButtonTest", view=TestView(char_tag))
         return True
     except ComExcept as err:
         await ctx.respond(err)
         return False
 
 
-async def catch_and_respond_file_action(ctx: BridgeExtContext, func: Callable[[str], str]) -> bool:
+async def catch_and_respond_file_action(ctx: ApplicationContext, func: Callable[[str], str]) -> bool:
     """
     Wraps a file specific command function, executing it with the user_id gained from the context.
 
@@ -53,7 +65,7 @@ async def catch_and_respond_file_action(ctx: BridgeExtContext, func: Callable[[s
         return False
 
 
-async def catch_async_file_action(ctx: BridgeExtContext, func: Callable[[str], Awaitable[None]]) -> bool:
+async def catch_async_file_action(ctx: ApplicationContext, func: Callable[[str], Awaitable[None]]) -> bool:
     """
         Wraps a file specific command function, executing it with the user_id gained from the context.
         This is the async version
@@ -70,7 +82,7 @@ async def catch_async_file_action(ctx: BridgeExtContext, func: Callable[[str], A
         return False
 
 
-async def add_c(ctx: BridgeExtContext, char_tag: str, char_name: str, user_id: str = None) -> bool:
+async def add_c(ctx: ApplicationContext, char_tag: str, char_name: str, user_id: str = None) -> bool:
     val = await catch_and_respond_file_action(ctx,
                                               lambda executing_user: bcom.add_char(executing_user, char_tag, char_name))
     if user_id is not None:
@@ -78,102 +90,102 @@ async def add_c(ctx: BridgeExtContext, char_tag: str, char_name: str, user_id: s
     return val
 
 
-async def rem_c(ctx: BridgeExtContext, char_tag: str) -> bool:
+async def rem_c(ctx: ApplicationContext, char_tag: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.rem_char(executing_user, char_tag))
 
 
-async def crit(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None) -> bool:
+async def crit(ctx: ApplicationContext, amount: int = 1, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.crit(executing_user, tag, amount))
 
 
-async def faint(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None) -> bool:
+async def faint(ctx: ApplicationContext, amount: int = 1, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.faint(executing_user, tag, amount))
 
 
-async def dodged(ctx: BridgeExtContext, amount: int = 1, char_tag: str = None) -> bool:
+async def dodged(ctx: ApplicationContext, amount: int = 1, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.dodge(executing_user, tag, amount))
 
 
-async def cause(ctx: BridgeExtContext, amount: int, kills: int = 0, char_tag: str = None) -> bool:
+async def cause(ctx: ApplicationContext, amount: int, kills: int = 0, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.cause_damage(executing_user, tag,
                                                                                              amount, kills))
 
 
-async def take(ctx: BridgeExtContext, amount: int, char_tag: str = None) -> bool:
+async def take(ctx: ApplicationContext, amount: int, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.take_damage(executing_user, tag, amount,
                                                                                             False))
 
 
-async def take_reduced(ctx: BridgeExtContext, amount: int, char_tag: str = None) -> bool:
+async def take_reduced(ctx: ApplicationContext, amount: int, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.take_damage(executing_user, tag, amount,
                                                                                             True))
 
 
-async def heal(ctx: BridgeExtContext, amount: int, char_tag: str = None) -> bool:
+async def heal(ctx: ApplicationContext, amount: int, char_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                char_tag,
                                                lambda executing_user, tag: bcom.heal(executing_user, tag, amount))
 
 
-async def log(ctx: BridgeExtContext, adv=False) -> bool:
+async def log(ctx: ApplicationContext, adv=False) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.log(executing_user, adv))
 
 
-async def retag_pc(ctx: BridgeExtContext, char_tag_old: str, char_tag_new: str) -> bool:
+async def retag_pc(ctx: ApplicationContext, char_tag_old: str, char_tag_new: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.retag_character(executing_user, char_tag_old,
                                                                                            char_tag_new))
 
 
-async def rename_pc(ctx: BridgeExtContext, char_tag: str, new_char_name: str) -> bool:
+async def rename_pc(ctx: ApplicationContext, char_tag: str, new_char_name: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.rename_character(executing_user, char_tag,
                                                                                             new_char_name))
 
 
-async def load_command(ctx: BridgeExtContext, file_name: str) -> bool:
+async def load_command(ctx: ApplicationContext, file_name: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.load_or_create_save(executing_user,
                                                                                                file_name))
 
 
-async def add_player(ctx: BridgeExtContext, user_id: str) -> bool:
+async def add_player(ctx: ApplicationContext, user_id: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.add_player(executing_user, user_id))
 
 
-async def rem_player(ctx: BridgeExtContext, user_id: str) -> bool:
+async def rem_player(ctx: ApplicationContext, user_id: str) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.remove_player(executing_user, user_id))
 
 
-async def claim(ctx: BridgeExtContext, char_tag: str, user_id: str = None) -> bool:
+async def claim(ctx: ApplicationContext, char_tag: str, user_id: str = None) -> bool:
     return await catch_async_file_action(ctx,
                                          lambda executing_user: bcom.claim_character(executing_user, ctx, char_tag,
                                                                                      user_id))
 
 
-async def unclaim(ctx: BridgeExtContext, character_tag: str = None) -> bool:
+async def unclaim(ctx: ApplicationContext, character_tag: str = None) -> bool:
     return await catch_and_respond_char_action(ctx,
                                                character_tag,
                                                lambda executing_user, tag: bcom.unclaim_char(executing_user, tag))
 
 
-async def session(ctx: BridgeExtContext) -> bool:
+async def session(ctx: ApplicationContext) -> bool:
     executing_user = str(ctx.author.id)
     try:
         # this is not wrapped in catch and respond, cause in case of it not working, it should not send a message
@@ -184,12 +196,12 @@ async def session(ctx: BridgeExtContext) -> bool:
                                                lambda exec_user: bcom.session_increase(exec_user))
 
 
-async def cache(ctx: BridgeExtContext) -> bool:
+async def cache(ctx: ApplicationContext) -> bool:
     return await catch_async_file_action(ctx,
                                          lambda executing_user: bcom.cache_file(executing_user, ctx))
 
 
-async def get_cache(ctx: BridgeExtContext) -> bool:
+async def get_cache(ctx: ApplicationContext) -> bool:
     try:
         cmp_hlp.check_bot_admin(ctx, raise_error=True)
         chat_id = cmp_vars.cache_folder
@@ -225,7 +237,7 @@ async def get_cache(ctx: BridgeExtContext) -> bool:
         return False
 
 
-async def download(ctx: BridgeExtContext) -> bool:
+async def download(ctx: ApplicationContext) -> bool:
     executing_user = str(ctx.author.id)
     try:
         live_save.check_file_loaded(executing_user, raise_error=True)
@@ -237,11 +249,11 @@ async def download(ctx: BridgeExtContext) -> bool:
         return False
 
 
-async def undo(ctx: BridgeExtContext, amount: int = 1) -> bool:
+async def undo(ctx: ApplicationContext, amount: int = 1) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.undo_command(executing_user, amount))
 
 
-async def redo(ctx: BridgeExtContext, amount: int = 1) -> bool:
+async def redo(ctx: ApplicationContext, amount: int = 1) -> bool:
     return await catch_and_respond_file_action(ctx,
                                                lambda executing_user: bcom.redo_command(executing_user, amount))

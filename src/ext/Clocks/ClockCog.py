@@ -1,13 +1,14 @@
 import logging
 from discord.ext import commands, bridge
-from discord import Embed, File
+from discord import Embed, File, ApplicationContext
+
 from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
 
 
 logger = logging.getLogger('bot')
 
 
-async def print_clock(ctx, clock: Clock):
+async def print_clock(ctx: ApplicationContext, clock: Clock):
     embed = Embed(title=f'**{clock.name}**')
     try:
 
@@ -27,7 +28,7 @@ async def print_clock(ctx, clock: Clock):
 class ClockCog(commands.Cog):
 
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
-    async def add_clock(self, ctx, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
+    async def add_clock(self, ctx: ApplicationContext, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
         user_id = str(ctx.author.id)
         clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
@@ -45,7 +46,7 @@ class ClockCog(commands.Cog):
             await print_clock(ctx, clock_dic[clock_tag])
 
     @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
-    async def remove_clock(self, ctx, clock_tag: str):
+    async def remove_clock(self, ctx: ApplicationContext, clock_tag: str):
         user_id = str(ctx.author.id)
         clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
@@ -57,7 +58,7 @@ class ClockCog(commands.Cog):
             await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!")
 
     @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
-    async def show_clock(self, ctx, clock_tag: str):
+    async def show_clock(self, ctx: ApplicationContext, clock_tag: str):
         user_id = str(ctx.author.id)
         clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)
@@ -67,7 +68,7 @@ class ClockCog(commands.Cog):
             await ctx.respond("This clock does not exist")
 
     @commands.slash_command(name="clock_all", description="Prints out all saved clocks")
-    async def all_clocks(self, ctx):
+    async def all_clocks(self, ctx: ApplicationContext):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 0:
@@ -80,7 +81,7 @@ class ClockCog(commands.Cog):
         await ctx.respond(all_c)
 
     @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
-    async def tick_clock(self, ctx, clock_tag: str, ticks: int = 1):
+    async def tick_clock(self, ctx: ApplicationContext, clock_tag: str, ticks: int = 1):
         user_id = str(ctx.author.id)
         clock_tag = clock_tag.strip().lower()
         clock_dic = load_clocks(user_id)

@@ -4,8 +4,7 @@ from PIL.Image import open as image_open, Image, new as create_new_image
 import random
 import pathlib
 
-from discord import File, Embed
-from discord.ext.bridge import BridgeExtContext
+from discord import File, Embed, ApplicationContext
 
 from .BladesCommandException import BladesCommandException
 
@@ -23,7 +22,7 @@ def get_asset_folder_filepath():
     return os.path.join(this_file_folder_path, asset_folder_rel_path)
 
 
-async def blades_roll_command(ctx: BridgeExtContext, dice_amount: int, sorted_dice=False):
+async def blades_roll_command(ctx: ApplicationContext, dice_amount: int, sorted_dice=False):
     erg, rolled_array = get_blades_roll_sorted(dice_amount) if sorted_dice else get_blades_roll(dice_amount)
     spritesheet = image_open(get_blade_dice_spritesheet_filepath()).convert('RGBA')
     dice_sprite_size = get_blades_sprite_size()
@@ -63,7 +62,7 @@ def interpret_roll_info(dice_sprite_size, erg, new_image, rolled_array, spritesh
             new_image.paste(nr_image, (dice_sprite_size * array_index, 0), nr_image)
 
 
-async def all_size_roll_sorted(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
+async def all_size_roll_sorted(ctx: ApplicationContext, dice_amount: int, dice_type: int):
     rolled_array = get_roll_sorted(dice_amount, dice_type)
     merged_file_path = get_asset_folder_filepath() + "merged.png"
 
@@ -98,7 +97,7 @@ async def all_size_roll_sorted(ctx: BridgeExtContext, dice_amount: int, dice_typ
         await ctx.respond(embed=embed)
 
 
-async def all_size_roll(ctx: BridgeExtContext, dice_amount: int, dice_type: int):
+async def all_size_roll(ctx: ApplicationContext, dice_amount: int, dice_type: int):
     if dice_amount > 100 or dice_amount < 1:
         raise BladesCommandException("cannot roll more than 100 dice or less than 1")
     if dice_type < 0:

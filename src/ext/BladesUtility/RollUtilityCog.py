@@ -2,7 +2,6 @@ import logging
 from discord import slash_command
 from discord.commands import option
 from discord.ext import commands
-from discord.ext import bridge
 
 from .BladesCommandException import BladesCommandException
 from .Dice import all_size_roll_sorted, all_size_roll
@@ -26,7 +25,7 @@ class RollUtilityCog(commands.Cog):
             await ctx.respond(str(e))
 
 
-def setup(bot: bridge.Bot):
+def setup(bot: commands.Bot):
     # Every extension should have this function
     logger.debug("setting up Blades Cog")
     bot.add_cog(RollUtilityCog())

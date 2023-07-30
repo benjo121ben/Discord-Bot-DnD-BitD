@@ -4,8 +4,7 @@ import pathlib
 import logging
 from os.path import exists
 
-from discord import Embed
-from discord.ext.bridge import BridgeExtContext
+from discord import Embed, ApplicationContext
 
 from ..Dice import get_blades_roll_sorted
 from .Entanglement_table import entanglement_sorting_table
@@ -21,7 +20,7 @@ def get_asset_folder_filepath():
     return os.path.join(this_file_folder_path, asset_folder_rel_path)
 
 
-async def entanglement_wanted_functionality(ctx: BridgeExtContext, wanted: int, heat:int):
+async def entanglement_wanted_functionality(ctx: ApplicationContext, wanted: int, heat:int):
     erg, dice_array = get_blades_roll_sorted(wanted)
     for i in range(0, 6):
         if wanted > 0 and dice_array[i] > 0:  # search biggest number
@@ -34,7 +33,7 @@ async def entanglement_wanted_functionality(ctx: BridgeExtContext, wanted: int, 
             return
 
 
-async def entanglement_functionality(ctx: BridgeExtContext, rolled: int, heat: int):
+async def entanglement_functionality(ctx: ApplicationContext, rolled: int, heat: int):
     if not entanglements_enabled:
         await ctx.respond("DevilsAndEntanglements are missing, therefore this command was automatically deactivated.")
         return

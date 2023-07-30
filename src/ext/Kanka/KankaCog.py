@@ -2,8 +2,8 @@ import logging
 from typing import Union
 
 import requests
+from discord import ApplicationContext
 from discord.ext import commands, bridge
-from discord.ext.bridge import BridgeExtContext
 
 from ...UserSaveDataManagement import load_user_dict, kanka_data_tag, save_user_dict
 
@@ -21,7 +21,7 @@ def load_kanka_data(user_id: str) -> Union[dict, None]:
 
 class KankaCog(commands.Cog):
     @commands.slash_command(name="kanka", description="Query a kanka database you or your dungeonmaster has set up")
-    async def kanka(self, ctx: BridgeExtContext, query_keyword: str):
+    async def kanka(self, ctx: ApplicationContext, query_keyword: str):
         kanka_data = load_kanka_data(str(ctx.author.id))
         if kanka_data is None:
             await ctx.respond("No kanka information set yet. Please use the _kanka\_setup_ command")
@@ -44,7 +44,7 @@ class KankaCog(commands.Cog):
             await ctx.respond(val["urls"]["view"])
 
     @commands.slash_command(name="kanka_setup", description="set/remove the campaign id in order to use the kanka command")
-    async def kanka_setup(self, ctx: BridgeExtContext, campaign_id: str = None, token: str = None, remove: bool = False):
+    async def kanka_setup(self, ctx: ApplicationContext, campaign_id: str = None, token: str = None, remove: bool = False):
         user_id = str(ctx.author.id)
         user_dict = load_user_dict(user_id)
 
