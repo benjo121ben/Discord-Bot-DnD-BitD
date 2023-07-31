@@ -3,7 +3,7 @@ from typing import Union
 
 import requests
 from discord import ApplicationContext
-from discord.ext import commands, bridge
+from discord.ext import commands
 
 from ...UserSaveDataManagement import load_user_dict, kanka_data_tag, save_user_dict
 
@@ -77,7 +77,7 @@ class KankaCog(commands.Cog):
         save_user_dict(user_id, user_dict)
 
 
-def setup(bot: bridge.Bot):
+def setup(bot: commands.Bot):
     # Every extension should have this function
     bot.add_cog(KankaCog())
     logger.info("kanka extension loaded\n")

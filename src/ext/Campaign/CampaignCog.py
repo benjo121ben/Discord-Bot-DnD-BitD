@@ -118,11 +118,11 @@ class CampaignCog(Cog):
 
     @slash_command(name="undo", description="Undo your mistakes")
     async def undo(self, ctx: ApplicationContext, amount: int = 1):
-        return await commands.undo(ctx, amount)
+        return await commands.undo(await initContext(ctx=ctx), amount)
 
     @slash_command(name="redo", description="Redo your undone non-mistakes")
     async def redo(self, ctx: ApplicationContext, amount: int = 1):
-        return await commands.redo(ctx, amount)
+        return await commands.redo(await initContext(ctx=ctx), amount)
 
 
 def setup(bot: Bot):

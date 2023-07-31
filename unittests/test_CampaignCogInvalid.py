@@ -3,10 +3,9 @@ from typing import Any, Coroutine, Callable
 
 import pytest
 from discord import ApplicationContext
-from discord.ext.bridge import BridgeExtContext
 from src.ext.Campaign.CampaignCog import CampaignCog
 from src.ext.Campaign import Undo
-from src.ext.Campaign import Character as char_file, packg_variables as packg_vars
+from src.ext.Campaign import Character as char_file
 from src.ext.Campaign.SaveDataManagement import \
     save_file_management as save_manager, \
     live_save_manager as live_manager, \
@@ -56,7 +55,7 @@ async def assert_failed_command(value: Coroutine, undo_len: int):
     assert len(Undo.get_action_queue(test_user_id)) == undo_len
 
 
-async def undo_redo(cog: CampaignCog, ctx: BridgeExtContext, pre_undo_assert: Callable, post_undo_assert: Callable):
+async def undo_redo(cog: CampaignCog, ctx: ApplicationContext, pre_undo_assert: Callable, post_undo_assert: Callable):
     pre_undo_assert()
     await assert_command(cog.undo(ctx))
     post_undo_assert()
@@ -75,19 +74,19 @@ class TestCampaignCogInvalid:
         print("teardown done")
 
     @pytest.fixture
-    def create_char(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    def create_char(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         asyncio.run(cog.add_c(ctx, test_char_tag, "test"))
         yield cog, ctx
 
     @pytest.fixture
-    def create_own_char(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    def create_own_char(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         asyncio.run(cog.add_c(ctx, test_char_tag, "test", test_user_id))
         yield cog, ctx
 
     @pytest.mark.asyncio
-    async def test_invalid_creation(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    async def test_invalid_creation(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         assert str(ctx.author.id) == test_user_id
         await assert_command(cog.add_c(ctx, test_char_tag, "testName"))

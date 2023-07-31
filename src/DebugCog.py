@@ -1,8 +1,7 @@
 import logging
 from discord import ApplicationContext
-from discord.ext import commands, bridge
-from . import GlobalVariables, command_helper_functions as hlp_f
-from .extension_loading import load_extensions
+from discord.ext import commands
+from . import GlobalVariables
 
 logger = logging.getLogger('bot')
 
@@ -30,7 +29,7 @@ class DebugCog(commands.Cog):
 
 
 
-def setup(bot: bridge.Bot):
+def setup(bot: commands.Bot):
     # Every extension should have this function
     bot.add_cog(DebugCog())
     logger.info("debug extension loaded\n")

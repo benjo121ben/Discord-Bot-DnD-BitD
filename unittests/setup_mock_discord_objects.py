@@ -22,7 +22,9 @@ def mockedRespond(messagetype: str, *args, **kwargs):
         print(f"{messagetype}:\n    empty message with kwargs content\n")
     else:
         raise RuntimeError("mock_respond:\n    EMPTY MESSAGE SENT\n")
-    return mock.MagicMock(Interaction)
+    interaction = mock.MagicMock(Interaction)
+    interaction.delete_original_message = mock.AsyncMock(Interaction.delete_original_message)
+    return interaction
 
 
 def get_mocked_context(author_id: int) -> ApplicationContext:

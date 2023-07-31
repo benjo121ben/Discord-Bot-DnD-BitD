@@ -2,7 +2,6 @@ import logging
 from os.path import exists
 from discord import File
 import os
-import json
 
 from ...UserSaveDataManagement import load_user_dict, clocks_dict_tag, save_user_dict
 import pathlib

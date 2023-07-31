@@ -13,7 +13,7 @@ wiki: dict[str, WikiEntry] = {}
 
 def levenshtein_distance(word1, word2):
     # Declaring array 'D' with rows = len(a) + 1 and columns = len(b) + 1:
-    D = [[0 for i in range(len(word2) + 1)] for j in range(len(word1) + 1)]
+    D = [[0 for _i in range(len(word2) + 1)] for _j in range(len(word1) + 1)]
 
     # Initialising first row and first column:
     for row in range(len(word1) + 1):

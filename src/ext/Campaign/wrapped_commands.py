@@ -52,11 +52,11 @@ class DamageModal(discord.ui.Modal):
 
 class UndoView(View):
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"))
-    async def button_callback7(self, button_info: Button, interaction: Interaction):
+    async def button_callback7(self, _: Button, interaction: Interaction):
         await undo(await initContext(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"))
-    async def button_callback8(self, button_info: Button, interaction: Interaction):
+    async def button_callback8(self, _: Button, interaction: Interaction):
         await redo(await initContext(interaction=interaction))
 
 
@@ -94,11 +94,11 @@ class StatView(View):
         await interaction.response.send_modal(DamageModal(title="Deals Damage", func=cause, char_tag=self.char_tag))
 
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"))
-    async def button_callback7(self, button_info: Button, interaction: Interaction):
+    async def button_callback7(self, _: Button, interaction: Interaction):
         await undo(await initContext(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"))
-    async def button_callback8(self, button_info: Button, interaction: Interaction):
+    async def button_callback8(self, _: Button, interaction: Interaction):
         await redo(await initContext(interaction=interaction))
 
 
@@ -148,7 +148,10 @@ async def catch_and_respond_file_action(
     """
     executing_user = str(ctx.author.id)
     try:
-        interaction: Interaction = await ctx.respond(func(executing_user), view=UndoView())
+        if send_undo_view:
+            interaction: Interaction = await ctx.respond(func(executing_user), view=UndoView())
+        else:
+            interaction: Interaction = await ctx.respond(func(executing_user))
         if timeout is not None:
             await interaction.delete_original_message(delay=timeout)
         return True
@@ -164,7 +167,6 @@ async def catch_async_file_action(ctx: ContextInfo, func: Callable[[str], Awaita
 
         :param func: the function executed
         :param ctx: The message context
-        :param timeout: determines how long it takes for the response to dissappear. Set to None if it shouldn't disappear
         :param send_undo_view: determines whether the undo view should be sent after execution
         """
     executing_user = str(ctx.author.id)

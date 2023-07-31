@@ -1,5 +1,5 @@
 import logging
-from discord.ext import commands, bridge
+from discord.ext import commands
 from discord import Embed, File, ApplicationContext
 
 from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
@@ -94,7 +94,7 @@ class ClockCog(commands.Cog):
             await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!")
 
 
-def setup(bot: bridge.Bot):
+def setup(bot: commands.Bot):
     # Every extension should have this function
     load_clock_files()
     bot.add_cog(ClockCog())

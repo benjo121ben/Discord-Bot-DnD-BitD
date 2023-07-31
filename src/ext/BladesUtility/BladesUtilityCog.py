@@ -2,14 +2,13 @@ import logging
 from discord import slash_command, ApplicationContext
 from discord.commands import option
 from discord.ext import commands
-from discord.ext import bridge
 
 from .BladesCommandException import BladesCommandException
-from src.ext.BladesUtility.DevilsAndEntanglements.DevilsBargainDeck import db_functionality, check_devils_bargain_assets
-from src.ext.BladesUtility.DevilsAndEntanglements.EntanglementFunctions import entanglement_functionality, check_entanglement_assets, \
+from .DevilsAndEntanglements.DevilsBargainDeck import db_functionality, check_devils_bargain_assets
+from .DevilsAndEntanglements.EntanglementFunctions import entanglement_functionality, check_entanglement_assets, \
     entanglement_wanted_functionality
 from .Dice import blades_roll_command
-from src.ext.BladesUtility.Wiki.ItemWiki import setup_wiki, wiki_search
+from .Wiki.ItemWiki import setup_wiki, wiki_search
 
 logger = logging.getLogger('bot')
 
@@ -56,7 +55,7 @@ class BladesUtilityCog(commands.Cog):
             await ctx.respond(str(e))
 
 
-def setup(bot: bridge.Bot):
+def setup(bot: commands.Bot):
     # Every extension should have this function
     logger.debug("setting up Blades Cog")
     check_entanglement_assets()

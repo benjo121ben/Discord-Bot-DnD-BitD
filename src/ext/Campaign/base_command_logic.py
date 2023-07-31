@@ -4,7 +4,7 @@ import logging
 import decohints
 from functools import wraps
 
-from discord import User, ApplicationContext
+from discord import User
 from .Character import Character, LABEL_PLAYER
 from .ContextInfo import ContextInfo
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
