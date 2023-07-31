@@ -34,6 +34,5 @@ def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
             load_ext("Clocks.ClockCog")
         if GlobalVariables.modules_list[2]:
             load_ext("Kanka.KankaCog")
-    load_ext("Buttons_test.ButtonCog")
 
     logger.info("---------------------EXTENSIONS LOADED---------------------\n")
