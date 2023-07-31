@@ -6,6 +6,7 @@ from functools import wraps
 
 from discord import User, ApplicationContext
 from .Character import Character, LABEL_PLAYER
+from .ContextInfo import ContextInfo
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
     check_savefile_existence, \
     get_savefile_as_discord_file
@@ -97,7 +98,7 @@ def log(executing_user: str, adv=False) -> str:
 
 
 @check_and_save_file_wrapper_async
-async def claim_character(executing_user: str, ctx: ApplicationContext, char_tag: str, assigned_user_id: str):
+async def claim_character(executing_user: str, ctx: ContextInfo, char_tag: str, assigned_user_id: str):
     if assigned_user_id is None:
         assigned_user_id = str(ctx.author.id)
     if check_if_user_has_char(executing_user, assigned_user_id):
@@ -263,7 +264,7 @@ def crit(executing_user: str, char_tag: str, amount: int = 1) -> str:
     crits = _char.crits
     _char.rolled_crit(amount)
     Undo.queue_basic_action(executing_user, char_tag, "crits", crits, crits + amount)
-    return f"Crit of {char_tag} increased by 1"
+    return f"Crit of {char_tag} increased to {crits + amount}"
 
 
 @check_and_save_file_wrapper
@@ -272,7 +273,7 @@ def faint(executing_user: str, char_tag: str, amount: int = 1) -> str:
     faints = _char.faints
     _char.faint(amount)
     Undo.queue_basic_action(executing_user, char_tag, "faints", faints, faints + amount)
-    return f"{char_tag} went unconcious"
+    return f"{char_tag} went unconcious. Increased to {faints + amount}"
 
 
 @check_and_save_file_wrapper
@@ -281,7 +282,7 @@ def dodge(executing_user: str, char_tag: str, amount: int = 1) -> str:
     _dodged = _char.dodged
     _char.dodge(amount)
     Undo.queue_basic_action(executing_user, char_tag, "dodged", _dodged, _dodged + amount)
-    return f"Character {char_tag}, dodged an attack"
+    return f"Character {char_tag}, dodged an attack. Increased to {_dodged + amount}"
 
 
 @check_and_save_file_wrapper
@@ -291,10 +292,10 @@ def session_increase(executing_user: str):
     get_loaded_dict(executing_user)[session_tag] += 1
     Undo.queue_undo_action(executing_user,
                            UndoActions.FileDataUndoAction(session_tag, current_session, current_session + 1))
-    return "finished session, increased by one"
+    return f"finished session, increased to {current_session + 1}"
 
 
-async def cache_file(executing_user: str, ctx: ApplicationContext):
+async def cache_file(executing_user: str, ctx: ContextInfo):
     """
     Sends the current savefile into the discord chat with the ID assigned in the campaign environment file
     :param ctx: Discord context

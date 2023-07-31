@@ -2,7 +2,7 @@ import asyncio
 from typing import Any, Coroutine, Callable
 
 import pytest
-from discord.ext.bridge import BridgeExtContext
+from discord import ApplicationContext
 from src.ext.Campaign.CampaignCog import CampaignCog
 from src.ext.Campaign import Character as char_file, packg_variables as packg_vars
 from src.ext.Campaign.SaveDataManagement import \
@@ -24,7 +24,7 @@ def delete_present_save_file():
         print("deleted existing unit test savefile")
 
 
-def setup() -> tuple[CampaignCog, BridgeExtContext]:
+def setup() -> tuple[CampaignCog, ApplicationContext]:
     delete_present_save_file()
     cog = setup_bot_and_cog_campaign()
     ctx = get_mocked_context(test_user_id_int)
@@ -49,7 +49,7 @@ async def assert_command(value: Coroutine):
     assert await value
 
 
-async def undo_redo(cog: CampaignCog, ctx: BridgeExtContext, pre_undo_assert: Callable, post_undo_assert: Callable):
+async def undo_redo(cog: CampaignCog, ctx: ApplicationContext, pre_undo_assert: Callable, post_undo_assert: Callable):
     pre_undo_assert()
     await assert_command(cog.undo(ctx))
     post_undo_assert()
@@ -68,19 +68,19 @@ class TestCampaignCogValid:
         print("teardown done")
 
     @pytest.fixture
-    def create_char(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    def create_char(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         asyncio.run(cog.add_c(ctx, test_char_tag, "test"))
         yield cog, ctx
 
     @pytest.fixture
-    def create_own_char(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    def create_own_char(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         asyncio.run(cog.add_c(ctx, test_char_tag, "test", test_user_id))
         yield cog, ctx
 
     @pytest.mark.asyncio
-    async def test_creation(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    async def test_creation(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         def pre_undo_assert():
             assert save_manager.check_savefile_existence(unit_test_save_file_name)
             assert char_access.check_char_tag(test_user_id, test_char_tag)
@@ -108,7 +108,7 @@ class TestCampaignCogValid:
         await undo_redo(cog, ctx, pre_undo_assert, post_undo_assert)
 
     @pytest.mark.asyncio
-    async def test_removal(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    async def test_removal(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         def pre_undo_assert():
             assert len(live_manager.get_loaded_chars(test_user_id)) == 0
             assert not char_access.check_char_tag(test_user_id, test_char_tag)
@@ -135,7 +135,7 @@ class TestCampaignCogValid:
         await undo_redo(cog, ctx, pre_undo_assert, post_undo_assert)
 
     @pytest.mark.asyncio
-    async def test_creation_with_user(self, create_cog_and_load: tuple[CampaignCog, BridgeExtContext]):
+    async def test_creation_with_user(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         await assert_command(cog.add_c(ctx, test_char_tag, "test", test_user_id))
         assert save_manager.check_savefile_existence(unit_test_save_file_name)
@@ -177,7 +177,7 @@ class TestCampaignCogValid:
         assert _char.dodged == 0
 
     @pytest.mark.asyncio
-    async def test_crit(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_crit(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_CRITS, 0)
         await assert_command(cog.crit(ctx, 1, test_char_tag))
@@ -196,7 +196,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_CRITS, 4)
 
     @pytest.mark.asyncio
-    async def test_faint(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_faint(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_FAINTS, 0)
         await assert_command(cog.faint(ctx, 1, test_char_tag))
@@ -215,7 +215,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_FAINTS, 4)
 
     @pytest.mark.asyncio
-    async def test_dodged(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_dodged(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_DODGE, 0)
         await assert_command(cog.dodged(ctx, 1, test_char_tag))
@@ -234,7 +234,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_DODGE, 4)
 
     @pytest.mark.asyncio
-    async def test_cause(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_cause(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_CAUSED, 0)
         assert_char_value_base_save(test_char_tag, char_file.LABEL_KILLS, 0)
@@ -261,7 +261,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_KILLS, 4)
 
     @pytest.mark.asyncio
-    async def test_take(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_take(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_TAKEN, 0)
         assert_char_value_base_save(test_char_tag, char_file.LABEL_RESISTED, 0)
@@ -288,7 +288,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_RESISTED, 0)
 
     @pytest.mark.asyncio
-    async def test_take_resisted(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_take_resisted(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_TAKEN, 0)
         assert_char_value_base_save(test_char_tag, char_file.LABEL_RESISTED, 0)
@@ -315,7 +315,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_RESISTED, 30)
 
     @pytest.mark.asyncio
-    async def test_heal(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_heal(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 0)
         await assert_command(cog.heal(ctx, 10, test_char_tag))
@@ -334,7 +334,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(test_char_tag, char_file.LABEL_HEALED, 25)
 
     @pytest.mark.asyncio
-    async def test_retag(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_retag(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         NEW_TAG = "new_tag"
         assert_char_value_base_save(test_char_tag, char_file.LABEL_TAG, test_char_tag)
@@ -350,7 +350,7 @@ class TestCampaignCogValid:
         assert_char_value_base_save(NEW_TAG, char_file.LABEL_TAG, NEW_TAG)
 
     @pytest.mark.asyncio
-    async def test_session(self, create_own_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_session(self, create_own_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_own_char
         assert_save_value_base_save(save_manager.session_tag, 1)
         await assert_command(cog.session(ctx))
@@ -361,7 +361,7 @@ class TestCampaignCogValid:
         assert_save_value_base_save(save_manager.session_tag, 2)
 
     @pytest.mark.asyncio
-    async def test_session_admin(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_session_admin(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         packg_vars.bot_admin_id = ctx.author.id
         assert_save_value_base_save(save_manager.session_tag, 1)
@@ -370,7 +370,7 @@ class TestCampaignCogValid:
         assert_ctx_any_respond(ctx, 'cached')
 
     @pytest.mark.asyncio
-    async def test_claim(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_claim(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, "")
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
@@ -396,7 +396,7 @@ class TestCampaignCogValid:
         assert_save_value_base_save(save_manager.players_tag, [test_user_id, "3"])
 
     @pytest.mark.asyncio
-    async def test_unclaim(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_unclaim(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         assert_char_value_base_save(test_char_tag, char_file.LABEL_PLAYER, "")
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
@@ -428,7 +428,7 @@ class TestCampaignCogValid:
         assert_save_value_base_save(save_manager.players_tag, [test_user_id, "3"])
 
     @pytest.mark.asyncio
-    async def test_add_player(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_add_player(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
         await assert_command(cog.add_player(ctx, "3"))
@@ -442,7 +442,7 @@ class TestCampaignCogValid:
         assert_save_value_base_save(save_manager.players_tag, [test_user_id, "3"])
 
     @pytest.mark.asyncio
-    async def test_rem_player(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_rem_player(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
         await assert_command(cog.add_player(ctx, "3"))
@@ -458,7 +458,7 @@ class TestCampaignCogValid:
         assert_save_value_base_save(save_manager.players_tag, [test_user_id])
 
     @pytest.mark.asyncio
-    async def test_cache_admin(self, create_char: tuple[CampaignCog, BridgeExtContext]):
+    async def test_cache_admin(self, create_char: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_char
         packg_vars.bot_admin_id = ctx.author.id
         await assert_command(cog.cache(ctx))

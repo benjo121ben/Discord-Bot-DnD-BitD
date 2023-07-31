@@ -110,7 +110,7 @@ def access_file_as_user(user_id: str, _save_name: str) -> str:
     global ID_dict
     check_file_player(user_id, _save_name, True)
     ID_dict.set(user_id, _save_name)
-    return f"Savefile {_save_name} exists.\n Data loaded."
+    return f"Savefile {_save_name} exists.\nData loaded."
 
 
 def save_user_file(user_id: str):

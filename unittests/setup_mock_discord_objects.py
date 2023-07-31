@@ -3,6 +3,7 @@ from unittest import mock
 from unittest.mock import AsyncMock, MagicMock
 
 import discord
+from discord import ApplicationContext
 from discord.ext.bridge import BridgeExtContext, Bot
 
 from src.ext.Campaign import CampaignCog as camp_cog, packg_variables as p_vars
@@ -14,19 +15,28 @@ def mock_string_layout(value: Any) -> str:
     return "    " + str(value).replace("\n", "\n    ")
 
 
-def get_mocked_context(author_id: int) -> BridgeExtContext:
+def mockedRespond(messagetype: str, *args, **kwargs):
+    if len(args) > 0:
+        print(f"{messagetype}:{{\n    {mock_string_layout(args[0])}\n}}")
+    elif len(kwargs) > 0:
+        print(f"{messagetype}:\n    empty message with kwargs content\n")
+    else:
+        raise RuntimeError("mock_respond:\n    EMPTY MESSAGE SENT\n")
+
+
+def get_mocked_context(author_id: int) -> ApplicationContext:
     class MockedAuthor:
         def __init__(self, user_id: int):
             self.id = user_id
 
-    ctx = mock.MagicMock(BridgeExtContext)
+    ctx = mock.MagicMock(ApplicationContext)
     ctx.author = MockedAuthor(author_id)
     ctx.respond = AsyncMock(
-        discord.ext.bridge.BridgeExtContext.respond,
-        side_effect=lambda *args, **kwargs: print(f"mock_respond:{{\n{mock_string_layout(args[0])}\n}}"))
+        discord.ApplicationContext.respond,
+        side_effect=lambda *args, **kwargs: mockedRespond("mock_respond", *args, **kwargs))
     ctx.send = AsyncMock(
-        discord.ext.bridge.BridgeExtContext.send,
-        side_effect=lambda *args, **kwargs: print(f"mock_send:{{\n{mock_string_layout(args[0])}\n}}"))
+        discord.ApplicationContext.send,
+        side_effect=lambda *args, **kwargs: mockedRespond(f"mock_send", *args, **kwargs))
     return ctx
 
 

@@ -3,16 +3,16 @@ import pathlib
 import logging
 from typing import Optional
 from dotenv import load_dotenv
-from discord import ApplicationContext
 
 from . import packg_variables as p_vars
+from .ContextInfo import ContextInfo
 from .SaveDataManagement import live_save_manager as live_save
 from .campaign_exceptions import NotBotAdminException
 
 logger = logging.getLogger('bot')
 
 
-def check_bot_admin(ctx: ApplicationContext, raise_error=False) -> bool:
+def check_bot_admin(ctx: ContextInfo, raise_error=False) -> bool:
     if p_vars.bot_admin_id is None or ctx.author.id == p_vars.bot_admin_id:
         return True
     elif raise_error:
