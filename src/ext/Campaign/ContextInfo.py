@@ -17,9 +17,9 @@ class ContextInfo:
 
     async def respond(self, *args, **kwargs):
         if not self.ctxType:
-            await self.interaction.followup.send(*args, **kwargs)
+            return await self.interaction.followup.send(*args, **kwargs)
         elif self.ctxType:
-            await self.ctx.respond(*args, **kwargs)
+            return await self.ctx.respond(*args, **kwargs)
 
 
 async def initContext(interaction: Interaction = None, ctx: ApplicationContext = None) -> ContextInfo:

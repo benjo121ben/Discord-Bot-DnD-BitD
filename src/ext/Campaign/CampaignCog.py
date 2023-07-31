@@ -9,7 +9,8 @@ logger = logging.getLogger('bot')
 
 
 class CampaignCog(Cog):
-    @slash_command(name="view_char")
+    @slash_command(name="edit_char",
+                   description="Use a simple button interface to change a characters' stats")
     async def view_char(self, ctx: ApplicationContext, char_tag: str = None):
         return await commands.sendCharView(await initContext(ctx=ctx), char_tag)
 
@@ -27,36 +28,31 @@ class CampaignCog(Cog):
     async def rem_c(self, ctx: ApplicationContext, char_tag: str):
         return await commands.rem_c(await initContext(ctx=ctx), char_tag)
 
-    @slash_command(name="crit", description="Character has rollet a nat20")
+    # @slash_command(name="crit", description="Character has rollet a nat20")
     async def crit(self, ctx: ApplicationContext, amount: int = 1, char_tag: str = None):
         return await commands.crit((await initContext(ctx=ctx)), amount, char_tag)
 
-    @slash_command(name="faint", description="Character faints")
+    # @slash_command(name="faint", description="Character faints")
     async def faint(self, ctx: ApplicationContext, amount: int = 1, char_tag: str = None):
         return await commands.faint((await initContext(ctx=ctx)), amount, char_tag)
 
-    @slash_command(name="dodged", description="Character dodged an attack")
+    # @slash_command(name="dodged", description="Character dodged an attack")
     async def dodged(self, ctx: ApplicationContext, amount: int = 1, char_tag: str = None):
         return await commands.dodged((await initContext(ctx=ctx)), amount, char_tag)
 
-    @slash_command(name="cause", description="Character causes damage to enemy")
+    # @slash_command(name="cause", description="Character causes damage to enemy")
     async def cause(self, ctx: ApplicationContext, amount: int, kills: int = 0, char_tag: str = None):
         return await commands.cause((await initContext(ctx=ctx)), amount, kills, char_tag)
 
-    @slash_command(name="take",
-                   description="Character takes all damage")
+    # @slash_command(name="take", description="Character takes full damage")
     async def take(self, ctx: ApplicationContext, amount: int, char_tag: str = None):
         return await commands.take((await initContext(ctx=ctx)), amount, char_tag)
 
-    @slash_command(name="taker",
-                   description="Character takes reduced damage")
+    # @slash_command(name="taker", description="Character takes reduced damage")
     async def take_reduced(self, ctx: ApplicationContext, amount: int, char_tag: str = None):
         return await commands.take_reduced((await initContext(ctx=ctx)), amount, char_tag)
 
-    @slash_command(
-        name="heal",
-        description="Character heals another by amount. Increases damage_healed stat"
-    )
+    # @slash_command(name="heal", description="Character heals another by amount. Increases damage_healed stat")
     async def heal(self, ctx: ApplicationContext, amount: int, char_tag: str = None):
         return await commands.heal((await initContext(ctx=ctx)), amount, char_tag)
 

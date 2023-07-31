@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import AsyncMock, MagicMock
 
 import discord
-from discord import ApplicationContext
+from discord import ApplicationContext, Interaction
 from discord.ext.bridge import BridgeExtContext, Bot
 
 from src.ext.Campaign import CampaignCog as camp_cog, packg_variables as p_vars
@@ -22,6 +22,7 @@ def mockedRespond(messagetype: str, *args, **kwargs):
         print(f"{messagetype}:\n    empty message with kwargs content\n")
     else:
         raise RuntimeError("mock_respond:\n    EMPTY MESSAGE SENT\n")
+    return mock.MagicMock(Interaction)
 
 
 def get_mocked_context(author_id: int) -> ApplicationContext:

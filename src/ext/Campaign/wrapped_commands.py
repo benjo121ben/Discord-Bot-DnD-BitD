@@ -102,57 +102,76 @@ class StatView(View):
         await redo(await initContext(interaction=interaction))
 
 
-async def catch_and_respond_char_action(ctx: ContextInfo, char_tag: str, func: Callable[[str, str], str], sendCharView=False) -> bool:
+async def catch_and_respond_char_action(
+        ctx: ContextInfo,
+        char_tag: str, func: Callable[[str, str], str],
+        send_char_view=False,
+        timeout=4) -> bool:
     """
     Wraps a character specific command function, executing it with the user_id gained from the context.
     Also if char_tag is None, it will try to load the character name from the current file
 
-    :param func: the function executed
     :param ctx: The message context
+    :param func: the function executed
     :param char_tag: the char_tag of the character that the command applies to
+    :param send_char_view: determines whether the character editing view is sent after execution
+    :param timeout: determines how long it takes for the response to dissappear. Set to None if it shouldn't disappear
     """
     executing_user = str(ctx.author.id)
     try:
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
-        if sendCharView:
-            await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag))
+        if send_char_view:
+            interaction: Interaction = await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag))
         else:
-            await ctx.respond(func(executing_user, char_tag), view=UndoView())
+            interaction: Interaction = await ctx.respond(func(executing_user, char_tag), view=UndoView())
+        if timeout is not None:
+            await interaction.delete_original_message(delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
         return False
 
 
-async def catch_and_respond_file_action(ctx: ContextInfo, func: Callable[[str], str]) -> bool:
+async def catch_and_respond_file_action(
+        ctx: ContextInfo,
+        func: Callable[[str], str],
+        timeout: None | int = 10,
+        send_undo_view=True) -> bool:
     """
     Wraps a file specific command function, executing it with the user_id gained from the context.
 
-    :param func: the function executed
     :param ctx: The message context
+    :param func: the function executed
+    :param timeout: determines how long it takes for the response to dissappear. Set to None if it shouldn't disappear
+    :param send_undo_view: determines whether the undo view should be sent after execution
     """
     executing_user = str(ctx.author.id)
     try:
-        await ctx.respond(func(executing_user), view=UndoView())
+        interaction: Interaction = await ctx.respond(func(executing_user), view=UndoView())
+        if timeout is not None:
+            await interaction.delete_original_message(delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
         return False
 
 
-async def catch_async_file_action(ctx: ContextInfo, func: Callable[[str], Awaitable[None]]) -> bool:
+async def catch_async_file_action(ctx: ContextInfo, func: Callable[[str], Awaitable[None]], send_undo_view=True) -> bool:
     """
         Wraps a file specific command function, executing it with the user_id gained from the context.
         This is the async version
 
         :param func: the function executed
         :param ctx: The message context
+        :param timeout: determines how long it takes for the response to dissappear. Set to None if it shouldn't disappear
+        :param send_undo_view: determines whether the undo view should be sent after execution
         """
     executing_user = str(ctx.author.id)
     try:
         await func(executing_user)
-        await ctx.respond("", view=UndoView())
+        if send_undo_view:
+            await ctx.respond("", view=UndoView())
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -163,13 +182,14 @@ async def sendCharView(ctx: ContextInfo, char_tag: str) -> bool:
     val = await catch_and_respond_char_action(ctx,
                                               char_tag,
                                               lambda executing_user, tag: f"**{get_char(executing_user, tag).name}**",
-                                              sendCharView=True)
+                                              send_char_view=True)
     return val
 
 
 async def add_c(ctx: ContextInfo, char_tag: str, char_name: str, user_id: str = None) -> bool:
     val = await catch_and_respond_file_action(ctx,
-                                              lambda executing_user: bcom.add_char(executing_user, char_tag, char_name))
+                                              lambda executing_user: bcom.add_char(executing_user, char_tag, char_name)
+                                              )
     if user_id is not None:
         val = val and await claim(ctx, char_tag, user_id)
     return val
@@ -227,7 +247,8 @@ async def heal(ctx: ContextInfo, amount: int, char_tag: str = None) -> bool:
 
 async def log(ctx: ContextInfo, adv=False) -> bool:
     return await catch_and_respond_file_action(ctx,
-                                               lambda executing_user: bcom.log(executing_user, adv))
+                                               lambda executing_user: bcom.log(executing_user, adv),
+                                               timeout=None)
 
 
 async def retag_pc(ctx: ContextInfo, char_tag_old: str, char_tag_new: str) -> bool:

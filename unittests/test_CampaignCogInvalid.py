@@ -2,6 +2,7 @@ import asyncio
 from typing import Any, Coroutine, Callable
 
 import pytest
+from discord import ApplicationContext
 from discord.ext.bridge import BridgeExtContext
 from src.ext.Campaign.CampaignCog import CampaignCog
 from src.ext.Campaign import Undo
@@ -25,7 +26,7 @@ def delete_present_save_file():
         print("deleted existing unit test savefile")
 
 
-def setup() -> tuple[CampaignCog, BridgeExtContext]:
+def setup() -> tuple[CampaignCog, ApplicationContext]:
     delete_present_save_file()
     cog = setup_bot_and_cog_campaign()
     ctx = get_mocked_context(test_user_id_int)
