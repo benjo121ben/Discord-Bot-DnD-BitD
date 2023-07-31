@@ -136,7 +136,7 @@ async def catch_and_respond_char_action(
 async def catch_and_respond_file_action(
         ctx: ContextInfo,
         func: Callable[[str], str],
-        timeout: None | int = 10,
+        timeout: int = 10,
         send_undo_view=True) -> bool:
     """
     Wraps a file specific command function, executing it with the user_id gained from the context.
