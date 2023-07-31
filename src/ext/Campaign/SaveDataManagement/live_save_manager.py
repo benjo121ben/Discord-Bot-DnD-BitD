@@ -108,6 +108,9 @@ def get_loaded_chars(user_id: str) -> dict[str, Character]:
 
 def access_file_as_user(user_id: str, _save_name: str) -> str:
     global ID_dict
+    if _save_name == "":
+        ID_dict.remove(user_id)
+        return f"unloaded current saveFile"
     check_file_player(user_id, _save_name, True)
     ID_dict.set(user_id, _save_name)
     return f"Savefile {_save_name} exists.\nData loaded."

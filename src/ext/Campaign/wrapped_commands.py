@@ -12,6 +12,7 @@ from .ContextInfo import ContextInfo, initContext
 from .SaveDataManagement import char_data_access as char_data, \
     live_save_manager as live_save, \
     save_file_management as save_manager
+from .SaveDataManagement.char_data_access import get_char
 from .campaign_exceptions import CommandException as ComExcept
 from . import base_command_logic as bcom, \
     packg_variables as cmp_vars, \
@@ -44,7 +45,7 @@ class DamageModal(discord.ui.Modal):
         await self.func(
             await initContext(interaction=interaction),
             int(self.children[0].value),
-            int(self.children[1].value) if self.children[1].value is not None else 0,
+            int(self.children[1].value) if self.children[1].value != "" else 0,
             self.char_tag
         )
 
@@ -59,9 +60,9 @@ class UndoView(View):
         await redo(await initContext(interaction=interaction))
 
 
-class TestView(View):
+class StatView(View):
     def __init__(self, char_tag: str):
-        super().__init__()
+        super().__init__(timeout=600)
         self.char_tag = char_tag
 
     @button(label="crit", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🎯"))
@@ -101,7 +102,7 @@ class TestView(View):
         await redo(await initContext(interaction=interaction))
 
 
-async def catch_and_respond_char_action(ctx: ContextInfo, char_tag: str, func: Callable[[str, str], str]) -> bool:
+async def catch_and_respond_char_action(ctx: ContextInfo, char_tag: str, func: Callable[[str, str], str], sendCharView=False) -> bool:
     """
     Wraps a character specific command function, executing it with the user_id gained from the context.
     Also if char_tag is None, it will try to load the character name from the current file
@@ -114,7 +115,10 @@ async def catch_and_respond_char_action(ctx: ContextInfo, char_tag: str, func: C
     try:
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
-        await ctx.respond(func(executing_user, char_tag), view=TestView(char_tag))
+        if sendCharView:
+            await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag))
+        else:
+            await ctx.respond(func(executing_user, char_tag), view=UndoView())
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -155,9 +159,12 @@ async def catch_async_file_action(ctx: ContextInfo, func: Callable[[str], Awaita
         return False
 
 
-async def sendCharView(ctx: ApplicationContext) -> bool:
-    await ctx.respond(view=TestView("testName"))
-    return True
+async def sendCharView(ctx: ContextInfo, char_tag: str) -> bool:
+    val = await catch_and_respond_char_action(ctx,
+                                              char_tag,
+                                              lambda executing_user, tag: f"**{get_char(executing_user, tag).name}**",
+                                              sendCharView=True)
+    return val
 
 
 async def add_c(ctx: ContextInfo, char_tag: str, char_name: str, user_id: str = None) -> bool:

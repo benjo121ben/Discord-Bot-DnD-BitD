@@ -10,8 +10,8 @@ logger = logging.getLogger('bot')
 
 class CampaignCog(Cog):
     @slash_command(name="view_char")
-    async def view_char(self, ctx: ApplicationContext):
-        return await commands.sendCharView(ctx)
+    async def view_char(self, ctx: ApplicationContext, char_tag: str = None):
+        return await commands.sendCharView(await initContext(ctx=ctx), char_tag)
 
     @slash_command(
         name="add",

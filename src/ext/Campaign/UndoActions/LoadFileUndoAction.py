@@ -12,8 +12,14 @@ class LoadFileUndoAction(BaseUndoAction):
 
     def undo(self, executing_user: str) -> str:
         lsave.access_file_as_user(executing_user, self.old_file)
-        return f"Undid load of {self.new_file}. Returned to {self.old_file}."
+        if self.old_file != "":
+            return f"Undid load of {self.new_file}. Returned to {self.old_file}."
+        else:
+            return f"Unloaded {self.new_file}."
 
     def redo(self, executing_user: str):
         lsave.access_file_as_user(executing_user, self.new_file)
-        return f"Reapplied load of {self.new_file}."
+        if self.new_file != "":
+            return f"Reloaded {self.new_file} savefile."
+        else:
+            return f"Unloaded {self.old_file}."
