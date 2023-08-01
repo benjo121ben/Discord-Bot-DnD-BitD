@@ -8,7 +8,7 @@ from discord.ui import View, button, Button
 from discord import ButtonStyle as Bstyle, Interaction, ApplicationContext, PartialEmoji
 
 from . import packg_variables
-from .ContextInfo import ContextInfo, initContext
+from ..ContextInfo import ContextInfo, initContext
 from .SaveDataManagement import char_data_access as char_data, \
     live_save_manager as live_save, \
     save_file_management as save_manager
@@ -66,16 +66,16 @@ class StatView(View):
         self.char_tag = char_tag
 
     @button(label="crit", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🎯"))
-    async def button_callback(self, button_info: Button, interaction: Interaction):
-        await crit(await initContext(interaction=interaction), char_tag=button_info.view.char_tag)
+    async def button_callback(self, _: Button, interaction: Interaction):
+        await crit(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="faint", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💤"))
-    async def button_callback1(self, button_info: Button, interaction: Interaction):
-        await faint(await initContext(interaction=interaction), char_tag=button_info.view.char_tag)
+    async def button_callback1(self, _: Button, interaction: Interaction):
+        await faint(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="dodge", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💨"))
-    async def button_callback2(self, button_info: Button, interaction: Interaction):
-        await dodged(await initContext(interaction=interaction), char_tag=button_info.view.char_tag)
+    async def button_callback2(self, _: Button, interaction: Interaction):
+        await dodged(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="resisted", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🛡"))
     async def button_callback3(self, _: Button, interaction: Interaction):

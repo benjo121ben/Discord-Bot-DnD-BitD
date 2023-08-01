@@ -6,7 +6,7 @@ from functools import wraps
 
 from discord import User
 from .Character import Character, LABEL_PLAYER
-from .ContextInfo import ContextInfo
+from ..ContextInfo import ContextInfo
 from .SaveDataManagement.save_file_management import session_tag, character_tag, version_tag, players_tag, \
     check_savefile_existence, \
     get_savefile_as_discord_file

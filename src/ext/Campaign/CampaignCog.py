@@ -3,7 +3,7 @@ import logging
 from discord import slash_command, ApplicationContext
 from discord.ext.commands import Cog, Bot
 from . import wrapped_commands as commands, campaign_helper as cmp_hlp
-from .ContextInfo import initContext
+from ..ContextInfo import initContext
 
 logger = logging.getLogger('bot')
 
