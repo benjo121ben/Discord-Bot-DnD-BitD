@@ -16,10 +16,21 @@ class ContextInfo:
             self.author = ctx.author
 
     async def respond(self, *args, **kwargs):
+        delay = None
+        if "delay" in kwargs:
+            delay = kwargs["delay"]
+            del kwargs["delay"]
+
         if not self.ctxType:
-            return await self.interaction.followup.send(*args, **kwargs)
+            ret = await self.interaction.followup.send(*args, **kwargs)
+            if delay is not None:
+                ret = await ret.delete(delay=delay)
+            return ret
         elif self.ctxType:
-            return await self.ctx.respond(*args, **kwargs)
+            ret = await self.ctx.respond(*args, **kwargs)
+            if delay is not None:
+                ret = await ret.delete_original_response(delay=delay)
+            return ret
 
 
 async def initContext(interaction: Interaction = None, ctx: ApplicationContext = None) -> ContextInfo:

@@ -2,10 +2,13 @@ import json
 import os
 import pathlib
 
-from discord import ApplicationContext
+import discord.ui
+from discord import ApplicationContext, ComponentType, SelectOption, Interaction
+from discord.ui import View, string_select, select, Item, Select
 
 from . import EntryLabels as eLabel
 from .WikiEntry import WikiEntry
+from ...ContextInfo import ContextInfo, initContext
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki: dict[str, WikiEntry] = {}
@@ -101,7 +104,7 @@ def insert_wiki_entry(wiki_entry: WikiEntry):
     wiki[wiki_entry.title.lower()] = wiki_entry
 
 
-async def send_wiki_entry(ctx: ApplicationContext, entry: WikiEntry):
+async def send_wiki_entry(ctx: ContextInfo, entry: WikiEntry):
     embed, file = entry.get_entry_embed()
     if file is None:
         await ctx.respond(embed=embed)
@@ -109,7 +112,7 @@ async def send_wiki_entry(ctx: ApplicationContext, entry: WikiEntry):
         await ctx.respond(embed=embed, file=file)
 
 
-async def wiki_search(ctx: ApplicationContext, search_term: str):
+async def wiki_search(ctx: ContextInfo, search_term: str):
     found = []
     term = search_term.lower()
     if term in wiki:
@@ -129,9 +132,16 @@ async def wiki_search(ctx: ApplicationContext, search_term: str):
             await send_wiki_entry(ctx, wiki[found[0]["key"]])
 
         elif len(found) > 1:
-            await ctx.respond("Entry could not be found. Did you mean any of these?\n" +
-                              ", ".join(
-                                  ["**"+item["key"]+"**" for item in found]
-                              ))
+            selectedItems = Select(options=[SelectOption(label=val["key"], value=val["key"]) for val in found])
+            itemView = View()
+
+            async def select_callback(interaction: Interaction):
+                await interaction.message.delete()
+                await wiki_search(await initContext(interaction=interaction), selectedItems.values[0])
+
+            selectedItems.callback = select_callback
+            itemView.add_item(selectedItems)
+
+            await ctx.respond("Entry could not be found. Did you mean any of these?", view=itemView)
         else:
             await ctx.respond("Entry could not be found.")

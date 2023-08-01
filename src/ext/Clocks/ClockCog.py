@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from functools import wraps
 
@@ -20,14 +21,17 @@ class ClockAdjustmentView(View):
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"))
     async def button_callback(self, _: Button, interaction: Interaction):
+        await interaction.message.delete()
         await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag)
 
     @button(label="negative_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
     async def button_callback1(self, _: Button, interaction: Interaction):
+        await interaction.message.delete()
         await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, ticks=-1)
 
     @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"))
     async def button_callback2(self, _: Button, interaction: Interaction):
+        await interaction.message.delete()
         await remove_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag)
 
 
@@ -57,12 +61,12 @@ async def add_logic(ctx: ContextInfo, clock_tag: str, clock_title: str, clock_si
         return
 
     if clock_tag in clock_dic:
-        await ctx.respond(content="This clock already exists!")
+        await ctx.respond(content="This clock already exists!", delay=5)
         await print_clock(ctx, clock_dic[clock_tag])
     else:
         clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
         save_clocks(user_id, clock_dic)
-        await ctx.respond("Clock created")
+        await ctx.respond("Clock created", delay=5)
         await print_clock(ctx, clock_dic[clock_tag])
 
 
@@ -73,10 +77,9 @@ async def remove_logic(ctx: ContextInfo, clock_tag: str):
     if clock_tag in clock_dic:
         del clock_dic[clock_tag]
         save_clocks(user_id, clock_dic)
-        await ctx.respond(content="The clock has been deleted!\n")
+        await ctx.respond(content="The clock has been deleted!\n", delay=5)
     else:
-        await ctx.respond(
-            f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!")
+        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!", delay=5)
 
 
 async def show_clock_logic(ctx: ContextInfo, clock_tag: str):
@@ -86,7 +89,7 @@ async def show_clock_logic(ctx: ContextInfo, clock_tag: str):
     if clock_tag in clock_dic:
         await print_clock(ctx, clock_dic[clock_tag])
     else:
-        await ctx.respond("This clock does not exist")
+        await ctx.respond("This clock does not exist", delay=5)
 
 
 async def tick_clock_logic(ctx: ContextInfo, clock_tag: str, ticks: int = 1):
@@ -99,7 +102,7 @@ async def tick_clock_logic(ctx: ContextInfo, clock_tag: str, ticks: int = 1):
         save_clocks(user_id, clock_dic)
         await print_clock(ctx, clock)
     else:
-        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!")
+        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", delay=5)
 
 
 class ClockCog(commands.Cog):
@@ -108,11 +111,7 @@ class ClockCog(commands.Cog):
     async def add_clock(self, ctx: ApplicationContext, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
         await add_logic(await initContext(ctx=ctx), clock_tag, clock_title, clock_size, clock_ticks)
 
-    @commands.slash_command(name="clock_rem", description="Removes the selected saved clock")
-    async def remove_clock(self, ctx: ApplicationContext, clock_tag: str):
-        await remove_logic(await initContext(ctx=ctx), clock_tag)
-
-    @commands.slash_command(name="clock_show", description="Prints a saved clock, with picture if possible")
+    @commands.slash_command(name="clock", description="Prints a saved clock, with picture if possible")
     async def show_clock(self, ctx: ApplicationContext, clock_tag: str):
         await show_clock_logic(await initContext(ctx=ctx), clock_tag)
 
@@ -121,17 +120,13 @@ class ClockCog(commands.Cog):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 0:
-            await ctx.respond("You have no existing clock. use the clock_add command to create clocks.")
+            await(await ctx.respond("You have no existing clock. use the **clock_add** command to create clocks.")).delete_original_response(delay=10)
             return
 
         all_c = "These are the clocks that you have created:\n"
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
-        await ctx.respond(all_c)
-
-    @commands.slash_command(name="clock_tick", description="Ticks the selected clock by a selected amount. Default: 1 tick")
-    async def tick_clock(self, ctx: ApplicationContext, clock_tag: str, ticks: int = 1):
-        await tick_clock_logic(await initContext(ctx=ctx), clock_tag, ticks)
+        await(await ctx.respond(all_c)).delete_original_response(delay=10)
 
 
 def setup(bot: commands.Bot):

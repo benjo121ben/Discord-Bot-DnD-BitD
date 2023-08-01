@@ -122,11 +122,9 @@ async def catch_and_respond_char_action(
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
         if send_char_view:
-            interaction: Interaction = await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag))
+            await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag), delay=timeout)
         else:
-            interaction: Interaction = await ctx.respond(func(executing_user, char_tag), view=UndoView())
-        if timeout is not None:
-            await interaction.delete_original_message(delay=timeout)
+            await ctx.respond(func(executing_user, char_tag), view=UndoView(), delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -153,7 +151,7 @@ async def catch_and_respond_file_action(
         else:
             interaction: Interaction = await ctx.respond(func(executing_user))
         if timeout is not None:
-            await interaction.delete_original_message(delay=timeout)
+            await interaction.delete_original_response(delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -184,7 +182,8 @@ async def sendCharView(ctx: ContextInfo, char_tag: str) -> bool:
     val = await catch_and_respond_char_action(ctx,
                                               char_tag,
                                               lambda executing_user, tag: f"**{get_char(executing_user, tag).name}**",
-                                              send_char_view=True)
+                                              send_char_view=True,
+                                              timeout=None)
     return val
 
 

@@ -108,7 +108,7 @@ There are entries for
 ## Technologies and Assets
 <strong>Project is created with Python: 3.10.  
 For packages see [requirements.txt](requirements.txt)</strong>  
-All of the functionality works via discords slash command system.
+All of the functionality works via discord's slash command system.
 
 
 ### Devils bargain card deck
@@ -226,23 +226,21 @@ Commands that are always enabled
 ### Blades in the Dark Commands
 Commands that are enabled with setting `BLADES=1`
 #### Utility commands
-|    command name     |        parameters        | Use                                                                                                                                         |
-|:-------------------:|:------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------|
- |   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**         |
- |    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                   |
- | entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                    |
-|        wiki         |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list. |
-|      bladeroll      |       dice_amount        | Makes a d6 roll using the Blades system. It recognizes success, partials, fails and crits and can handle 0 dice.                            |
-|        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 sice=8                                                                           |
+|    command name     |        parameters        | Use                                                                                                                                                                        |
+|:-------------------:|:------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ |   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**                                        |
+ |    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                                                  |
+ | entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                                                   |
+|        wiki         |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list with a dropdown selection menu. |
+|      bladeroll      |       dice_amount        | Makes a d6 roll using the Blades system. It recognizes success, partials, fails and crits and can handle 0 dice.                                                           |
+|        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 sice=8                                                                                                          |
 
 #### Progress Clock Commands
 | command name |                 parameters                 | Use                                                                                                                                                             |
 |:------------:|:------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ |    clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons                                                               |
  |  clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
- |  clock_rem   |                 clock_tag                  | Deletes the selected clock.                                                                                                                                     |
- |  clock_show  |                 clock_tag                  | Sends all info of a saved clock, with picture if possible.                                                                                                      |
-|  clock_all   |                     /                      | Prints out all saved clocks.                                                                                                                                    |
-|  clock_tick  |             clock_tag, *ticks              | Ticks the selected clock by a selected amount. <br>**Default: 1 tick, negative values possible**                                                                |
+|  clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
 
 ---
 
@@ -268,19 +266,13 @@ These are commands used to load files, manage characters and their assignment to
 
 #### Stat Commands
 
-All stat commands except for log have an optional `char_tag` parameter. If a user executes a stat
-command and no `char_tag` is provided, the command is applied to the executing users' claimed character.
+Stat commands allow you to view and edit a characters stats. 
+The amount of commands has been drastically reduced since the introduction of buttons
 
-| command name |        parameters         | Use                                                                                                                                                                                                                                                                                     |
-|:------------:|:-------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|     log      |         *advanced         | Output the stats of all characters in the currently selected save file.<br>Also outputs the commands that have been sent and can be undone/redone if the `advanced` parameter is set to 1                                                                                               |
- |     crit     |    *amount, *char_tag     | Increase the `crit` stat by the given amount for the selected character.<br>**Default: increase by one**                                                                                                                                                                                |
- |    dodged    |    *amount, *char_tag     | Increase the `dodged` stat by the given amount for the selected character.<br>**Default: increase by one**                                                                                                                                                                              |
- |    faint     |    *amount, *char_tag     | Increase the `fainted` stat by the given amount for the selected character.<br>**Default: increase by one**                                                                                                                                                                             |
- |    cause     | amount, *kills, *char_tag | Increases the `damage_caused` stat for the selected character by the provided `amount`. If kills are provided it also increases the `kills` stat by that amount. If the `amount` is greater than the characters previous `max_damage` stat, the stat will be replaced by the new amount |
-|     take     |     amount, *char_tag     | Increases the `damage_taken` stat for selected character.                                                                                                                                                                                                                               |
-|    taker     |     amount, *char_tag     | Works the same as take, increasing `damage_taken` stat by half of the `amount` rounded down, and the `damage_resisted` stat by the other half to account for damage resistances provided by abilities, such as the barbarian in dnd 5e                                                  |
-|     heal     |     amount, *char_tag     | Increases the `damage_healed` stat by the amount.                                                                                                                                                                                                                                       |
+| command name | parameters | Use                                                                                                                                                                                       |
+|:------------:|:----------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|     log      | *advanced  | Output the stats of all characters in the currently selected save file.<br>Also outputs the commands that have been sent and can be undone/redone if the `advanced` parameter is set to 1 |
+|  edit_char   | *char_tag  | Allows you to edit the stats of a character with a simple button interface. If no char_tag is given, it will check the character assigned to your userID.                                 |
 
 
 <!-- links --> 
