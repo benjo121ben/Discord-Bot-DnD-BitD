@@ -24,7 +24,7 @@ class ClockAdjustmentView(View):
         await interaction.message.delete()
         await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag)
 
-    @button(label="negative_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
+    @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
     async def button_callback1(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
         await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, ticks=-1)
