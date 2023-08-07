@@ -51,55 +51,85 @@ class DamageModal(discord.ui.Modal):
 
 
 class UndoView(View):
+    def __init__(self, executing_user: str):
+        super().__init__(timeout=600)
+        self.executing_user = executing_user
+
+    async def checkAuthorized(self, interaction: Interaction):
+        if str(interaction.user.id) != self.executing_user:
+            await (await interaction.response.send_message("you're not the same user that executed the button's command")).delete_original_response(delay=5)
+            return False
+        else:
+            return True
+
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"))
     async def button_callback7(self, _: Button, interaction: Interaction):
-        await undo(await initContext(interaction=interaction))
+        if await self.checkAuthorized(interaction):
+            await undo(await initContext(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"))
     async def button_callback8(self, _: Button, interaction: Interaction):
-        await redo(await initContext(interaction=interaction))
+        if await self.checkAuthorized(interaction):
+            await redo(await initContext(interaction=interaction))
 
 
 class StatView(View):
-    def __init__(self, char_tag: str):
+    def __init__(self, executing_user:str, char_tag: str):
         super().__init__(timeout=600)
         self.char_tag = char_tag
+        self.executing_user = executing_user
+
+    async def checkAuthorized(self, interaction: Interaction):
+        if str(interaction.user.id) != self.executing_user:
+            await (await interaction.response.send_message("you're not the same user that executed the button's command")).delete_original_response(delay=5)
+            return False
+        else:
+            return True
 
     @button(label="crit", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🎯"))
     async def button_callback(self, _: Button, interaction: Interaction):
-        await crit(await initContext(interaction=interaction), char_tag=self.char_tag)
+        if await self.checkAuthorized(interaction):
+            await crit(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="faint", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💤"))
     async def button_callback1(self, _: Button, interaction: Interaction):
-        await faint(await initContext(interaction=interaction), char_tag=self.char_tag)
+        if await self.checkAuthorized(interaction):
+            await faint(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="dodge", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💨"))
     async def button_callback2(self, _: Button, interaction: Interaction):
-        await dodged(await initContext(interaction=interaction), char_tag=self.char_tag)
+        if await self.checkAuthorized(interaction):
+            await dodged(await initContext(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="resisted", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🛡"))
     async def button_callback3(self, _: Button, interaction: Interaction):
-        await interaction.response.send_modal(SimpleStatModal(title="Resist Damage", func=take_reduced, char_tag=self.char_tag))
+        if await self.checkAuthorized(interaction):
+            await interaction.response.send_modal(SimpleStatModal(title="Resist Damage", func=take_reduced, char_tag=self.char_tag))
 
     @button(label="take", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🩸"))
     async def button_callback4(self, _: Button, interaction: Interaction):
-        await interaction.response.send_modal(SimpleStatModal(title="Take Damage", func=take, char_tag=self.char_tag))
+        if await self.checkAuthorized(interaction):
+            await interaction.response.send_modal(SimpleStatModal(title="Take Damage", func=take, char_tag=self.char_tag))
 
     @button(label="heal", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🚑"))
     async def button_callback5(self, _: Button, interaction: Interaction):
-        await interaction.response.send_modal(SimpleStatModal(title="Heals Damage", func=heal, char_tag=self.char_tag))
+        if await self.checkAuthorized(interaction):
+            await interaction.response.send_modal(SimpleStatModal(title="Heals Damage", func=heal, char_tag=self.char_tag))
 
     @button(label="deal", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🗡"))
     async def button_callback6(self, _: Button, interaction: Interaction):
-        await interaction.response.send_modal(DamageModal(title="Deals Damage", func=cause, char_tag=self.char_tag))
+        if await self.checkAuthorized(interaction):
+            await interaction.response.send_modal(DamageModal(title="Deals Damage", func=cause, char_tag=self.char_tag))
 
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"))
     async def button_callback7(self, _: Button, interaction: Interaction):
-        await undo(await initContext(interaction=interaction))
+        if await self.checkAuthorized(interaction):
+            await undo(await initContext(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"))
     async def button_callback8(self, _: Button, interaction: Interaction):
-        await redo(await initContext(interaction=interaction))
+        if await self.checkAuthorized(interaction):
+            await redo(await initContext(interaction=interaction))
 
 
 async def catch_and_respond_char_action(
@@ -122,9 +152,9 @@ async def catch_and_respond_char_action(
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
         if send_char_view:
-            await ctx.respond(func(executing_user, char_tag), view=StatView(char_tag), delay=timeout)
+            await ctx.respond(func(executing_user, char_tag), view=StatView(executing_user, char_tag), delay=timeout)
         else:
-            await ctx.respond(func(executing_user, char_tag), view=UndoView(), delay=timeout)
+            await ctx.respond(func(executing_user, char_tag), view=UndoView(executing_user), delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -147,11 +177,9 @@ async def catch_and_respond_file_action(
     executing_user = str(ctx.author.id)
     try:
         if send_undo_view:
-            interaction: Interaction = await ctx.respond(func(executing_user), view=UndoView())
+            await ctx.respond(func(executing_user), view=UndoView(executing_user), delay=timeout)
         else:
-            interaction: Interaction = await ctx.respond(func(executing_user))
-        if timeout is not None:
-            await interaction.delete_original_response(delay=timeout)
+            await ctx.respond(func(executing_user), delay=timeout)
         return True
     except ComExcept as err:
         await ctx.respond(err)
@@ -171,14 +199,14 @@ async def catch_async_file_action(ctx: ContextInfo, func: Callable[[str], Awaita
     try:
         await func(executing_user)
         if send_undo_view:
-            await ctx.respond("", view=UndoView())
+            await ctx.respond("", view=UndoView(executing_user))
         return True
     except ComExcept as err:
         await ctx.respond(err)
         return False
 
 
-async def sendCharView(ctx: ContextInfo, char_tag: str) -> bool:
+async def edit_char_view(ctx: ContextInfo, char_tag: str) -> bool:
     val = await catch_and_respond_char_action(ctx,
                                               char_tag,
                                               lambda executing_user, tag: f"**{get_char(executing_user, tag).name}**",

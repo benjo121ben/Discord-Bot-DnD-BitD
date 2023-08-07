@@ -11,8 +11,8 @@ logger = logging.getLogger('bot')
 class CampaignCog(Cog):
     @slash_command(name="edit_char",
                    description="Use a simple button interface to change a characters' stats")
-    async def view_char(self, ctx: ApplicationContext, char_tag: str = None):
-        return await commands.sendCharView(await initContext(ctx=ctx), char_tag)
+    async def edit_char(self, ctx: ApplicationContext, char_tag: str = None):
+        return await commands.edit_char_view(await initContext(ctx=ctx), char_tag)
 
     @slash_command(
         name="add",

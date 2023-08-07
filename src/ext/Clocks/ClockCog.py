@@ -15,38 +15,41 @@ logger = logging.getLogger('bot')
 
 
 class ClockAdjustmentView(View):
-    def __init__(self, clock_tag: str):
+    def __init__(self, clock_tag: str, user_id: str):
         super().__init__(timeout=600)
         self.clock_tag = clock_tag
+        self.user_id = user_id
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"))
     async def button_callback(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
-        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag)
+        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.user_id)
 
     @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
     async def button_callback1(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
-        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, ticks=-1)
+        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, ticks=-1, executing_user=self.user_id)
 
     @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"))
     async def button_callback2(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
-        await remove_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag)
+        await remove_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.user_id)
 
 
-async def print_clock(ctx: ContextInfo, clock: Clock):
+async def print_clock(ctx: ContextInfo, clock: Clock, executing_user:str = None):
     embed = Embed(title=f'**{clock.name}**')
+    if executing_user is None:
+        executing_user = str(ctx.author.id)
     try:
 
         image_file: File = get_clock_image(clock)
         embed.set_thumbnail(url=f'attachment://{image_file.filename}')
         embed.description = f"_Tag: {clock.tag}_"
-        await ctx.respond(embed=embed, file=image_file, view=ClockAdjustmentView(clock_tag=clock.tag))
+        await ctx.respond(embed=embed, file=image_file, view=ClockAdjustmentView(clock_tag=clock.tag, user_id=executing_user))
     except NoClockImageException:
         embed.set_footer(text="Clocks of this size don't have output images")
         embed.description = str(clock)
-        await ctx.respond(embed=embed, view=ClockAdjustmentView(clock_tag=clock.tag))
+        await ctx.respond(embed=embed, view=ClockAdjustmentView(clock_tag=clock.tag, user_id=executing_user))
         logger.debug(
             f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
         )
@@ -70,37 +73,40 @@ async def add_logic(ctx: ContextInfo, clock_tag: str, clock_title: str, clock_si
         await print_clock(ctx, clock_dic[clock_tag])
 
 
-async def remove_logic(ctx: ContextInfo, clock_tag: str):
-    user_id = str(ctx.author.id)
+async def remove_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
+    if executing_user is None:
+        executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
-    clock_dic = load_clocks(user_id)
+    clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
         del clock_dic[clock_tag]
-        save_clocks(user_id, clock_dic)
+        save_clocks(executing_user, clock_dic)
         await ctx.respond(content="The clock has been deleted!\n", delay=5)
     else:
         await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!", delay=5)
 
 
-async def show_clock_logic(ctx: ContextInfo, clock_tag: str):
-    user_id = str(ctx.author.id)
+async def show_clock_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
+    if executing_user is None:
+        executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
-    clock_dic = load_clocks(user_id)
+    clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
         await print_clock(ctx, clock_dic[clock_tag])
     else:
         await ctx.respond("This clock does not exist", delay=5)
 
 
-async def tick_clock_logic(ctx: ContextInfo, clock_tag: str, ticks: int = 1):
-    user_id = str(ctx.author.id)
+async def tick_clock_logic(ctx: ContextInfo, clock_tag: str, ticks: int = 1, executing_user: str = None):
+    if executing_user is None:
+        executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
-    clock_dic = load_clocks(user_id)
+    clock_dic = load_clocks(executing_user)
     clock = clock_dic.get(clock_tag)
     if clock:
         clock.tick(ticks)
-        save_clocks(user_id, clock_dic)
-        await print_clock(ctx, clock)
+        save_clocks(executing_user, clock_dic)
+        await print_clock(ctx, clock, executing_user)
     else:
         await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", delay=5)
 
