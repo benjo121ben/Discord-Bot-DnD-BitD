@@ -274,7 +274,16 @@ The amount of commands has been drastically reduced since the introduction of bu
 |     log      | *advanced  | Output the stats of all characters in the currently selected save file.<br>Also outputs the commands that have been sent and can be undone/redone if the `advanced` parameter is set to 1 |
 |  edit_char   | *char_tag  | Allows you to edit the stats of a character with a simple button interface. If no char_tag is given, it will check the character assigned to your userID.                                 |
 
+---
 
+### Kanka Commands
+Commands that are enabled with setting `KANKA=1`
+
+| command name |          parameters           | Use                                                                                                                                                                                                                                                                   |
+|:------------:|:-----------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ | kanka_setup  | *campaign_id, *token, *remove | This command allows the user set or remove the necessary data to use the kanka command. A user must set both an API token and a campaign_id in order for it to work. If remove is set to true, the token and campaign_id saved previously by the bot will be deleted. |
+ |    kanka     |         query_keyword         | The value for which to look for in the kanka database. This command will only work if the kanka_setup command was used to correctly set the necessary data.                                                                                                           |
+ 
 <!-- links --> 
 
 [exp_ent_user]: https://www.reddit.com/user/Lupo_1982/
