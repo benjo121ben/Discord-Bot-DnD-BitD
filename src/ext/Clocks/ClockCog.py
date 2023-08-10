@@ -16,7 +16,7 @@ logger = logging.getLogger('bot')
 
 class ClockAdjustmentView(View):
     def __init__(self, clock_tag: str, user_id: str):
-        super().__init__(timeout=600)
+        super().__init__()
         self.clock_tag = clock_tag
         self.user_id = user_id
 
