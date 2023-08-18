@@ -29,7 +29,6 @@ def main():
     load_dotenv(os.path.join(main_path, GlobalVariables.env_file_rel_path))
     GlobalVariables.admin_id = os.environ.get("ADMIN_ID")
     GlobalVariables.bot_host_email = os.environ.get("HOST_EMAIL")
-    GlobalVariables.kanka_token = os.environ.get("KANKA_TOKEN")
     token = os.environ.get("DISCORD_TOKEN")
     if token is None or token == "":
         input("\nERROR:DISCORD_TOKEN IS EMPTY.\nrestart the bot after inserting a token into the .env file\npress ENTER")

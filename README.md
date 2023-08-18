@@ -16,6 +16,7 @@ as well as helping to run a game of "Blades in the Dark"
   * [Wiki](#wiki) 
 
 
+* [Support](#support)
 * [Technologies and Assets](#technologies-and-assets)
   * [Devils bargain card deck](#devils-bargain-card-deck)
   * [Expanded Entanglements Table](#expanded-entanglements-table)
@@ -105,6 +106,11 @@ There are entries for
 
 ---
 
+## Support
+If you like the bot and want to support me directly, please pay me a *ko-fi*. Even just a handful euros would make my day
+
+Buy me a coffee: https://ko-fi.com/benjiwenger
+
 ## Technologies and Assets
 <strong>Project is created with Python: 3.10.  
 For packages see [requirements.txt](requirements.txt)</strong>  
@@ -155,11 +161,15 @@ It will look something like this:
 ```
 DISCORD_TOKEN=""
 COMMAND_CHAR="!"
+HOST_EMAIL="TEST_MAIL@MAIL.COM"
 CLOUD_SAVE_CHANNEL=
 ADMIN_ID=
 DND=1
 BLADES=1
+KANKA=1
+
 ```
+
 
 In order to get the bot running, follow these steps:  
 1. rename the `.env_example` file to `.env` and open the `.env` file.  
@@ -170,30 +180,33 @@ your own use alone.
 4. If you wish to be able to save your save files into a predetermined discord channel via the `/cache` command, 
 you can copy the channels discord id into the `CLOUD_SAVE_CHANNEL` variable. 
 Just make sure the bot has access to the channel and authorization to post there.  
-5. Set DND to 1 if you wish to enable campaign tracking specific commands, otherwise set 0.
-6. Set Blades to 1 if you wish to enable Blades in the Dark specific commands, otherwise set 0.
+5. Set DND, BLADES and KANKA flags to 1 individually if you wish to enable their respective commands, otherwise set them to 0.
 
 At the end of this process your .env file should look something like this (values are just examples):
 ```
 DISCORD_TOKEN="youR241DiscordBotTokenPastedHERE"
 COMMAND_CHAR="!"
+HOST_EMAIL="TEST_MAIL@MAIL.COM"
 CLOUD_SAVE_CHANNEL=1save24ChannelID
 ADMIN_ID=231OfAdmin23UserID
 DND=0
 BLADES=1
+KANKA=1
 ```
 
 
 These are the variables that can be assigned in the .env file.
 
-| Variable           | Required | Use                                                                         |
-|--------------------|----------|-----------------------------------------------------------------------------|
- | DISCORD_TOKEN      | YES      | bot token assigned by the discord developer page                            |
- | ADMIN_ID           | YES      | user id of user assigned as administrator                                   |
- | COMMAND_CHAR       | YES      | prefix used for admin commands                                              |
- | CLOUD_SAVE_CHANNEL | NO       | channel id, in which the bot sends save files if the /cache command is used |
-| DND                | YES      | Enables/Disables Campaign tracking commands                                 |
-| BLADES             | YES      | Enables/Disables Blades in the Dark specific commands                       |
+| Variable           | Required | Use                                                                             |
+|--------------------|----------|---------------------------------------------------------------------------------|
+| DISCORD_TOKEN      | YES      | Bot token assigned by the discord developer page                                |
+| ADMIN_ID           | YES      | User id of user assigned as administrator                                       |
+| COMMAND_CHAR       | YES      | Prefix used for some admin commands (mostly deprecated by now, will be removed) |
+| DND                | YES      | Enables/Disables Campaign tracking commands                                     |
+| BLADES             | YES      | Enables/Disables Blades in the Dark specific commands                           |
+| KANKA              | YES      | Enables/Disables Kanka specific commands                                        |
+| CLOUD_SAVE_CHANNEL | NO       | Channel id, in which the bot sends save files if the /cache command is used     |
+| HOST_EMAIL         | NO       | E-Mail of the bot host. The email is visible in the help command.               |
 
 
 #### Permissions
@@ -219,27 +232,29 @@ These are all the commands implemented so far, ordered by the Cogs they are assi
 ### Common Commands
 Commands that are always enabled
 
-| command name | parameters | Use                                                                      |
-|:------------:|:----------:|:-------------------------------------------------------------------------|
- |     ping     |     /      | The bot will answer the ping. This is to check whether the bot is online |
+| command name | parameters | Use                                                                                        |
+|:------------:|:----------:|:-------------------------------------------------------------------------------------------|
+|     ping     |     /      | The bot will answer the ping. This is to check whether the bot is online.                  |
+|   commands   |     /      | Will send you to the github page to diplay this list of commands.                          |
+|     help     |     /      | Returns a link to the suppord discord, a link to my ko-fi, and the bots host-email if set. |
 
 ### Blades in the Dark Commands
 Commands that are enabled with setting `BLADES=1`
 #### Utility commands
 |    command name     |        parameters        | Use                                                                                                                                                                        |
 |:-------------------:|:------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- |   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**                                        |
- |    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                                                  |
- | entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                                                   |
+|   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**                                        |
+|    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                                                  |
+| entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                                                   |
 |        wiki         |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list with a dropdown selection menu. |
 |      bladeroll      |       dice_amount        | Makes a d6 roll using the Blades system. It recognizes success, partials, fails and crits and can handle 0 dice.                                                           |
-|        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 sice=8                                                                                                          |
+|        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 size=8                                                                                                          |
 
 #### Progress Clock Commands
 | command name |                 parameters                 | Use                                                                                                                                                             |
 |:------------:|:------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
- |    clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons                                                               |
- |  clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
+|    clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons.                                                              |
+|  clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
 |  clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
 
 ---
@@ -252,10 +267,10 @@ These are commands used to load files, manage characters and their assignment to
 | command name |          parameters           | Admin Only | Use                                                                                                                                                                                                                                                                                       |
 |:------------:|:-----------------------------:|:----------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |     load     |           file_name           |     NO     | Load one of the save files.                                                                                                                                                                                                                                                               |
- |     add      | char_tag, char_name, *user_id |     NO     | Adds new character to currently selected savefile and sets their name and tag. <br>The tag is used to adress them later. <br>If user_id is provided, it tries to claim the character for the user with the provided discord user id. (See `/claim`)                                       |
- |    rename    |    char_tag, new_char_name    |     NO     | Rename a character on the current save file.                                                                                                                                                                                                                                              |
- |    retag     | old_char_name, new_char_name  |     NO     | Change the tag of a character on the current save file.                                                                                                                                                                                                                                   |
- |    claim     |      char_tag, *user_id       |  DEPENDS   | Tries to assign a character to the user with the user_id provided. If none is provided, it will try to assign it to the user executing the command.<br>**A user can only claim one character per save file. Only the file creator can assign characters that already belong to a player** |
+|     add      | char_tag, char_name, *user_id |     NO     | Adds new character to currently selected savefile and sets their name and tag. <br>The tag is used to adress them later. <br>If user_id is provided, it tries to claim the character for the user with the provided discord user id. (See `/claim`)                                       |
+|    rename    |    char_tag, new_char_name    |     NO     | Rename a character on the current save file.                                                                                                                                                                                                                                              |
+|    retag     | old_char_name, new_char_name  |     NO     | Change the tag of a character on the current save file.                                                                                                                                                                                                                                   |
+|    claim     |      char_tag, *user_id       |  DEPENDS   | Tries to assign a character to the user with the user_id provided. If none is provided, it will try to assign it to the user executing the command.<br>**A user can only claim one character per save file. Only the file creator can assign characters that already belong to a player** |
 |   unclaim    |           *user_id            |  DEPENDS   | Unclaims the character assigned to yourself, or the user_id provided. <br>**You can only unclaim other users characters, if you are the creator of the currently loaded file.**                                                                                                           |
 |   session    |               /               |  DEPENDS   | Increases the session counter by 1. <br>**If you are a bot administrator, the bot also tries to execute the `/cache` command.**                                                                                                                                                           |
 |   download   |               /               |     NO     | Sends a copy of the currently selected save file into the channel where the command was called.                                                                                                                                                                                           |
@@ -281,8 +296,8 @@ Commands that are enabled with setting `KANKA=1`
 
 | command name |          parameters           | Use                                                                                                                                                                                                                                                                   |
 |:------------:|:-----------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
- | kanka_setup  | *campaign_id, *token, *remove | This command allows the user set or remove the necessary data to use the kanka command. A user must set both an API token and a campaign_id in order for it to work. If remove is set to true, the token and campaign_id saved previously by the bot will be deleted. |
- |    kanka     |         query_keyword         | The value for which to look for in the kanka database. This command will only work if the kanka_setup command was used to correctly set the necessary data.                                                                                                           |
+| kanka_setup  | *campaign_id, *token, *remove | This command allows the user set or remove the necessary data to use the kanka command. A user must set both an API token and a campaign_id in order for it to work. If remove is set to true, the token and campaign_id saved previously by the bot will be deleted. |
+|    kanka     |         query_keyword         | The value for which to look for in the kanka database. This command will only work if the kanka_setup command was used to correctly set the necessary data.                                                                                                           |
  
 <!-- links --> 
 
