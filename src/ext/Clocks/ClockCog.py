@@ -9,7 +9,8 @@ from ..ContextInfo import ContextInfo, initContext
 
 logger = logging.getLogger('bot')
 
-message_deletion_delay: int = 10
+MESSAGE_DELETION_DELAY: int = 10
+BUTTON_VIEW_TIMEOUT: int = 21600  # 6 hours
 
 
 # This will be deprecated in a future update of py-cord, which introduces interaction.respond and interaction.edit
@@ -26,9 +27,13 @@ async def edit_interaction_message(interaction: Interaction, params: dict):
 
 class ClockAdjustmentView(View):
     def __init__(self, clock_tag: str, associated_user: str):
-        super().__init__()
+        super().__init__(timeout=2)
         self.clock_tag = clock_tag
         self.associated_user = associated_user
+
+    async def on_timeout(self) -> None:
+        self.clear_items()
+        await self.message.edit(view=self)
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"))
     async def button_tick_callback(self, _: Button, interaction: Interaction):
@@ -78,16 +83,16 @@ async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title:
     clock_tag = clock_tag.strip().lower()
     clock_dic = load_clocks(executing_user)
     if len(clock_dic) == 40:
-        await ctx.respond("You already have 40 clocks, please remove one.", delay=message_deletion_delay)
+        await ctx.respond("You already have 40 clocks, please remove one.", delay=MESSAGE_DELETION_DELAY)
         return
 
     if clock_tag in clock_dic:
-        await ctx.respond(content="This clock already exists!", delay=message_deletion_delay)
+        await ctx.respond(content="This clock already exists!", delay=MESSAGE_DELETION_DELAY)
         await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
     else:
         clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
         save_clocks(executing_user, clock_dic)
-        await ctx.respond("Clock created", delay=message_deletion_delay)
+        await ctx.respond("Clock created", delay=MESSAGE_DELETION_DELAY)
         await ctx.respond(**get_clock_response_params( clock_dic[clock_tag], executing_user))
 
 
@@ -99,7 +104,7 @@ async def remove_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing
     if clock_tag in clock_dic:
         del clock_dic[clock_tag]
         save_clocks(executing_user, clock_dic)
-        await ctx.respond(content="The clock has been deleted!\n", delay=message_deletion_delay)
+        await ctx.respond(content="The clock has been deleted!\n", delay=MESSAGE_DELETION_DELAY)
     else:
         await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n This shouldn't be possible, please contact the developer if this happens to you."
                           f"See the /help command")
@@ -114,7 +119,7 @@ async def show_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_u
     if clock_tag in clock_dic:
         await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
     else:
-        await ctx.respond("This clock does not exist", delay=message_deletion_delay)
+        await ctx.respond("This clock does not exist", delay=MESSAGE_DELETION_DELAY)
 
 
 async def tick_clock_command_ctx(ctx: ContextInfo, clock_tag: str, ticks: int = 1, executing_user: str = None):
@@ -142,7 +147,7 @@ def tick_clock_logic(clock_tag: str, executing_user: str, ticks: int = 1) -> dic
         return get_clock_response_params(clock, executing_user)
     else:
         logger.error(f"The bot tried to tick a clock that does not exist for user: ({executing_user}), clock tag: ({clock_tag})")
-        return {"content": f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", "delay": message_deletion_delay}
+        return {"content": f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", "delay": MESSAGE_DELETION_DELAY}
 
 
 class ClockCog(commands.Cog):
@@ -160,13 +165,13 @@ class ClockCog(commands.Cog):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 0:
-            await(await ctx.respond("You have no existing clock. use the **clock_add** command to create clocks.")).delete_original_response(delay=message_deletion_delay)
+            await(await ctx.respond("You have no existing clock. use the **clock_add** command to create clocks.")).delete_original_response(delay=MESSAGE_DELETION_DELAY)
             return
 
         all_c = "These are the clocks that you have created:\n"
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
-        await(await ctx.respond(all_c)).delete_original_response(delay=message_deletion_delay)
+        await(await ctx.respond(all_c)).delete_original_response(delay=MESSAGE_DELETION_DELAY)
 
 
 def setup(bot: commands.Bot):

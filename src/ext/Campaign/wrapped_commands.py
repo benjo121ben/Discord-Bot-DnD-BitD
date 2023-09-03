@@ -21,6 +21,8 @@ from . import base_command_logic as bcom, \
 
 logger = logging.getLogger('bot')
 
+VIEW_TIMEOUT: int = 21600  # 6 hours
+
 
 class SimpleStatModal(discord.ui.Modal):
     def __init__(self, char_tag=None, func=None, *args, **kwargs) -> None:
@@ -53,8 +55,12 @@ class DamageModal(discord.ui.Modal):
 
 class UndoView(View):
     def __init__(self, executing_user: str):
-        super().__init__(timeout=600)
+        super().__init__(timeout=VIEW_TIMEOUT)
         self.executing_user = executing_user
+
+    async def on_timeout(self) -> None:
+        self.clear_items()
+        await self.message.edit(view=self)
 
     async def checkAuthorized(self, interaction: Interaction):
         if str(interaction.user.id) != self.executing_user:
@@ -76,9 +82,12 @@ class UndoView(View):
 
 class StatView(View):
     def __init__(self, executing_user:str, char_tag: str):
-        super().__init__(timeout=600)
+        super().__init__(timeout=VIEW_TIMEOUT)
         self.char_tag = char_tag
         self.executing_user = executing_user
+
+    async def on_timeout(self) -> None:
+        await self.message.delete()
 
     async def checkAuthorized(self, interaction: Interaction):
         if str(interaction.user.id) != self.executing_user:
