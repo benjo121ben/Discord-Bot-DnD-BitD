@@ -61,7 +61,7 @@ class KankaCog(commands.Cog):
         if remove:
             if kanka_data_tag in user_dict:
                 del user_dict[kanka_data_tag]
-            await (await ctx.respond(f"kanka campaign ID removed")).delete_original_message(delay=3)
+            await (await ctx.respond(f"kanka campaign ID removed")).delete_original_message(delay=10)
         else:
             base_data = {} if kanka_data_tag not in user_dict else user_dict[kanka_data_tag]
             ret_val = ""
@@ -72,7 +72,7 @@ class KankaCog(commands.Cog):
                 base_data[kanka_token_tag] = token
                 ret_val += f"kanka token changed to (first five letters): {token[0:5]}"
             if ret_val != "":
-                await (await ctx.respond(ret_val)).delete_original_message(delay=3)
+                await (await ctx.respond(ret_val)).delete_original_message(delay=10)
             user_dict[kanka_data_tag] = base_data
         save_user_dict(user_id, user_dict)
 

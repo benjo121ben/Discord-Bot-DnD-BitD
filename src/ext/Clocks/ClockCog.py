@@ -1,79 +1,97 @@
-import asyncio
 import logging
-from functools import wraps
-
-import decohints
 from discord.ext import commands
-from discord import Embed, File, ApplicationContext, PartialEmoji, Interaction, ButtonStyle as Bstyle
+from discord import Embed, File, ApplicationContext, PartialEmoji, Interaction, ButtonStyle as Bstyle, \
+    InteractionResponded
 from discord.ui import button, View, Button
 
 from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
 from ..ContextInfo import ContextInfo, initContext
 
-
 logger = logging.getLogger('bot')
+
+message_deletion_delay: int = 10
+
+
+# This will be deprecated in a future update of py-cord, which introduces interaction.respond and interaction.edit
+# I'm making my own shorthand since I haven't yet figured out how to get access to that code
+async def edit_interaction_message(interaction: Interaction, params: dict):
+    try:
+        if not interaction.response.is_done():
+            return await interaction.response.edit_message(**params)
+        else:
+            return await interaction.edit_original_response(**params)
+    except InteractionResponded:
+        return await interaction.edit_original_response(**params)
 
 
 class ClockAdjustmentView(View):
-    def __init__(self, clock_tag: str, user_id: str):
+    def __init__(self, clock_tag: str, associated_user: str):
         super().__init__()
         self.clock_tag = clock_tag
-        self.user_id = user_id
+        self.associated_user = associated_user
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"))
-    async def button_callback(self, _: Button, interaction: Interaction):
-        await interaction.message.delete()
-        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.user_id)
+    async def button_tick_callback(self, _: Button, interaction: Interaction):
+        params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
+        await edit_interaction_message(interaction, params)
 
     @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
-    async def button_callback1(self, _: Button, interaction: Interaction):
-        await interaction.message.delete()
-        await tick_clock_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, ticks=-1, executing_user=self.user_id)
+    async def button_back_tick_callback(self, _: Button, interaction: Interaction):
+        params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
+        await edit_interaction_message(interaction, params)
 
     @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"))
-    async def button_callback2(self, _: Button, interaction: Interaction):
+    async def button_delete_callback(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
-        await remove_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.user_id)
+        await remove_clock_command_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.associated_user)
+
+    @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"))
+    async def button_lock_callback(self, _: Button, interaction: Interaction):
+        await interaction.message.edit(view=None)
 
 
-async def print_clock(ctx: ContextInfo, clock: Clock, executing_user:str = None):
+def get_clock_response_params(clock: Clock, assiciated_user: str) -> dict:
     embed = Embed(title=f'**{clock.name}**')
-    if executing_user is None:
-        executing_user = str(ctx.author.id)
+    params = {
+        "file": None,
+        "embed": embed,
+        "view": ClockAdjustmentView(clock_tag=clock.tag, associated_user=assiciated_user)
+    }
     try:
-
         image_file: File = get_clock_image(clock)
         embed.set_thumbnail(url=f'attachment://{image_file.filename}')
+        params["file"] = image_file
         embed.description = f"_Tag: {clock.tag}_"
-        await ctx.respond(embed=embed, file=image_file, view=ClockAdjustmentView(clock_tag=clock.tag, user_id=executing_user))
     except NoClockImageException:
         embed.set_footer(text="Clocks of this size don't have output images")
         embed.description = str(clock)
-        await ctx.respond(embed=embed, view=ClockAdjustmentView(clock_tag=clock.tag, user_id=executing_user))
         logger.debug(
             f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
         )
+    no_none_params = {k: v for k, v in params.items() if v is not None} # removes all parameters that are none
+
+    return no_none_params
 
 
-async def add_logic(ctx: ContextInfo, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
-    user_id = str(ctx.author.id)
+async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
+    executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
-    clock_dic = load_clocks(user_id)
+    clock_dic = load_clocks(executing_user)
     if len(clock_dic) == 40:
-        await ctx.respond("You already have 40 clocks, please remove one.")
+        await ctx.respond("You already have 40 clocks, please remove one.", delay=message_deletion_delay)
         return
 
     if clock_tag in clock_dic:
-        await ctx.respond(content="This clock already exists!", delay=5)
-        await print_clock(ctx, clock_dic[clock_tag])
+        await ctx.respond(content="This clock already exists!", delay=message_deletion_delay)
+        await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
     else:
         clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
-        save_clocks(user_id, clock_dic)
-        await ctx.respond("Clock created", delay=5)
-        await print_clock(ctx, clock_dic[clock_tag])
+        save_clocks(executing_user, clock_dic)
+        await ctx.respond("Clock created", delay=message_deletion_delay)
+        await ctx.respond(**get_clock_response_params( clock_dic[clock_tag], executing_user))
 
 
-async def remove_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
+async def remove_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
     if executing_user is None:
         executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
@@ -81,58 +99,74 @@ async def remove_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = N
     if clock_tag in clock_dic:
         del clock_dic[clock_tag]
         save_clocks(executing_user, clock_dic)
-        await ctx.respond(content="The clock has been deleted!\n", delay=5)
+        await ctx.respond(content="The clock has been deleted!\n", delay=message_deletion_delay)
     else:
-        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\nMake sure to use the clock tag and not its name!", delay=5)
+        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n This shouldn't be possible, please contact the developer if this happens to you."
+                          f"See the /help command")
+        logger.error(f"The bot tried to remove a clock that does not exist for user: ({executing_user}), clock tag: ({clock_tag})")
 
 
-async def show_clock_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
+async def show_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
     if executing_user is None:
         executing_user = str(ctx.author.id)
     clock_tag = clock_tag.strip().lower()
     clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
-        await print_clock(ctx, clock_dic[clock_tag])
+        await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
     else:
-        await ctx.respond("This clock does not exist", delay=5)
+        await ctx.respond("This clock does not exist", delay=message_deletion_delay)
 
 
-async def tick_clock_logic(ctx: ContextInfo, clock_tag: str, ticks: int = 1, executing_user: str = None):
+async def tick_clock_command_ctx(ctx: ContextInfo, clock_tag: str, ticks: int = 1, executing_user: str = None):
+    """
+    A shorthand async function, that calls both tick_clock_logic and responds via ContextInfo
+    """
     if executing_user is None:
         executing_user = str(ctx.author.id)
+    await ctx.respond(**tick_clock_logic(clock_tag, executing_user, ticks))
+
+
+def tick_clock_logic(clock_tag: str, executing_user: str, ticks: int = 1) -> dict:
+    """
+    Logic for accessing the clocks of the executing user and ticking a specific clock by the assigned ticks.
+    Includes access checks
+
+    :return: a dictionary containing the paramaters that can be passed to a ContextInfo respond logic.
+    """
     clock_tag = clock_tag.strip().lower()
     clock_dic = load_clocks(executing_user)
     clock = clock_dic.get(clock_tag)
     if clock:
         clock.tick(ticks)
         save_clocks(executing_user, clock_dic)
-        await print_clock(ctx, clock, executing_user)
+        return get_clock_response_params(clock, executing_user)
     else:
-        await ctx.respond(f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", delay=5)
+        logger.error(f"The bot tried to tick a clock that does not exist for user: ({executing_user}), clock tag: ({clock_tag})")
+        return {"content": f"Clock with this tag does not exist: {clock_tag}\n Make sure to use the clock tag and not its name!", "delay": message_deletion_delay}
 
 
 class ClockCog(commands.Cog):
 
     @commands.slash_command(name="clock_add", description="Adds a new clock of a certain size.")
     async def add_clock(self, ctx: ApplicationContext, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
-        await add_logic(await initContext(ctx=ctx), clock_tag, clock_title, clock_size, clock_ticks)
+        await add_clock_command_logic(await initContext(ctx=ctx), clock_tag, clock_title, clock_size, clock_ticks)
 
     @commands.slash_command(name="clock", description="Prints a saved clock, with picture if possible")
     async def show_clock(self, ctx: ApplicationContext, clock_tag: str):
-        await show_clock_logic(await initContext(ctx=ctx), clock_tag)
+        await show_clock_command_logic(await initContext(ctx=ctx), clock_tag)
 
     @commands.slash_command(name="clock_all", description="Prints out all saved clocks")
     async def all_clocks(self, ctx: ApplicationContext):
         user_id = str(ctx.author.id)
         clock_dic = load_clocks(user_id)
         if len(clock_dic) == 0:
-            await(await ctx.respond("You have no existing clock. use the **clock_add** command to create clocks.")).delete_original_response(delay=10)
+            await(await ctx.respond("You have no existing clock. use the **clock_add** command to create clocks.")).delete_original_response(delay=message_deletion_delay)
             return
 
         all_c = "These are the clocks that you have created:\n"
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
-        await(await ctx.respond(all_c)).delete_original_response(delay=10)
+        await(await ctx.respond(all_c)).delete_original_response(delay=message_deletion_delay)
 
 
 def setup(bot: commands.Bot):

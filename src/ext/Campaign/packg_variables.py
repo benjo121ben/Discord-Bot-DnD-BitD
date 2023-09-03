@@ -8,10 +8,7 @@ campaign_env_file_rel_path = os.sep.join(['..', '..', '..', '.env'])
 cache_folder: int = None
 bot_admin_id: int = None
 bot: discord.Bot = None
-
-# charDic: dict[str, Character] = {}
-# localCommDic = {}
-# imported_dic = {}
+message_deletion_delay: int = 10
 
 
 def get_save_folder_filepath():

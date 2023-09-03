@@ -172,7 +172,7 @@ def remove_player(executing_user: str, user_id: str):
 def add_char(executing_user: str, tag: str, char_name: str) -> str:
     if tag == "all":
         raise CommandException(
-            "You are not allowed to call your character all, due to special commands using it as a keyword." +
+            "You are not allowed to call your character \"all\", due to special commands using it as a keyword." +
             " Please call them something else"
         )
 

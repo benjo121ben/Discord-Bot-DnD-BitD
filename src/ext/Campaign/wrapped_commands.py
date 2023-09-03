@@ -8,6 +8,7 @@ from discord.ui import View, button, Button
 from discord import ButtonStyle as Bstyle, Interaction, ApplicationContext, PartialEmoji
 
 from . import packg_variables
+from .packg_variables import message_deletion_delay
 from ..ContextInfo import ContextInfo, initContext
 from .SaveDataManagement import char_data_access as char_data, \
     live_save_manager as live_save, \
@@ -136,7 +137,7 @@ async def catch_and_respond_char_action(
         ctx: ContextInfo,
         char_tag: str, func: Callable[[str, str], str],
         send_char_view=False,
-        timeout=4) -> bool:
+        timeout=-1) -> bool:
     """
     Wraps a character specific command function, executing it with the user_id gained from the context.
     Also if char_tag is None, it will try to load the character name from the current file
@@ -148,6 +149,8 @@ async def catch_and_respond_char_action(
     :param timeout: determines how long it takes for the response to dissappear. Set to None if it shouldn't disappear
     """
     executing_user = str(ctx.author.id)
+    if timeout == -1:  # set to package default
+        timeout = message_deletion_delay
     try:
         if char_tag is None:
             char_tag = char_data.get_char_tag_by_id(executing_user)
@@ -164,7 +167,7 @@ async def catch_and_respond_char_action(
 async def catch_and_respond_file_action(
         ctx: ContextInfo,
         func: Callable[[str], str],
-        timeout: int = 10,
+        timeout: int = -1,
         send_undo_view=True) -> bool:
     """
     Wraps a file specific command function, executing it with the user_id gained from the context.
@@ -175,6 +178,8 @@ async def catch_and_respond_file_action(
     :param send_undo_view: determines whether the undo view should be sent after execution
     """
     executing_user = str(ctx.author.id)
+    if timeout == -1:  # set to package default
+        timeout = message_deletion_delay
     try:
         if send_undo_view:
             await ctx.respond(func(executing_user), view=UndoView(executing_user), delay=timeout)
