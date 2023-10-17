@@ -6,7 +6,7 @@ from discord.ui import button, View, Button
 
 from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
 from ..ContextInfo import ContextInfo, initContext
-from src import GlobalVariables as global_vars
+from ... import GlobalVariables as global_vars
 
 logger = logging.getLogger('bot')
 
