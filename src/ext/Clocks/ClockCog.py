@@ -27,7 +27,7 @@ async def edit_interaction_message(interaction: Interaction, params: dict):
 
 class ClockAdjustmentView(View):
     def __init__(self, clock_tag: str, associated_user: str):
-        super().__init__(timeout=6)
+        super().__init__(timeout=BUTTON_VIEW_TIMEOUT)
         self.clock_tag = clock_tag
         self.associated_user = associated_user
 
