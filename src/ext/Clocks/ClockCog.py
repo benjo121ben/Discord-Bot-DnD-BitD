@@ -27,32 +27,55 @@ async def edit_interaction_message(interaction: Interaction, params: dict):
 
 class ClockAdjustmentView(View):
     def __init__(self, clock_tag: str, associated_user: str):
-        super().__init__(timeout=BUTTON_VIEW_TIMEOUT)
+        super().__init__(timeout=6)
         self.clock_tag = clock_tag
         self.associated_user = associated_user
 
     async def on_timeout(self) -> None:
-        self.clear_items()
-        await self.message.edit(view=self)
+        locked_view = LockedClockAdjustmentView(self.clock_tag, self.associated_user)
+        if self.message:
+            locked_view.message = self.message
+            await self.message.edit(view=locked_view)
+        self.stop()
 
-    @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"))
+    @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"), custom_id="plus_tick_button")
     async def button_tick_callback(self, _: Button, interaction: Interaction):
         params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
         await edit_interaction_message(interaction, params)
 
-    @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"))
+    @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"), custom_id="minus_tick_button")
     async def button_back_tick_callback(self, _: Button, interaction: Interaction):
         params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
         await edit_interaction_message(interaction, params)
 
-    @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"))
+    @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"), custom_id="delete_button")
     async def button_delete_callback(self, _: Button, interaction: Interaction):
         await interaction.message.delete()
         await remove_clock_command_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.associated_user)
 
-    @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"))
+    @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"), custom_id="lock_view_button")
     async def button_lock_callback(self, _: Button, interaction: Interaction):
-        await interaction.message.edit(view=None)
+        locked_view = LockedClockAdjustmentView(self.clock_tag, self.associated_user)
+        locked_view.message = self.message
+        await edit_interaction_message(interaction, {"view": locked_view})
+        self.stop()
+
+
+class LockedClockAdjustmentView(View):
+    def __init__(self, clock_tag: str, associated_user: str):
+        super().__init__(timeout=None)
+        self.clock_tag = clock_tag
+        self.associated_user = associated_user
+
+    @button(label="unlock view", style=Bstyle.primary, row=0, emoji=PartialEmoji.from_str("🔓"), custom_id="unlock_clock_button")
+    async def button_lock_callback(self, _: Button, interaction: Interaction):
+        if str(interaction.user.id) != self.associated_user:
+            await ContextInfo(interaction=interaction).respond("You are not the owner of this clock", delay=10)
+            return
+        adjustment_view = ClockAdjustmentView(self.clock_tag, self.associated_user)
+        adjustment_view.message = self.message
+        await edit_interaction_message(interaction, {"view": adjustment_view})
+        self.stop()
 
 
 def get_clock_response_params(clock: Clock, assiciated_user: str) -> dict:

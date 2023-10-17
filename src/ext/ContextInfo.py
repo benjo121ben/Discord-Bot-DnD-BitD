@@ -1,4 +1,4 @@
-from discord import Interaction, ApplicationContext
+from discord import Interaction, ApplicationContext, InteractionResponse
 
 
 class ContextInfo:
@@ -22,10 +22,15 @@ class ContextInfo:
             del kwargs["delay"]
 
         if not self.ctxType:
-            ret = await self.interaction.followup.send(*args, **kwargs)
-            if delay is not None:
-                ret = await ret.delete(delay=delay)
+            response: InteractionResponse = self.interaction.response
+            if not response.is_done():
+                ret = await response.send_message(delete_after=delay, *args, **kwargs)
+            else:
+                ret = await self.interaction.followup.send(*args, **kwargs)
+                if delay is not None:
+                    ret = await ret.delete(delay=delay)
             return ret
+
         elif self.ctxType:
             ret = await self.ctx.respond(*args, **kwargs)
             if delay is not None:
