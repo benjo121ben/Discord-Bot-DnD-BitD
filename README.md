@@ -256,7 +256,6 @@ Commands that are enabled with setting `BLADES=1`
 |     clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons.                                                              |
 |   clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
 |   clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
-| clock_refresh |                     /                      | Refreshes the LockedClock Views in a channel after the bot was restarted. Unfortunately doesn't work for still active clock views                               |
 
 ---
 

@@ -233,11 +233,6 @@ class ClockCog(commands.Cog):
             all_c += str(clock) + "\n"
         await(await ctx.respond(all_c)).delete_original_response(delay=MESSAGE_DELETION_DELAY)
 
-    @commands.slash_command(name="clock_refresh", description="refreshes your clock views in the current channel")
-    async def refresh_clock(self, ctx: ApplicationContext):
-        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
-        await ContextInfo(ctx=ctx).respond("refreshed", delay=4)
-
 
 def setup(bot: commands.Bot):
     # Every extension should have this function
