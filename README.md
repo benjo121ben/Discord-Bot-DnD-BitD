@@ -251,11 +251,12 @@ Commands that are enabled with setting `BLADES=1`
 |        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 size=8                                                                                                          |
 
 #### Progress Clock Commands
-| command name |                 parameters                 | Use                                                                                                                                                             |
-|:------------:|:------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons.                                                              |
-|  clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
-|  clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
+| command name  |                 parameters                 | Use                                                                                                                                                             |
+|:-------------:|:------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|     clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons.                                                              |
+|   clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
+|   clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
+| clock_refresh |                     /                      | Refreshes the LockedClock Views in a channel after the bot was restarted. Unfortunately doesn't work for still active clock views                               |
 
 ---
 

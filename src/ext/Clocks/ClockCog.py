@@ -6,6 +6,7 @@ from discord.ui import button, View, Button
 
 from .clocks import NoClockImageException, load_clock_files, save_clocks, Clock, load_clocks, get_clock_image
 from ..ContextInfo import ContextInfo, initContext
+from src import GlobalVariables as global_vars
 
 logger = logging.getLogger('bot')
 
@@ -18,7 +19,8 @@ BUTTON_VIEW_TIMEOUT: int = 21600  # 6 hours
 async def edit_interaction_message(interaction: Interaction, params: dict):
     try:
         if not interaction.response.is_done():
-            return await interaction.response.edit_message(**params)
+            await interaction.response.edit_message(**params)
+            return await interaction.original_response()
         else:
             return await interaction.edit_original_response(**params)
     except InteractionResponded:
@@ -26,17 +28,39 @@ async def edit_interaction_message(interaction: Interaction, params: dict):
 
 
 class ClockAdjustmentView(View):
-    def __init__(self, clock_tag: str, associated_user: str):
+    def __init__(self, clock_tag: str, associated_user: str, channel_message_id: tuple[int, int] = None):
         super().__init__(timeout=BUTTON_VIEW_TIMEOUT)
         self.clock_tag = clock_tag
         self.associated_user = associated_user
+        self.channel_message_id = channel_message_id
 
     async def on_timeout(self) -> None:
-        locked_view = LockedClockAdjustmentView(self.clock_tag, self.associated_user)
-        if self.message:
-            locked_view.message = self.message
-            await self.message.edit(view=locked_view)
+        self.update_channel_message_id()
+        message = await self.get_message()
+        if message is not None:
+            await(
+                message
+            ).edit(view=LockedClockAdjustmentView(self.clock_tag, self.associated_user, self.channel_message_id))
+        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
         self.stop()
+
+    def update_channel_message_id(self):
+        if self.message:
+            self.channel_message_id = (self.message.channel.id, self.message.id)
+
+    def refresh_clock_data(self, interaction: Interaction):
+        self.clock_tag = interaction.message.embeds[0].description.split(":")[1].strip().replace("_", "")
+        self.associated_user = str(interaction.message.interaction.data['user']['id'])
+
+    async def get_message(self):
+        if self.message:
+            return self.message
+        elif self.channel_message_id is not None:
+            return await (
+                    await global_vars.bot.fetch_channel(self.channel_message_id[0])
+                ).fetch_message(self.channel_message_id[1])
+        else:
+            return None
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"), custom_id="plus_tick_button")
     async def button_tick_callback(self, _: Button, interaction: Interaction):
@@ -55,26 +79,40 @@ class ClockAdjustmentView(View):
 
     @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"), custom_id="lock_view_button")
     async def button_lock_callback(self, _: Button, interaction: Interaction):
-        locked_view = LockedClockAdjustmentView(self.clock_tag, self.associated_user)
-        locked_view.message = self.message
-        await edit_interaction_message(interaction, {"view": locked_view})
+        self.refresh_clock_data(interaction)
+        self.update_channel_message_id()
+        await edit_interaction_message(
+            interaction,
+            {"view": LockedClockAdjustmentView(self.clock_tag, self.associated_user, self.channel_message_id)}
+        )
+        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
         self.stop()
 
 
 class LockedClockAdjustmentView(View):
-    def __init__(self, clock_tag: str, associated_user: str):
+    def __init__(self, clock_tag: str, associated_user: str, channel_message_id: tuple[int, int] = None):
         super().__init__(timeout=None)
         self.clock_tag = clock_tag
         self.associated_user = associated_user
+        self.channel_message_id = channel_message_id
+
+    def refresh_clock_data(self, interaction: Interaction):
+        self.clock_tag = interaction.message.embeds[0].description.split(":")[1].strip().replace("_", "")
+        self.associated_user = str(interaction.message.interaction.data['user']['id'])
 
     @button(label="unlock view", style=Bstyle.primary, row=0, emoji=PartialEmoji.from_str("🔓"), custom_id="unlock_clock_button")
     async def button_lock_callback(self, _: Button, interaction: Interaction):
+        self.refresh_clock_data(interaction)
         if str(interaction.user.id) != self.associated_user:
             await ContextInfo(interaction=interaction).respond("You are not the owner of this clock", delay=10)
             return
-        adjustment_view = ClockAdjustmentView(self.clock_tag, self.associated_user)
-        adjustment_view.message = self.message
-        await edit_interaction_message(interaction, {"view": adjustment_view})
+        if self.channel_message_id is None:
+            self.channel_message_id = (interaction.channel.id, interaction.message.id)
+        await edit_interaction_message(
+            interaction,
+            {"view": ClockAdjustmentView(self.clock_tag, self.associated_user, self.channel_message_id)}
+        )
+        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
         self.stop()
 
 
@@ -92,7 +130,7 @@ def get_clock_response_params(clock: Clock, assiciated_user: str) -> dict:
         embed.description = f"_Tag: {clock.tag}_"
     except NoClockImageException:
         embed.set_footer(text="Clocks of this size don't have output images")
-        embed.description = str(clock)
+        embed.description = f'Tag: _{clock.tag}_ : {{{clock.ticks}/{clock.size}}}'
         logger.debug(
             f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
         )
@@ -115,8 +153,7 @@ async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title:
     else:
         clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
         save_clocks(executing_user, clock_dic)
-        await ctx.respond("Clock created", delay=MESSAGE_DELETION_DELAY)
-        await ctx.respond(**get_clock_response_params( clock_dic[clock_tag], executing_user))
+        await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
 
 
 async def remove_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
@@ -195,6 +232,11 @@ class ClockCog(commands.Cog):
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
         await(await ctx.respond(all_c)).delete_original_response(delay=MESSAGE_DELETION_DELAY)
+
+    @commands.slash_command(name="clock_refresh", description="refreshes your clock views in the current channel")
+    async def refresh_clock(self, ctx: ApplicationContext):
+        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
+        await ContextInfo(ctx=ctx).respond("refreshed", delay=4)
 
 
 def setup(bot: commands.Bot):
