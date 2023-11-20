@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pathlib
 
@@ -12,6 +13,8 @@ from ...ContextInfo import ContextInfo, initContext
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki: dict[str, WikiEntry] = {}
+
+log = logging.getLogger('bot')
 
 
 def levenshtein_distance(word1, word2):
@@ -89,7 +92,7 @@ def handle_super_entries(category: dict):
     elif eLabel.CPROP_REFERENCE_LABEL in sup_entry_info:
         for entry in sup_entry_info[eLabel.CPROP_REFERENCE_LABEL]:
             if entry.lower() not in wiki:
-                print(entry, "not found")
+                log.error(entry, "not found")
                 raise RuntimeError(entry + " not found")
             else:
                 super_entry.add_field(wiki[entry.lower()].title, wiki[entry.lower()].entry_info[eLabel.DESCRIPTION_LABEL])

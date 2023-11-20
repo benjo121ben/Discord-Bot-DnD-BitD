@@ -125,7 +125,6 @@ async def all_size_roll(ctx: ApplicationContext, dice_amount: int, dice_type: in
         end_image.save(merged_file_path, "PNG")
         image_file = File(merged_file_path)
         embed.set_image(url=f"attachment://{image_file.filename}")
-        print(nr_attachment)
         await ctx.respond(file=image_file, embed=embed)
         os.remove(merged_file_path)
     else:

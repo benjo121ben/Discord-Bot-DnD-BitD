@@ -13,7 +13,7 @@ def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
             _bot.load_extension(ext_path + extension)
 
     global logger
-    logger.info("\n---------------------LOADING EXTENSIONS---------------------\n")
+    logger.info("---------------------LOADING EXTENSIONS---------------------")
     if modules_list is not None:
         GlobalVariables.modules_list = modules_list
     if GlobalVariables.modules_list is None:
@@ -35,4 +35,4 @@ def load_extensions(_bot, modules_list: list[bool] = None, reload=False):
         if GlobalVariables.modules_list[2]:
             load_ext("Kanka.KankaCog")
 
-    logger.info("---------------------EXTENSIONS LOADED---------------------\n")
+    logger.info("---------------------EXTENSIONS LOADED---------------------")

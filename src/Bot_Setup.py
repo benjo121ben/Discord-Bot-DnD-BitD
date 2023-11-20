@@ -34,8 +34,7 @@ async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bo
     async def on_ready():
         stop_retrying()
         GlobalVariables.bot.add_view(LockedClockAdjustmentView("", ""))
-        logger.info(f"Bot connection completed\n"
-                    f"We have logged in as {GlobalVariables.bot.user}")
+        logger.info(f"Bot connection completed. We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.slash_command(name="ping", description="Tests whether the bot is active")
     async def ping(ctx: ApplicationContext):

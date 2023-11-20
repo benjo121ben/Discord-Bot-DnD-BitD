@@ -78,6 +78,6 @@ def check_entanglement_assets():
                     logger.debug("missing", entanglement)
 
     if not entanglements_enabled:
-        logger.warning("DevilsAndEntanglements disabled, due to entanglements missing in json file\n")
+        logger.warning("DevilsAndEntanglements disabled, due to entanglements missing in json file")
     else:
-        logger.info("All Entanglement info present, feature enabled\n")
+        logger.info("All Entanglement info present, feature enabled")

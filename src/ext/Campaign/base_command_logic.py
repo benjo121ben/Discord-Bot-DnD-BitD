@@ -118,7 +118,7 @@ async def claim_character(executing_user: str, ctx: ContextInfo, char_tag: str, 
         user = await bot.fetch_user(int(assigned_user_id))
     except Exception as err:
         logger.error(err)
-        await ctx.respond("An error has occurred while fetching the user with this ID.\n")
+        await ctx.respond("An error has occurred while fetching the user with this ID.")
         Undo.undo(executing_user)
         Undo.discard_undo_queue_after_pointer(executing_user)
         return

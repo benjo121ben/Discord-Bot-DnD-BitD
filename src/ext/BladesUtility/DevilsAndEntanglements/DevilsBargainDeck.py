@@ -34,9 +34,9 @@ def check_devils_bargain_assets():
             devils_bargains_enabled = False
             logger.warning("DevilsBargain-" + nr + ".png", "missing")
     if not devils_bargains_enabled:
-        logger.warning("Devils Bargains disabled, due to missing Files\n")
+        logger.warning("Devils Bargains disabled, due to missing Files")
     else:
-        logger.info("Devils Bargains present, feature enabled\n")
+        logger.info("Devils Bargains present, feature enabled")
 
 
 def get_devils_bargain():

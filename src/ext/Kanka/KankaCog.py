@@ -80,4 +80,4 @@ class KankaCog(commands.Cog):
 def setup(bot: commands.Bot):
     # Every extension should have this function
     bot.add_cog(KankaCog())
-    logger.info("kanka extension loaded\n")
+    logger.info("kanka extension loaded")

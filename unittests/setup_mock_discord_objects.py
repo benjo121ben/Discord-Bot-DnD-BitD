@@ -21,7 +21,7 @@ def mockedRespond(messagetype: str, *args, **kwargs):
     elif len(kwargs) > 0:
         print(f"{messagetype}:\n    empty message with kwargs content\n")
     else:
-        raise RuntimeError("mock_respond:\n    EMPTY MESSAGE SENT\n")
+        raise RuntimeError("mock_respond:\n    EMPTY MESSAGE SENT")
     interaction = mock.MagicMock(Interaction)
     interaction.delete_original_message = mock.AsyncMock(Interaction.delete_original_message)
     return interaction

@@ -133,4 +133,4 @@ def setup(bot: Bot):
     cmp_hlp.check_base_setup()
     bot.add_cog(CampaignCog())
 
-    logger.info("campaign extension loaded\n")
+    logger.info("campaign extension loaded")

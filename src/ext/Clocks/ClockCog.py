@@ -33,6 +33,14 @@ class ClockAdjustmentView(View):
         self.clock_tag = clock_tag
         self.associated_user = associated_user
         self.channel_message_id = channel_message_id
+        logger.debug("ClockAdjustmentView created: [clock_tag={0}, associated_user={1}, channel_message_id={2}]"
+                     .format(self.clock_tag, self.associated_user, self.channel_message_id))
+        logger.debug(f"type associated user: {type(self.associated_user)}")
+
+    def log_view_interaction(self, interaction_name: str, interaction: Interaction):
+        logger.debug("{0} called: [interaction ID={1}, clock_tag={2}, associated_user={3}, channel_message_id={4}]"
+                     .format(interaction_name, interaction.user.id, self.clock_tag, self.associated_user, self.channel_message_id))
+        logger.debug(f"type associated user: {type(self.associated_user)}")
 
     async def on_timeout(self) -> None:
         self.update_channel_message_id()
@@ -64,29 +72,53 @@ class ClockAdjustmentView(View):
 
     @button(label="tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("▶"), custom_id="plus_tick_button")
     async def button_tick_callback(self, _: Button, interaction: Interaction):
-        params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
-        await edit_interaction_message(interaction, params)
+        self.log_view_interaction("tick", interaction)
+        ctx: ContextInfo = await initContext(interaction=interaction)
+        try:
+            params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
+            await edit_interaction_message(interaction, params)
+        except Exception as e:
+            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+                              str(e))
 
     @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"), custom_id="minus_tick_button")
     async def button_back_tick_callback(self, _: Button, interaction: Interaction):
-        params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
-        await edit_interaction_message(interaction, params)
+        self.log_view_interaction("back_tick", interaction)
+        ctx: ContextInfo = await initContext(interaction=interaction)
+        try:
+            params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
+            await edit_interaction_message(interaction, params)
+        except Exception as e:
+            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+                              str(e))
 
     @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"), custom_id="delete_button")
     async def button_delete_callback(self, _: Button, interaction: Interaction):
-        await interaction.message.delete()
-        await remove_clock_command_logic(await initContext(interaction=interaction), clock_tag=self.clock_tag, executing_user=self.associated_user)
+        self.log_view_interaction("delete", interaction)
+        ctx: ContextInfo = await initContext(interaction=interaction)
+        try:
+            await remove_clock_command_logic(ctx, clock_tag=self.clock_tag, executing_user=self.associated_user)
+            await interaction.message.delete()
+        except Exception as e:
+            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+                              str(e))
 
     @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"), custom_id="lock_view_button")
     async def button_lock_callback(self, _: Button, interaction: Interaction):
-        self.refresh_clock_data(interaction)
-        self.update_channel_message_id()
-        await edit_interaction_message(
-            interaction,
-            {"view": LockedClockAdjustmentView(self.clock_tag, self.associated_user, self.channel_message_id)}
-        )
-        global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
-        self.stop()
+        self.log_view_interaction("lock view", interaction)
+        ctx: ContextInfo = await initContext(interaction=interaction)
+        try:
+            self.refresh_clock_data(interaction)
+            self.update_channel_message_id()
+            await edit_interaction_message(
+                interaction,
+                {"view": LockedClockAdjustmentView(self.clock_tag, self.associated_user, self.channel_message_id)}
+            )
+            global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
+            self.stop()
+        except Exception as e:
+            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+                              str(e))
 
 
 class LockedClockAdjustmentView(View):
@@ -95,18 +127,28 @@ class LockedClockAdjustmentView(View):
         self.clock_tag = clock_tag
         self.associated_user = associated_user
         self.channel_message_id = channel_message_id
+        logger.debug("LockedClockAdjustmentView created: [clock_tag={0}, associated_user={1}, channel_message_id={2}]"
+                     .format(self.clock_tag, self.associated_user, self.channel_message_id))
+        logger.debug(f"type associated user: {type(self.associated_user)}")
 
     def refresh_clock_data(self, interaction: Interaction):
         self.clock_tag = interaction.message.embeds[0].description.split(":")[1].strip().replace("_", "")
         self.associated_user = str(interaction.message.interaction.data['user']['id'])
 
+    def log_view_interaction(self, interaction_name: str, interaction: Interaction):
+        logger.debug("{0} called: {interaction ID={1}, clock_tag={2}, associated_user={3}, channel_message_id={4}}"
+                     .format(interaction_name, interaction.user.id, self.clock_tag, self.associated_user, self.channel_message_id))
+        logger.debug(f"type associated user: {type(self.associated_user)}")
+
     @button(label="unlock view", style=Bstyle.primary, row=0, emoji=PartialEmoji.from_str("🔓"), custom_id="unlock_clock_button")
     async def button_lock_callback(self, _: Button, interaction: Interaction):
         self.refresh_clock_data(interaction)
         if str(interaction.user.id) != self.associated_user:
-            await ContextInfo(interaction=interaction).respond("You are not the owner of this clock", delay=10)
+            self.log_view_interaction("LockedClockAdjustmentView/unlock_view, not owner", interaction)
+            await (await initContext(interaction=interaction)).respond("You are not the owner of this clock", delay=10)
             return
         if self.channel_message_id is None:
+            self.log_view_interaction("LockedClockAdjustmentView/channel_message_id is None", interaction)
             self.channel_message_id = (interaction.channel.id, interaction.message.id)
         await edit_interaction_message(
             interaction,
@@ -141,7 +183,7 @@ def get_clock_response_params(clock: Clock, assiciated_user: str) -> dict:
 
 async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
     executing_user = str(ctx.author.id)
-    clock_tag = clock_tag.strip().lower()
+    clock_tag = clock_tag.replace("_", "").strip().lower()
     clock_dic = load_clocks(executing_user)
     if len(clock_dic) == 40:
         await ctx.respond("You already have 40 clocks, please remove one.", delay=MESSAGE_DELETION_DELAY)
@@ -159,6 +201,9 @@ async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title:
 async def remove_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
     if executing_user is None:
         executing_user = str(ctx.author.id)
+    elif type(executing_user) != str:
+        logger.error(f"executing user is not a string")
+        raise Exception("clock_removal, executing_user is not a string for some reason")
     clock_tag = clock_tag.strip().lower()
     clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
@@ -174,6 +219,9 @@ async def remove_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing
 async def show_clock_command_logic(ctx: ContextInfo, clock_tag: str, executing_user: str = None):
     if executing_user is None:
         executing_user = str(ctx.author.id)
+    elif type(executing_user) != str:
+        logger.error(f"executing user is not a string")
+        raise Exception("clock_removal, executing_user is not a string for some reason")
     clock_tag = clock_tag.strip().lower()
     clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
@@ -188,6 +236,9 @@ async def tick_clock_command_ctx(ctx: ContextInfo, clock_tag: str, ticks: int = 
     """
     if executing_user is None:
         executing_user = str(ctx.author.id)
+    elif type(executing_user) != str:
+        logger.error(f"executing user is not a string")
+        raise Exception("clock_removal, executing_user is not a string for some reason")
     await ctx.respond(**tick_clock_logic(clock_tag, executing_user, ticks))
 
 
@@ -231,11 +282,11 @@ class ClockCog(commands.Cog):
         all_c = "These are the clocks that you have created:\n"
         for clock in clock_dic.values():
             all_c += str(clock) + "\n"
-        await(await ctx.respond(all_c)).delete_original_response(delay=MESSAGE_DELETION_DELAY)
+        await(await ctx.respond(all_c)).delete_original_response(delay=40)
 
 
 def setup(bot: commands.Bot):
     # Every extension should have this function
     load_clock_files()
     bot.add_cog(ClockCog())
-    logger.info("clock extension loaded\n")
+    logger.info("clock extension loaded")

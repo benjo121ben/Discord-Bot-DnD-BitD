@@ -5,7 +5,7 @@ import pathlib
 from src import GlobalVariables
 from dotenv import load_dotenv
 from src.Bot_Setup import start_bot
-from src.logging import setup_logging
+from src.bot_logging import setup_logging
 
 
 def get_env_bool(environment_tag: str) -> bool:

@@ -1,12 +1,16 @@
+import datetime
 import logging
 from discord import ApplicationContext
-from discord.ext import commands
-from . import GlobalVariables
+from discord.ext import commands, tasks
+from . import GlobalVariables, bot_logging
 
 logger = logging.getLogger('bot')
 
 
 class DebugCog(commands.Cog):
+
+    def __init__(self):
+        self.reset_logger_handlers.start()
 
     @commands.slash_command(name="help", description="receive help with this bot")
     async def help(self, ctx: ApplicationContext):
@@ -29,12 +33,17 @@ class DebugCog(commands.Cog):
     #     await ctx.send("reloaded")
     #     logger.info(f"user {ctx.author.name} reloaded bot")
 
-
+    @tasks.loop(time=datetime.time(hour=0, minute=1, tzinfo=datetime.timezone(datetime.timedelta(hours=1))))
+    async def reset_logger_handlers(self):
+        bot_logging.restart_logging()
+        logger.debug("Logger restarted as scheduled")
+        user = await GlobalVariables.bot.fetch_user(int(GlobalVariables.admin_id))
+        await user.send("logger scheduled restart")
 
 
 def setup(bot: commands.Bot):
     # Every extension should have this function
     bot.add_cog(DebugCog())
-    logger.info("debug extension loaded\n")
+    logger.info("debug extension loaded")
 
 
