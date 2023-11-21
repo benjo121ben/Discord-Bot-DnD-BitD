@@ -5,12 +5,17 @@ from discord.ext import commands, tasks
 from . import GlobalVariables, bot_logging
 
 logger = logging.getLogger('bot')
+started_task = False
 
 
 class DebugCog(commands.Cog):
 
     def __init__(self):
-        self.reset_logger_handlers.start()
+        global started_task
+        logger.debug("DebugCog constructor called, tried to start task again")
+        if not started_task:
+            started_task = True
+            self.reset_logger_handlers.start()
 
     @commands.slash_command(name="help", description="receive help with this bot")
     async def help(self, ctx: ApplicationContext):
