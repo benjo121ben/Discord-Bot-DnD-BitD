@@ -33,12 +33,15 @@ class DebugCog(commands.Cog):
     #     await ctx.send("reloaded")
     #     logger.info(f"user {ctx.author.name} reloaded bot")
 
-    @tasks.loop(time=datetime.time(hour=0, minute=1, tzinfo=datetime.timezone(datetime.timedelta(hours=1))))
+    @tasks.loop(time=datetime.time(hour=0, minute=1, tzinfo=datetime.timezone(datetime.timedelta(hours=1))), reconnect=False)
     async def reset_logger_handlers(self):
-        bot_logging.restart_logging()
-        logger.debug("Logger restarted as scheduled")
-        user = await GlobalVariables.bot.fetch_user(int(GlobalVariables.admin_id))
-        await user.send("logger scheduled restart")
+        try:
+            bot_logging.restart_logging()
+            logger.debug("Logger restarted as scheduled")
+            user = await GlobalVariables.bot.fetch_user(int(GlobalVariables.admin_id))
+            await user.send("logger scheduled restart")
+        except Exception as e:
+            logger.error("an error occurred during the attempted restart")
 
 
 def setup(bot: commands.Bot):
