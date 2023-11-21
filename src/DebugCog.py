@@ -10,13 +10,6 @@ started_task = False
 
 class DebugCog(commands.Cog):
 
-    def __init__(self):
-        global started_task
-        logger.debug("DebugCog constructor called, tried to start task again")
-        if not started_task:
-            started_task = True
-            self.reset_logger_handlers.start()
-
     @commands.slash_command(name="help", description="receive help with this bot")
     async def help(self, ctx: ApplicationContext):
         await ctx.respond(f"Any bugs, issues or ideas for improvements? Contact my creator on the support discord or via email\n"
@@ -38,10 +31,10 @@ class DebugCog(commands.Cog):
     #     await ctx.send("reloaded")
     #     logger.info(f"user {ctx.author.name} reloaded bot")
 
-    @tasks.loop(time=datetime.time(hour=0, minute=1, tzinfo=datetime.timezone(datetime.timedelta(hours=1))), reconnect=False)
+    @tasks.loop(time=datetime.time(hour=0, minute=9, tzinfo=datetime.timezone(datetime.timedelta(hours=1))), reconnect=False)
     async def reset_logger_handlers(self):
         try:
-            bot_logging.restart_logging()
+            # bot_logging.restart_logging()
             logger.debug("Logger restarted as scheduled")
             user = await GlobalVariables.bot.fetch_user(int(GlobalVariables.admin_id))
             await user.send("logger scheduled restart")
@@ -52,7 +45,9 @@ class DebugCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     # Every extension should have this function
-    bot.add_cog(DebugCog())
+    debug_cog = DebugCog()
+    bot.add_cog(debug_cog)
+    debug_cog.reset_logger_handlers.start()
     logger.info("debug extension loaded")
 
 
