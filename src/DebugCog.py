@@ -47,6 +47,7 @@ class DebugCog(commands.Cog):
             await user.send("logger scheduled restart")
         except Exception as e:
             logger.error("an error occurred during the attempted restart")
+            logger.error(e)
 
 
 def setup(bot: commands.Bot):
