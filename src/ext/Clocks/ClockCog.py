@@ -13,6 +13,12 @@ logger = logging.getLogger('bot')
 MESSAGE_DELETION_DELAY: int = 10
 BUTTON_VIEW_TIMEOUT: int = 21600  # 6 hours
 
+error_message = "An error has occurred. Try re-inviting the bot to your server through the button in its description, " \
+                "the issue may be due to updated required permissions. Sorry for the inconvenience\n" \
+                "If the issue persists even after a re-invite, please send my creator an error message with a screenshot and describe your problem.\n" \
+                "**Use the discord linked in the \\help command.\n**" \
+                "Error:\n"
+
 
 # This will be deprecated in a future update of py-cord, which introduces interaction.respond and interaction.edit
 # I'm making my own shorthand since I haven't yet figured out how to get access to that code
@@ -78,7 +84,8 @@ class ClockAdjustmentView(View):
             params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
             await edit_interaction_message(interaction, params)
         except Exception as e:
-            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+            logger.error(e)
+            await ctx.respond(error_message +
                               str(e))
 
     @button(label="back_tick", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("◀"), custom_id="minus_tick_button")
@@ -89,7 +96,8 @@ class ClockAdjustmentView(View):
             params: dict = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
             await edit_interaction_message(interaction, params)
         except Exception as e:
-            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+            logger.error(e)
+            await ctx.respond(error_message +
                               str(e))
 
     @button(label="delete", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🚮"), custom_id="delete_button")
@@ -100,7 +108,8 @@ class ClockAdjustmentView(View):
             await remove_clock_command_logic(ctx, clock_tag=self.clock_tag, executing_user=self.associated_user)
             await interaction.message.delete()
         except Exception as e:
-            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+            logger.error(e)
+            await ctx.respond(error_message +
                               str(e))
 
     @button(label="lock view", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("🔒"), custom_id="lock_view_button")
@@ -117,7 +126,8 @@ class ClockAdjustmentView(View):
             global_vars.bot.add_view(LockedClockAdjustmentView("", ""))
             self.stop()
         except Exception as e:
-            await ctx.respond("an error has occurred handling your request. Please send my creator a message.\n" +
+            logger.error(e)
+            await ctx.respond(error_message +
                               str(e))
 
 
