@@ -31,7 +31,7 @@ class DebugCog(commands.Cog):
     #     await ctx.send("reloaded")
     #     logger.info(f"user {ctx.author.name} reloaded bot")
 
-    @tasks.loop(time=datetime.time(hour=0, minute=20, second=0, tzinfo=datetime.timezone(datetime.timedelta(hours=1))), reconnect=False, count=1)
+    @tasks.loop(time=datetime.time(hour=1), reconnect=False)
     async def reset_logger_handlers(self):
         try:
             bot_logging.restart_logging()
