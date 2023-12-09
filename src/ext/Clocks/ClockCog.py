@@ -13,6 +13,7 @@ logger = logging.getLogger('bot')
 MESSAGE_DELETION_DELAY: int = 10
 BUTTON_VIEW_TIMEOUT: int = 21600  # 6 hours
 
+# TODO use this error message everywhere in the code where the user gets a unknown error/interaction failed
 error_message = "An error has occurred. Try re-inviting the bot to your server through the button in its description, " \
                 "the issue may be due to updated required permissions. Sorry for the inconvenience\n" \
                 "If the issue persists even after a re-invite, please send my creator an error message with a screenshot and describe your problem.\n" \
@@ -146,7 +147,7 @@ class LockedClockAdjustmentView(View):
         self.associated_user = str(interaction.message.interaction.data['user']['id'])
 
     def log_view_interaction(self, interaction_name: str, interaction: Interaction):
-        logger.debug("{0} called: {interaction ID={1}, clock_tag={2}, associated_user={3}, channel_message_id={4}}"
+        logger.debug("{0} called: [interaction ID={1}, clock_tag={2}, associated_user={3}, channel_message_id={4}]"
                      .format(interaction_name, interaction.user.id, self.clock_tag, self.associated_user, self.channel_message_id))
         logger.debug(f"type associated user: {type(self.associated_user)}")
 
@@ -200,8 +201,9 @@ async def add_clock_command_logic(ctx: ContextInfo, clock_tag: str, clock_title:
         return
 
     if clock_tag in clock_dic:
-        await ctx.respond(content="This clock already exists!", delay=MESSAGE_DELETION_DELAY)
-        await ctx.respond(**get_clock_response_params(clock_dic[clock_tag], executing_user))
+        response_data: dict = get_clock_response_params(clock_dic[clock_tag], executing_user)
+        response_data["content"] = "This clock already exists!"
+        await ctx.respond(**response_data)
     else:
         clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
         save_clocks(executing_user, clock_dic)

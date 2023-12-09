@@ -34,7 +34,10 @@ class ContextInfo:
         elif self.ctxType:
             ret = await self.ctx.respond(*args, **kwargs)
             if delay is not None:
-                ret = await ret.delete_original_response(delay=delay)
+                if isinstance(ret, Interaction):
+                    ret = await ret.delete_original_response(delay=delay)
+                else:
+                    ret = await ret.delete(delay=delay)
             return ret
 
 
