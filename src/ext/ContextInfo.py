@@ -46,3 +46,10 @@ async def initContext(interaction: Interaction = None, ctx: ApplicationContext =
     if interaction is not None:
         await context.interaction.response.defer()
     return context
+
+
+async def initContext_with_executing_user(interaction: Interaction = None, ctx: ApplicationContext = None) -> tuple[ContextInfo, str]:
+    context = ContextInfo(interaction=interaction, ctx=ctx)
+    if interaction is not None:
+        await context.interaction.response.defer()
+    return context, str(context.author.id)

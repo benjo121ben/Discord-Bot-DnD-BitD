@@ -64,7 +64,7 @@ class UndoView(View):
 
     async def checkAuthorized(self, interaction: Interaction):
         if str(interaction.user.id) != self.executing_user:
-            await (await interaction.response.send_message("you're not the same user that executed the button's command")).delete_original_response(delay=5)
+            await interaction.response.send_message("you're not the same user that executed the button's command", delete_after=5)
             return False
         else:
             return True
@@ -91,7 +91,7 @@ class StatView(View):
 
     async def checkAuthorized(self, interaction: Interaction):
         if str(interaction.user.id) != self.executing_user:
-            await (await interaction.response.send_message("you're not the same user that executed the button's command")).delete_original_response(delay=5)
+            await interaction.response.send_message("you're not the same user that executed the button's command", delete_after=5)
             return False
         else:
             return True

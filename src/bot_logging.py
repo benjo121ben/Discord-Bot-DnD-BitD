@@ -14,7 +14,7 @@ class StreamFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    format = "%(message)s"
+    formatb = "%(message)s"
     formaterr = "%(asctime)s - %(levelname)s - (%(filename)s:%(lineno)d):_///_%(message)s"
     testint = 80
 
