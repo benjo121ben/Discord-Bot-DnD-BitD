@@ -36,8 +36,6 @@ class DebugCog(commands.Cog):
         try:
             bot_logging.restart_logging()
             logger.debug("Logger restarted as scheduled")
-            user = await GlobalVariables.bot.fetch_user(int(GlobalVariables.admin_id))
-            await user.send("logger scheduled restart")
         except Exception as e:
             logger.error("an error occurred during the attempted restart")
             logger.error(e)
