@@ -9,7 +9,7 @@ from .DevilsAndEntanglements.EntanglementFunctions import entanglement_functiona
     entanglement_wanted_functionality
 from .Dice import blades_roll_command
 from .Wiki.ItemWiki import setup_wiki, wiki_search
-from ..ContextInfo import initContext
+from ...ContextInfo import init_context
 
 logger = logging.getLogger('bot')
 
@@ -51,7 +51,7 @@ class BladesUtilityCog(commands.Cog):
                    description="Prints out the item description for the selected item")
     async def wiki(self, ctx: ApplicationContext, entry_name: str):
         try:
-            await wiki_search(await initContext(ctx=ctx), entry_name)
+            await wiki_search(await init_context(ctx=ctx), entry_name)
         except BladesCommandException as e:
             await ctx.respond(str(e))
 

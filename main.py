@@ -35,7 +35,7 @@ def main():
         return
 
     loop = asyncio.new_event_loop()
-    modules = [get_env_bool("DND"), get_env_bool("BLADES"), get_env_bool("KANKA")]
+    modules = [get_env_bool("DND"), get_env_bool("BLADES"), get_env_bool("KANKA"), get_env_bool("WEATHER")]
     try:
         loop.run_until_complete(start_bot(os.environ.get('COMMAND_CHAR'), os.environ.get("DISCORD_TOKEN"), modules))
     except KeyboardInterrupt:

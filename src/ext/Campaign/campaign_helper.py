@@ -5,7 +5,7 @@ from typing import Optional
 from dotenv import load_dotenv
 
 from . import packg_variables as p_vars
-from ..ContextInfo import ContextInfo
+from src.ContextInfo import ContextInfo
 from .SaveDataManagement import live_save_manager as live_save
 from .campaign_exceptions import NotBotAdminException
 

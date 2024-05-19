@@ -3,13 +3,12 @@ import logging
 import os
 import pathlib
 
-import discord.ui
-from discord import ApplicationContext, ComponentType, SelectOption, Interaction
-from discord.ui import View, string_select, select, Item, Select
+from discord import SelectOption, Interaction
+from discord.ui import View, Select
 
 from . import EntryLabels as eLabel
 from .WikiEntry import WikiEntry
-from ...ContextInfo import ContextInfo, initContext
+from ....ContextInfo import ContextInfo, init_context
 
 relative_wiki_path = os.sep.join(["Assets", "item_wiki.json"])
 wiki: dict[str, WikiEntry] = {}
@@ -140,7 +139,7 @@ async def wiki_search(ctx: ContextInfo, search_term: str):
 
             async def select_callback(interaction: Interaction):
                 await interaction.message.delete()
-                await wiki_search(await initContext(interaction=interaction), selectedItems.values[0])
+                await wiki_search(await init_context(interaction=interaction), selectedItems.values[0])
 
             selectedItems.callback = select_callback
             itemView.add_item(selectedItems)

@@ -41,14 +41,14 @@ class ContextInfo:
             return ret
 
 
-async def initContext(interaction: Interaction = None, ctx: ApplicationContext = None) -> ContextInfo:
+async def init_context(interaction: Interaction = None, ctx: ApplicationContext = None) -> ContextInfo:
     context = ContextInfo(interaction=interaction, ctx=ctx)
     if interaction is not None:
         await context.interaction.response.defer()
     return context
 
 
-async def initContext_with_executing_user(interaction: Interaction = None, ctx: ApplicationContext = None) -> tuple[ContextInfo, str]:
+async def init_context_with_executing_user(interaction: Interaction = None, ctx: ApplicationContext = None) -> tuple[ContextInfo, str]:
     context = ContextInfo(interaction=interaction, ctx=ctx)
     if interaction is not None:
         await context.interaction.response.defer()

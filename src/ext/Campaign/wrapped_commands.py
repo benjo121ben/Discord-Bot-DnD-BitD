@@ -9,7 +9,7 @@ from discord import ButtonStyle as Bstyle, Interaction, ApplicationContext, Part
 
 from . import packg_variables
 from .packg_variables import message_deletion_delay
-from ..ContextInfo import ContextInfo, initContext
+from ...ContextInfo import ContextInfo, init_context
 from .SaveDataManagement import char_data_access as char_data, \
     live_save_manager as live_save, \
     save_file_management as save_manager
@@ -32,7 +32,7 @@ class SimpleStatModal(discord.ui.Modal):
         self.add_item(discord.ui.InputText(label="amount"))
 
     async def callback(self, interaction: discord.Interaction):
-        await self.func(await initContext(interaction=interaction), int(self.children[0].value), self.char_tag)
+        await self.func(await init_context(interaction=interaction), int(self.children[0].value), self.char_tag)
 
 
 class DamageModal(discord.ui.Modal):
@@ -46,7 +46,7 @@ class DamageModal(discord.ui.Modal):
 
     async def callback(self, interaction: discord.Interaction):
         await self.func(
-            await initContext(interaction=interaction),
+            await init_context(interaction=interaction),
             int(self.children[0].value),
             int(self.children[1].value) if self.children[1].value != "" else 0,
             self.char_tag
@@ -72,12 +72,12 @@ class UndoView(View):
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"), custom_id="undo_button")
     async def button_callback7(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await undo(await initContext(interaction=interaction))
+            await undo(await init_context(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"), custom_id="redo_button")
     async def button_callback8(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await redo(await initContext(interaction=interaction))
+            await redo(await init_context(interaction=interaction))
 
 
 class StatView(View):
@@ -99,17 +99,17 @@ class StatView(View):
     @button(label="crit", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("🎯"), custom_id="crit_button")
     async def button_callback(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await crit(await initContext(interaction=interaction), char_tag=self.char_tag)
+            await crit(await init_context(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="faint", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💤"), custom_id="faint_button")
     async def button_callback1(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await faint(await initContext(interaction=interaction), char_tag=self.char_tag)
+            await faint(await init_context(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="dodge", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("💨"), custom_id="dodge_button")
     async def button_callback2(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await dodged(await initContext(interaction=interaction), char_tag=self.char_tag)
+            await dodged(await init_context(interaction=interaction), char_tag=self.char_tag)
 
     @button(label="resisted", style=Bstyle.grey, row=1, emoji=PartialEmoji.from_str("🛡"), custom_id="resist_button")
     async def button_callback3(self, _: Button, interaction: Interaction):
@@ -134,12 +134,12 @@ class StatView(View):
     @button(label="undo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↩"), custom_id="undo_stats_button")
     async def button_callback7(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await undo(await initContext(interaction=interaction))
+            await undo(await init_context(interaction=interaction))
 
     @button(label="redo", style=Bstyle.grey, row=2, emoji=PartialEmoji.from_str("↪"), custom_id="redo_stats_button")
     async def button_callback8(self, _: Button, interaction: Interaction):
         if await self.checkAuthorized(interaction):
-            await redo(await initContext(interaction=interaction))
+            await redo(await init_context(interaction=interaction))
 
 
 async def catch_and_respond_char_action(

@@ -1,0 +1,124 @@
+{
+  "temp": [
+    {
+      "title": "Incredible Cold",
+      "description": "Fatigue after 2 hours of travel, 4d6-6d6 cold damage every minute. Most snowy ground is difficult terrain or even greater difficult terrain"
+    },
+    {
+      "title": "Extreme Cold",
+      "description": "Fatigue after 4 hours of travel, 1d6-2d6 cold damage every 10 minutes. Most snowy ground is difficult terrain or even greater difficult terrain"
+    },
+    {
+      "title": "Severe Cold",
+      "description": "Fatigue after 4 hours of travel, 1d6-2d6 cold damage every hour. Most snowy ground is difficult terrain or even greater difficult terrain"
+    },
+    {
+      "title": "Mild Cold",
+      "description": "Fatigue after 4 hours of travel. Most snowy ground is difficult terrain or even greater difficult terrain"
+    },
+    {
+      "title": "Cool",
+      "description": "The weather is getting colter but does not require special precautions"
+    },
+    {
+      "title": "Average",
+      "description": "The weather is comfortable"
+    },
+    {
+      "title": "Warm",
+      "description": "The weather is pleasant"
+    },
+    {
+      "title": "Mild Heat",
+      "description": "Fatigue after 4 hours of travel."
+    },
+    {
+      "title": "Severe heat",
+      "description": "Fatigue after 4 hours of travel, 1d6-2d6 fire damage every hour"
+    },
+    {
+      "title": "Extreme heat",
+      "description": "Fatigue after 4 hours of travel, 1d6-2d6 fire damage every 10 minutes"
+    },
+    {
+      "title": "Incredible heat",
+      "description": "Fatigue after 2 hours of travel, 4d6-6d6 fire damage every minute"
+    }
+  ],
+
+  "wind": [
+    {
+      "title": "No wind",
+      "description": "At sea, this creates the _Dead Calm_ event."
+    },
+    {
+      "title": "Calm Wind",
+      "description": "The wind is noticeable, but not disruptive."
+    },
+    {
+      "title": "Light Wind",
+      "description": "Circumstance penalty on auditory Perception.\nMight induce circumstance penalty on physical ranged attacks."
+    },
+    {
+      "title": "Strong Wind",
+      "description": "Circumstance penalty on auditory Perception and physical ranged attacks.\nFlying requires a Maneuver in Flight action, and fliers are blown away on a critical failure or if they don't succeed at a minimum of one such check each round."
+    }
+  ],
+  "snow": [
+    {
+      "title": "Clear",
+      "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+    },
+    {
+      "title": "Cloudy",
+      "description": "The Sun or Moon is obscured by clouds covering the sky."
+    },
+    {
+      "title": "Light Snow",
+      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away."
+    },
+    {
+      "title": "Heavy Snow",
+      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away. Soaked creatures treat Temperature at one level lower."
+    }
+  ],
+  "rain": [
+    {
+      "title": "Clear",
+      "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+    },
+    {
+      "title": "Cloudy",
+      "description": "The Sun or Moon is obscured by clouds covering the sky."
+    },
+    {
+      "title": "Light Rain",
+      "description": "Visual and Auditory perception takes a circumstance penalty."
+    },
+    {
+      "title": "Heavy Rain",
+      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away. Soaked creatures treat Temperature at one level lower. Trails are washed away and boats might cover their decks to prevent flooding."
+    }
+  ],
+  "inc_temp": [
+    "Warmer: increases by 2 steps",
+    "Warmer: increases",
+    "Stays the same",
+    "Cooler: decreases",
+    "Cooler: decreases by 2 steps"
+  ],
+  "inc_wind": [
+    "Decreases by 2 steps",
+    "Decreases",
+    "Stays the same",
+    "Increases",
+    "Increases by 2 steps"
+  ],
+  "inc_snow": [
+    "Decreases by 2 steps",
+    "Decreases",
+    "Stays the same",
+    "Increases",
+    "Increases by 2 steps"
+  ]
+}

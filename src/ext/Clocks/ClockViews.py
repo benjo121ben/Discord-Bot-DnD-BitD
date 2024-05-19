@@ -7,14 +7,14 @@ from ... import GlobalVariables as global_vars
 from .MessageContent.AbstractMessageContent import AbstractMessageContent
 from .clock_data import get_clock_image, NoClockImageException, Clock, load_clocks
 from .clock_logic import tick_clock_logic, remove_clock_logic, MESSAGE_DELETION_DELAY
-from ..ContextInfo import ContextInfo, initContext
+from ...ContextInfo import ContextInfo, init_context
 
 logger = logging.getLogger('bot')
 BUTTON_VIEW_TIMEOUT: int = 21600  # 6 hours
 
 # TODO use this error message everywhere in the code where the user gets a unknown error/interaction failed
 error_message = "An error has occurred. Try re-inviting the bot to your server through the button in its description, " \
-                "the issue may be due to updated required permissions. Sorry for the inconvenience\n" \
+                "the issue may be due to updated required permissions. Sorry for the inconvenience.\n" \
                 "If the issue persists even after a re-invite, please send my creator an error message with a screenshot and describe your problem.\n" \
                 "**Use the discord linked in the \\help command.\n**" \
                 "Error:\n"
@@ -26,7 +26,7 @@ async def bot_channel_permissions_check_interaction(interaction: Interaction):
 
     member_data: Member = interaction.guild.get_member(global_vars.bot.user.id)
     if not interaction.channel.permissions_for(member_data).view_channel:
-        await (await initContext(interaction=interaction)).respond(
+        await (await init_context(interaction=interaction)).respond(
             "The bot does not have permission to view this channel.\n"
             "Some stuff just doesn't work without it, so please make sure you give it access. :)",
             delay=40
@@ -126,7 +126,7 @@ class ClockAdjustmentView(View):
     async def button_tick_callback(self, _: Button, interaction: Interaction):
         self.refresh_clock_data(interaction)
         self.log_view_interaction("tick", interaction)
-        ctx: ContextInfo = await initContext(interaction=interaction)
+        ctx: ContextInfo = await init_context(interaction=interaction)
         try:
             params: AbstractMessageContent = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=1)
             await edit_interaction_message(interaction, params.get_message_content(get_clock_response_params))
@@ -139,7 +139,7 @@ class ClockAdjustmentView(View):
     async def button_back_tick_callback(self, _: Button, interaction: Interaction):
         self.refresh_clock_data(interaction)
         self.log_view_interaction("back_tick", interaction)
-        ctx: ContextInfo = await initContext(interaction=interaction)
+        ctx: ContextInfo = await init_context(interaction=interaction)
         try:
             params: AbstractMessageContent = tick_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user, ticks=-1)
             await edit_interaction_message(interaction, params.get_message_content(get_clock_response_params))
@@ -154,7 +154,7 @@ class ClockAdjustmentView(View):
             return
         self.refresh_clock_data(interaction)
         self.log_view_interaction("delete", interaction)
-        ctx: ContextInfo = await initContext(interaction=interaction)
+        ctx: ContextInfo = await init_context(interaction=interaction)
         try:
             params: AbstractMessageContent = remove_clock_logic(clock_tag=self.clock_tag, executing_user=self.associated_user)
             await ctx.respond(**params.get_message_content(get_clock_response_params))
@@ -168,7 +168,7 @@ class ClockAdjustmentView(View):
     async def button_lock_callback(self, _: Button, interaction: Interaction):
         self.refresh_clock_data(interaction)
         self.log_view_interaction("lock view", interaction)
-        ctx: ContextInfo = await initContext(interaction=interaction)
+        ctx: ContextInfo = await init_context(interaction=interaction)
         try:
             self.refresh_clock_data(interaction)
             await edit_interaction_message(
@@ -200,7 +200,7 @@ class LockedClockAdjustmentView(View):
         logger.debug(f"unlock_called for message {interaction.message.id}. Tag={clock_tag}. Assoc_user={associated_user}")
         if str(interaction.user.id) != associated_user:
             self.log_view_interaction("LockedClockAdjustmentView/unlock_view, not owner", interaction)
-            await (await initContext(interaction=interaction)).respond("You are not the owner of this clock", delay=10)
+            await (await init_context(interaction=interaction)).respond("You are not the owner of this clock", delay=10)
             return
         id = interaction.message.id
         message_data = MessageData(interaction.channel.id, id)

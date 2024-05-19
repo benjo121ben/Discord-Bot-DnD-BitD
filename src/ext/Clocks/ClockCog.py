@@ -10,12 +10,12 @@ from .MessageContent.AbstractMessageContent import AbstractMessageContent
 from .clock_data import load_clock_files, load_clocks
 from .clock_logic import add_clock_command_logic, show_clock_command_logic, \
     MESSAGE_DELETION_DELAY
-from ..ContextInfo import initContext_with_executing_user
+from ...ContextInfo import init_context_with_executing_user
 
 logger = logging.getLogger('bot')
 
 
-def executing_user_messageData_wrapper(ctx: ApplicationContext, function_to_wrap):
+def executing_user_message_data_wrapper(ctx: ApplicationContext, function_to_wrap):
     """
     Decorator for all functions that require the opening of a context and execution of the function using the id of the
     user opening the context
@@ -26,7 +26,7 @@ def executing_user_messageData_wrapper(ctx: ApplicationContext, function_to_wrap
 
     @wraps(function_to_wrap)
     async def wrapped_func(_function_to_wrap):
-        context, executing_user = await initContext_with_executing_user(ctx=ctx)
+        context, executing_user = await init_context_with_executing_user(ctx=ctx)
         content: AbstractMessageContent = _function_to_wrap(executing_user=executing_user)
         await context.respond(**content.get_message_content(get_clock_response_params))
     return wrapped_func(function_to_wrap)
@@ -52,7 +52,7 @@ class ClockCog(commands.Cog):
     async def add_clock(self, ctx: ApplicationContext, clock_tag: str, clock_title: str, clock_size: int, clock_ticks: int = 0):
         if not await self.bot_channel_permissions_check(ctx):
             return
-        await executing_user_messageData_wrapper(
+        await executing_user_message_data_wrapper(
             ctx,
             lambda executing_user: add_clock_command_logic(clock_tag, clock_title, clock_size, executing_user, clock_ticks)
         )
@@ -61,7 +61,7 @@ class ClockCog(commands.Cog):
     async def show_clock(self, ctx: ApplicationContext, clock_tag: str):
         if not await self.bot_channel_permissions_check(ctx):
             return
-        await executing_user_messageData_wrapper(
+        await executing_user_message_data_wrapper(
             ctx,
             lambda executing_user: show_clock_command_logic(clock_tag, executing_user)
         )

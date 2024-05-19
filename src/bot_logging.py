@@ -49,8 +49,20 @@ def setup_logging():
     soutputhandler = logging.StreamHandler(stream=sys.stdout)
     soutputhandler.setFormatter(StreamFormatter())
     logger.addHandler(soutputhandler)
+    delete_old_files(logger, logpath)
 
     return logger
+
+
+def delete_old_files(logger, logpath):
+    logger.debug("Deleting old files")
+    for file in os.listdir(logpath):
+        date_as_string = file.split('-')[0]
+        file_date: datetime = datetime.strptime(date_as_string, '%Y_%m_%d')
+        delta = datetime.now() - file_date
+        if delta.days > 10:
+            logger.debug(f"DELETE {file}")
+            os.remove(os.path.join(logpath, file))
 
 
 def restart_logging():
