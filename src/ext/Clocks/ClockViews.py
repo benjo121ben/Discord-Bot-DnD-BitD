@@ -76,9 +76,9 @@ class ClockAdjustmentView(View):
         self.associated_user = str(associated_user)
         self.message_data = message_data
 
-        logger.debug("ClockAdjustmentView created: [clock_tag={0}, associated_user={1}, message_data={2}]"
-                     .format(self.clock_tag, self.associated_user, self.message_data))
-        logger.debug(f"type associated user: {type(self.associated_user)}")
+        # logger.debug("ClockAdjustmentView created: [clock_tag={0}, associated_user={1}, message_data={2}]"
+        #              .format(self.clock_tag, self.associated_user, self.message_data))
+        # logger.debug(f"type associated user: {type(self.associated_user)}")
 
     def log_view_interaction(self, interaction_name: str, interaction: Interaction):
         logger.debug("{0} called: ClockAdjustmentView[interaction ID={1}, clock_tag={2}, associated_user={3}, message_data={4}]"
@@ -186,7 +186,6 @@ class ClockAdjustmentView(View):
 class LockedClockAdjustmentView(View):
     def __init__(self):
         super().__init__(timeout=None)
-        logger.debug("LockedClockAdjustmentView created")
 
     @staticmethod
     def log_view_interaction(interaction_name: str, interaction: Interaction):
@@ -210,13 +209,11 @@ class LockedClockAdjustmentView(View):
                 interaction,
                 {"content": "This Clock does not exist anymore", "view": None, "delay": MESSAGE_DELETION_DELAY}
             )
-            global_vars.bot.add_view(LockedClockAdjustmentView())
         else:
             await edit_interaction_message(
                 interaction,
                 {"view": ClockAdjustmentView(clock_tag, associated_user, message_data)}
             )
-            global_vars.bot.add_view(LockedClockAdjustmentView())
             self.stop()
 
 

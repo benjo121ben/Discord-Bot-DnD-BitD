@@ -28,13 +28,13 @@ def find_weather_data_values_from_fields(embed: Embed):
                 return idx
         return -99
     global weather_tracker_text_data
-    temp: int = search_list(weather_tracker_text_data["temp"], embed.fields[0].name) - 4
-    wind: int = search_list(weather_tracker_text_data["wind"], embed.fields[1].name)
+    temp: int = search_list(weather_tracker_text_data["temp"], embed.fields[0].name.replace("*", "")) - 5
+    wind: int = search_list(weather_tracker_text_data["wind"], embed.fields[1].name.replace("*", ""))
     weather = -99
     if temp <= -2:
-        weather = search_list(weather_tracker_text_data["snow"], embed.fields[2].name)
+        weather = search_list(weather_tracker_text_data["snow"], embed.fields[2].name.replace("*", ""))
     else:
-        weather = search_list(weather_tracker_text_data["rain"], embed.fields[2].name)
+        weather = search_list(weather_tracker_text_data["rain"], embed.fields[2].name.replace("*", ""))
     return [temp, wind, weather]
 
 
@@ -47,12 +47,25 @@ def init_data():
             weather_tracker_text_data = json.load(data)
 
 
+def get_titles():
+    global weather_tracker_text_data
+    temp = [val["title"] for val in weather_tracker_text_data["temp"]]
+    wind = [val["title"] for val in weather_tracker_text_data["wind"]]
+    precip = [
+        "Clear",
+        "Cloudy",
+        "Light Snow/Rain",
+        "Heavy Snow/Rain"
+    ]
+    return temp, wind, precip
+
+
 class WeatherTracker:
     temperature_lvl: int = 0
     wind_lvl: int = 0
     snow_rain_lvl: int = 0
 
-    def __init__(self, temp: int, wind: int, snow: int):
+    def __init__(self, temp: int = 0, wind: int = 0, snow: int = 0):
         self.temperature_lvl = temp
         self.wind_lvl = wind
         self.snow_rain_lvl = snow
@@ -61,9 +74,10 @@ class WeatherTracker:
         embed = Embed()
         if delta:
             embed.description = (
-                f'Temperature:   {delta[0]}\n'
-                f'Wind:          {delta[1]}\n'
-                f'Precipitation: {delta[2]}'
+                f'**Temperature**:   {delta[0]}\n'
+                f'**Wind**:          {delta[1]}\n'
+                f'**Precipitation**: {delta[2]}\n'
+                f'---'
             )
         else:
             embed.description = ""
@@ -75,9 +89,12 @@ class WeatherTracker:
         ]
 
         for entry in columns:
-            embed.add_field(name=entry["title"], value=entry["description"])
+            embed.add_field(name=f"*{entry['title']}*", value=entry["description"])
 
         return embed
+
+    def __str__(self):
+        return f"{self.temperature_lvl}, {self.wind_lvl}, {self.snow_rain_lvl}"
 
     def roll(self) -> [int, int, int]:
 

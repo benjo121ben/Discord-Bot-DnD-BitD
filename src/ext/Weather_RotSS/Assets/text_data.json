@@ -2,23 +2,23 @@
   "temp": [
     {
       "title": "Incredible Cold",
-      "description": "Fatigue after 2 hours of travel, 4d6-6d6 cold damage every minute. Most snowy ground is difficult terrain or even greater difficult terrain"
+      "description": "Fatigue after **2** hours of travel, **4d6-6d6 cold damage every minute**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
     },
     {
       "title": "Extreme Cold",
-      "description": "Fatigue after 4 hours of travel, 1d6-2d6 cold damage every 10 minutes. Most snowy ground is difficult terrain or even greater difficult terrain"
+      "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every 10 minutes**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
     },
     {
       "title": "Severe Cold",
-      "description": "Fatigue after 4 hours of travel, 1d6-2d6 cold damage every hour. Most snowy ground is difficult terrain or even greater difficult terrain"
+      "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every hour**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
     },
     {
       "title": "Mild Cold",
-      "description": "Fatigue after 4 hours of travel. Most snowy ground is difficult terrain or even greater difficult terrain"
+      "description": "Fatigue after **4** hours of travel.\nMost snowy ground is difficult terrain or even greater difficult terrain"
     },
     {
       "title": "Cool",
-      "description": "The weather is getting colter but does not require special precautions"
+      "description": "The weather is getting colder but does not require special precautions"
     },
     {
       "title": "Average",
@@ -30,19 +30,19 @@
     },
     {
       "title": "Mild Heat",
-      "description": "Fatigue after 4 hours of travel."
+      "description": "Fatigue after **4** hours of travel."
     },
     {
-      "title": "Severe heat",
-      "description": "Fatigue after 4 hours of travel, 1d6-2d6 fire damage every hour"
+      "title": "Severe Heat",
+      "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every hour**"
     },
     {
-      "title": "Extreme heat",
-      "description": "Fatigue after 4 hours of travel, 1d6-2d6 fire damage every 10 minutes"
+      "title": "Extreme Heat",
+      "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every 10 minutes**"
     },
     {
-      "title": "Incredible heat",
-      "description": "Fatigue after 2 hours of travel, 4d6-6d6 fire damage every minute"
+      "title": "Incredible Heat",
+      "description": "Fatigue after **2** hours of travel, **4d6-6d6 fire damage every minute**"
     }
   ],
 
@@ -57,11 +57,11 @@
     },
     {
       "title": "Light Wind",
-      "description": "Circumstance penalty on auditory Perception.\nMight induce circumstance penalty on physical ranged attacks."
+      "description": "Circumstance penalty on auditory **Perception**.\nMight induce circumstance penalty on **physical ranged attacks**."
     },
     {
       "title": "Strong Wind",
-      "description": "Circumstance penalty on auditory Perception and physical ranged attacks.\nFlying requires a Maneuver in Flight action, and fliers are blown away on a critical failure or if they don't succeed at a minimum of one such check each round."
+      "description": "Circumstance penalty on auditory **Perception** and **physical ranged attacks**.\nFlying requires a **Maneuver in Flight** action, and fliers are blown away on a critical failure or if they don't succeed at a minimum of one such check each round."
     }
   ],
   "snow": [
@@ -75,11 +75,11 @@
     },
     {
       "title": "Light Snow",
-      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away."
+      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away."
     },
     {
       "title": "Heavy Snow",
-      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away. Soaked creatures treat Temperature at one level lower."
+      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower."
     }
   ],
   "rain": [
@@ -93,11 +93,11 @@
     },
     {
       "title": "Light Rain",
-      "description": "Visual and Auditory perception takes a circumstance penalty."
+      "description": "visual and auditory **Perception** takes a circumstance penalty."
     },
     {
       "title": "Heavy Rain",
-      "description": "Visual and Auditory perception takes a circumstance penalty. Creatures are concealed if far away. Soaked creatures treat Temperature at one level lower. Trails are washed away and boats might cover their decks to prevent flooding."
+      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower.\nTrails are washed away and boats might cover their decks to prevent flooding."
     }
   ],
   "inc_temp": [
