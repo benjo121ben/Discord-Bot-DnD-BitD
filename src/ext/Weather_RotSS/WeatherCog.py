@@ -155,19 +155,19 @@ async def roll_dc_logic(self, interaction):
     self.stop()
 
 
-async def switch_system(self: WeatherView | WeatherSelectView, interaction: Interaction):
-    self.update_weather_data(interaction)
-    track = self.weather_tracker
+async def switch_system(view, interaction: Interaction):
+    view.update_weather_data(interaction)
+    track = view.weather_tracker
     track.is_pathfinder = not track.is_pathfinder
     track.temperature_lvl = max(min(track.temperature_lvl, track.get_temp_modifier()), -track.get_temp_modifier())
     await edit_interaction_message(
         interaction,
         {
-            "embed": self.weather_tracker.get_weather_tracker_embed(),
-            "view": WeatherView(self.weather_tracker)
+            "embed": view.weather_tracker.get_weather_tracker_embed(),
+            "view": WeatherView(view.weather_tracker)
         }
     )
-    self.stop()
+    view.stop()
 
 
 def setup(bot: commands.Bot):
