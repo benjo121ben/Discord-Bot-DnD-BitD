@@ -202,11 +202,12 @@ These are the variables that can be assigned in the .env file.
 | DISCORD_TOKEN      | YES      | Bot token assigned by the discord developer page                                |
 | ADMIN_ID           | YES      | User id of user assigned as administrator                                       |
 | COMMAND_CHAR       | YES      | Prefix used for some admin commands (mostly deprecated by now, will be removed) |
+| CLOUD_SAVE_CHANNEL | NO       | Channel id, in which the bot sends save files if the /cache command is used     |
+| HOST_EMAIL         | NO       | E-Mail of the bot host. The email is visible in the help command.               |
 | DND                | YES      | Enables/Disables Campaign tracking commands                                     |
 | BLADES             | YES      | Enables/Disables Blades in the Dark specific commands                           |
 | KANKA              | YES      | Enables/Disables Kanka specific commands                                        |
-| CLOUD_SAVE_CHANNEL | NO       | Channel id, in which the bot sends save files if the /cache command is used     |
-| HOST_EMAIL         | NO       | E-Mail of the bot host. The email is visible in the help command.               |
+| WEATHER            | YES      | Enables/Disables The Raiders of the Serpent sea Weather Track command           |
 
 
 #### Permissions
@@ -288,6 +289,16 @@ The amount of commands has been drastically reduced since the introduction of bu
 |:------------:|:----------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |     log      | *advanced  | Output the stats of all characters in the currently selected save file.<br>Also outputs the commands that have been sent and can be undone/redone if the `advanced` parameter is set to 1 |
 |  edit_char   | *char_tag  | Allows you to edit the stats of a character with a simple button interface. If no char_tag is given, it will check the character assigned to your userID.                                 |
+
+---
+
+### Weather Tracking Commands
+Commands that are enabled with setting `WEATHER=1`
+
+| command name | parameters | Admin Only | Use                                                                                                                                                                                          |
+|:------------:|:----------:|:----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|   weather    |     /      |     NO     | Starts a new Weather Track, as defined in **Raiders of the Serpent Sea**, by Arcanum Worlds. It can be switched between the DnD 5e system and an interpretation for the Pathfinder 2e system |
+
 
 ---
 
