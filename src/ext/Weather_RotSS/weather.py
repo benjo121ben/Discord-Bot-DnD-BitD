@@ -21,21 +21,31 @@ def get_text_data_path():
     return os.path.join(this_file_folder_path, relative_asset_folder_path, 'text_data.json')
 
 
-def find_weather_data_values_from_fields(embed: Embed):
-    def search_list(l, value):
-        for idx, obj in enumerate(l):
+def get_system_data(is_pathfinder):
+    global weather_tracker_text_data
+    return weather_tracker_text_data["pf2e" if is_pathfinder else "5e"]
+
+
+def create_weather_tracker_from_fields(embed: Embed):
+    def search_list(entry_list, value):
+        for idx, obj in enumerate(entry_list):
             if obj["title"] == value:
                 return idx
         return -99
-    global weather_tracker_text_data
-    temp: int = search_list(weather_tracker_text_data["temp"], embed.fields[0].name.replace("*", "")) - 5
-    wind: int = search_list(weather_tracker_text_data["wind"], embed.fields[1].name.replace("*", ""))
+
+    def get_clean_header(field):
+        return field.name.replace("*", "").replace("_", "")
+
+    is_pathfinder = not embed.description or "5e" not in embed.description
+    data = get_system_data(is_pathfinder)
+    temp: int = search_list(data["temp"], get_clean_header(embed.fields[0])) - (5 if is_pathfinder else 3)
+    wind: int = search_list(data["wind"], get_clean_header(embed.fields[1]))
     weather = -99
     if temp <= -2:
-        weather = search_list(weather_tracker_text_data["snow"], embed.fields[2].name.replace("*", ""))
+        weather = search_list(data["snow"], get_clean_header(embed.fields[2]))
     else:
-        weather = search_list(weather_tracker_text_data["rain"], embed.fields[2].name.replace("*", ""))
-    return [temp, wind, weather]
+        weather = search_list(data["rain"], get_clean_header(embed.fields[2]))
+    return WeatherTracker(is_pathfinder, temp, wind, weather)
 
 
 def init_data():
@@ -47,10 +57,10 @@ def init_data():
             weather_tracker_text_data = json.load(data)
 
 
-def get_titles():
-    global weather_tracker_text_data
-    temp = [val["title"] for val in weather_tracker_text_data["temp"]]
-    wind = [val["title"] for val in weather_tracker_text_data["wind"]]
+def get_titles(is_pathfinder):
+    data = get_system_data(is_pathfinder)
+    temp = [val["title"] for val in data["temp"]]
+    wind = [val["title"] for val in data["wind"]]
     precip = [
         "Clear",
         "Cloudy",
@@ -65,7 +75,8 @@ class WeatherTracker:
     wind_lvl: int = 0
     snow_rain_lvl: int = 0
 
-    def __init__(self, temp: int = 0, wind: int = 0, snow: int = 0):
+    def __init__(self, is_pathfinder: bool = False, temp: int = 0, wind: int = 0, snow: int = 0):
+        self.is_pathfinder = is_pathfinder
         self.temperature_lvl = temp
         self.wind_lvl = wind
         self.snow_rain_lvl = snow
@@ -77,21 +88,26 @@ class WeatherTracker:
                 f'**Temperature**:   {delta[0]}\n'
                 f'**Wind**:          {delta[1]}\n'
                 f'**Precipitation**: {delta[2]}\n'
-                f'---'
+                f'---\n'
+                f'**System: {"pf2e" if self.is_pathfinder else "5e"}**'
             )
         else:
-            embed.description = ""
+            embed.description = f'**System: {"pf2e" if self.is_pathfinder else "5e"}**'
 
+        data = get_system_data(self.is_pathfinder)
         columns = [
-            weather_tracker_text_data['temp'][self.temperature_lvl+5],
-            weather_tracker_text_data['wind'][self.wind_lvl],
-            weather_tracker_text_data['snow'][self.snow_rain_lvl] if self.temperature_lvl <= -2 else weather_tracker_text_data['rain'][self.snow_rain_lvl]
+            data['temp'][self.temperature_lvl + self.get_temp_modifier()],
+            data['wind'][self.wind_lvl],
+            data['snow'][self.snow_rain_lvl] if self.temperature_lvl <= -2 else data['rain'][self.snow_rain_lvl]
         ]
 
         for entry in columns:
             embed.add_field(name=f"*{entry['title']}*", value=entry["description"])
 
         return embed
+
+    def get_temp_modifier(self):
+        return 5 if self.is_pathfinder else 3
 
     def __str__(self):
         return f"{self.temperature_lvl}, {self.wind_lvl}, {self.snow_rain_lvl}"
@@ -139,12 +155,12 @@ class WeatherTracker:
 
         delta = [roll_temp(), roll_wind(), roll_snow()]
         text_delta = [
-            weather_tracker_text_data['inc_temp'][delta[0]+2],
-            weather_tracker_text_data['inc_wind'][delta[1]+2],
-            weather_tracker_text_data['inc_snow'][delta[2]+2]
+            weather_tracker_text_data['inc'][delta[0]+2],
+            weather_tracker_text_data['inc'][delta[1]+2],
+            weather_tracker_text_data['inc'][delta[2]+2]
         ]
 
-        self.temperature_lvl = max(min(self.temperature_lvl + delta[0], 5), -5)
+        self.temperature_lvl = max(min(self.temperature_lvl + delta[0], self.get_temp_modifier()), -self.get_temp_modifier())
         self.wind_lvl = max(min(self.wind_lvl + delta[1], 3), 0)
         self.snow_rain_lvl = max(min(self.snow_rain_lvl + delta[2], 3), 0)
 

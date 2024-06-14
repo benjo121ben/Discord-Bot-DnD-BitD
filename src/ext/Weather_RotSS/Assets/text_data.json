@@ -1,120 +1,193 @@
 {
-  "temp": [
-    {
-      "title": "Incredible Cold",
-      "description": "Fatigue after **2** hours of travel, **4d6-6d6 cold damage every minute**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
-    },
-    {
-      "title": "Extreme Cold",
-      "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every 10 minutes**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
-    },
-    {
-      "title": "Severe Cold",
-      "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every hour**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
-    },
-    {
-      "title": "Mild Cold",
-      "description": "Fatigue after **4** hours of travel.\nMost snowy ground is difficult terrain or even greater difficult terrain"
-    },
-    {
-      "title": "Cool",
-      "description": "The weather is getting colder but does not require special precautions"
-    },
-    {
-      "title": "Average",
-      "description": "The weather is comfortable"
-    },
-    {
-      "title": "Warm",
-      "description": "The weather is pleasant"
-    },
-    {
-      "title": "Mild Heat",
-      "description": "Fatigue after **4** hours of travel."
-    },
-    {
-      "title": "Severe Heat",
-      "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every hour**"
-    },
-    {
-      "title": "Extreme Heat",
-      "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every 10 minutes**"
-    },
-    {
-      "title": "Incredible Heat",
-      "description": "Fatigue after **2** hours of travel, **4d6-6d6 fire damage every minute**"
-    }
-  ],
-
-  "wind": [
-    {
-      "title": "No wind",
-      "description": "At sea, this creates the _Dead Calm_ event."
-    },
-    {
-      "title": "Calm Wind",
-      "description": "The wind is noticeable, but not disruptive."
-    },
-    {
-      "title": "Light Wind",
-      "description": "Circumstance penalty on auditory **Perception**.\nMight induce circumstance penalty on **physical ranged attacks**."
-    },
-    {
-      "title": "Strong Wind",
-      "description": "Circumstance penalty on auditory **Perception** and **physical ranged attacks**.\nFlying requires a **Maneuver in Flight** action, and fliers are blown away on a critical failure or if they don't succeed at a minimum of one such check each round."
-    }
-  ],
-  "snow": [
-    {
-      "title": "Clear",
-      "description": "The sky is clear of clouds and heroes can see quite far into the distance."
-    },
-    {
-      "title": "Cloudy",
-      "description": "The Sun or Moon is obscured by clouds covering the sky."
-    },
-    {
-      "title": "Light Snow",
-      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away."
-    },
-    {
-      "title": "Heavy Snow",
-      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower."
-    }
-  ],
-  "rain": [
-    {
-      "title": "Clear",
-      "description": "The sky is clear of clouds and heroes can see quite far into the distance."
-    },
-    {
-      "title": "Cloudy",
-      "description": "The Sun or Moon is obscured by clouds covering the sky."
-    },
-    {
-      "title": "Light Rain",
-      "description": "visual and auditory **Perception** takes a circumstance penalty."
-    },
-    {
-      "title": "Heavy Rain",
-      "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower.\nTrails are washed away and boats might cover their decks to prevent flooding."
-    }
-  ],
-  "inc_temp": [
-    "Warmer: increases by 2 steps",
-    "Warmer: increases",
-    "Stays the same",
-    "Cooler: decreases",
-    "Cooler: decreases by 2 steps"
-  ],
-  "inc_wind": [
-    "Decreases by 2 steps",
-    "Decreases",
-    "Stays the same",
-    "Increases",
-    "Increases by 2 steps"
-  ],
-  "inc_snow": [
+  "pf2e": {
+    "temp": [
+      {
+        "title": "Incredible Cold",
+        "description": "Fatigue after **2** hours of travel, **4d6-6d6 cold damage every minute**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
+      },
+      {
+        "title": "Extreme Cold",
+        "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every 10 minutes**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
+      },
+      {
+        "title": "Severe Cold",
+        "description": "Fatigue after **4** hours of travel, **1d6-2d6 cold damage every hour**.\nMost snowy ground is difficult terrain or even greater difficult terrain"
+      },
+      {
+        "title": "Mild Cold",
+        "description": "Fatigue after **4** hours of travel.\nMost snowy ground is difficult terrain or even greater difficult terrain"
+      },
+      {
+        "title": "Cool",
+        "description": "The weather is getting colder but does not require special precautions"
+      },
+      {
+        "title": "Average",
+        "description": "The weather is comfortable"
+      },
+      {
+        "title": "Warm",
+        "description": "The weather is pleasant"
+      },
+      {
+        "title": "Mild Heat",
+        "description": "Fatigue after **4** hours of travel."
+      },
+      {
+        "title": "Severe Heat",
+        "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every hour**"
+      },
+      {
+        "title": "Extreme Heat",
+        "description": "Fatigue after **4** hours of travel, **1d6-2d6 fire damage every 10 minutes**"
+      },
+      {
+        "title": "Incredible Heat",
+        "description": "Fatigue after **2** hours of travel, **4d6-6d6 fire damage every minute**"
+      }
+    ],
+    "wind": [
+      {
+        "title": "No wind",
+        "description": "At sea, this creates the _Dead Calm_ event."
+      },
+      {
+        "title": "Calm Wind",
+        "description": "The wind is noticeable, but not disruptive."
+      },
+      {
+        "title": "Light Wind",
+        "description": "Circumstance penalty on auditory **Perception**.\nMight induce circumstance penalty on **physical ranged attacks**."
+      },
+      {
+        "title": "Strong Wind",
+        "description": "Circumstance penalty on auditory **Perception** and **physical ranged attacks**.\nFlying requires a **Maneuver in Flight** action, and fliers are blown away on a critical failure or if they don't succeed at a minimum of one such check each round."
+      }
+    ],
+    "snow": [
+      {
+        "title": "Clear",
+        "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+      },
+      {
+        "title": "Cloudy",
+        "description": "The Sun or Moon is obscured by clouds covering the sky."
+      },
+      {
+        "title": "Light Snow",
+        "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away."
+      },
+      {
+        "title": "Heavy Snow",
+        "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower."
+      }
+    ],
+    "rain": [
+      {
+        "title": "Clear",
+        "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+      },
+      {
+        "title": "Cloudy",
+        "description": "The Sun or Moon is obscured by clouds covering the sky."
+      },
+      {
+        "title": "Light Rain",
+        "description": "visual and auditory **Perception** takes a circumstance penalty."
+      },
+      {
+        "title": "Heavy Rain",
+        "description": "visual and auditory **Perception** takes a circumstance penalty.\nCreatures are concealed if far away.\nSoaked creatures treat Temperature at one level lower.\nTrails are washed away and boats might cover their decks to prevent flooding."
+      }
+    ]
+  },
+  "5e": {
+    "temp": [
+      {
+        "title": "Extreme Cold",
+        "description": "**DC 15** Constitution saving throw at the end of each hour. Inflicts one level of exhaustion, unless the creature has cold resistance/immunity. Cold weather gear alone is not sufficient."
+      },
+      {
+        "title": "Cold",
+        "description": "**DC 10** Constitution saving throw at the end of each hour. Inflicts one level of exhaustion, unless the creature has cold weather gear or cold resistance/immunity."
+      },
+      {
+        "title": "Cool",
+        "description": "The weather is getting colder but does not require special precautions"
+      },
+      {
+        "title": "Average",
+        "description": "The weather is comfortable"
+      },
+      {
+        "title": "Warm",
+        "description": "The weather is pleasant"
+      },
+      {
+        "title": "Hot",
+        "description": "**DC 10** Constitution saving throw at the end of each hour. Inflicts one level of exhaustion, unless the creature has access to water or fire resistance/immunity"
+      },
+      {
+        "title": "Extreme Heat",
+        "description": "**DC 16** Constitution saving throw at the end of each hour. Inflicts one level of exhaustion, unless the creature has access to water or fire resistance/immunity"
+      }
+    ],
+    "wind": [
+      {
+        "title": "No wind",
+        "description": "At sea, this creates the _Dead Calm_ event."
+      },
+      {
+        "title": "Calm Wind",
+        "description": "The wind is noticeable, but not disruptive. Ships are able to move."
+      },
+      {
+        "title": "Light Wind",
+        "description": "The wind is noticeable, but not disruptive. Ships are able to move."
+      },
+      {
+        "title": "Strong Wind",
+        "description": "**Ranged weapon** attack rolls have **disadvantage**. Any flying creature must land at the end of its turn or fall."
+      }
+    ],
+    "snow": [
+      {
+        "title": "Clear",
+        "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+      },
+      {
+        "title": "Cloudy",
+        "description": "The Sun or Moon is obscured by clouds covering the sky."
+      },
+      {
+        "title": "Light Snow",
+        "description": "**Visibility is considered lightly obscured.** There's light precipitation but it does not overly impede one's travel."
+      },
+      {
+        "title": "Heavy Snow",
+        "description": "Snow accumulates. **Visiblity is heavily obscured**, and all movement is considered **difficult terrain**."
+      }
+    ],
+    "rain": [
+      {
+        "title": "Clear",
+        "description": "The sky is clear of clouds and heroes can see quite far into the distance."
+      },
+      {
+        "title": "Cloudy",
+        "description": "The Sun or Moon is obscured by clouds covering the sky."
+      },
+      {
+        "title": "Light Rain",
+        "description": "**Visibility is considered lightly obscured.** There's light precipitation but it does not overly impede one's travel."
+      },
+      {
+        "title": "Heavy Rain",
+        "description": "**Visibility is heavily obscured.** Might cause trails to wash away or a ship to be forced to cover its decks to prevent flooding."
+      }
+    ]
+  },
+  "inc": [
     "Decreases by 2 steps",
     "Decreases",
     "Stays the same",
