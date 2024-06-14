@@ -47,7 +47,7 @@ class WeatherView(View):
         )
         self.stop()
 
-    @button(label="switch systems", style=Bstyle.red, row=0, emoji=PartialEmoji.from_str("⚙"), custom_id="edit_system")
+    @button(label="switch systems", style=Bstyle.gray, row=0, emoji=PartialEmoji.from_str("🗡"), custom_id="edit_system")
     async def switch_system_button(self, _: Button, interaction: Interaction):
         await switch_system(self, interaction)
 
@@ -137,7 +137,7 @@ class WeatherSelectView(View):
         )
         self.stop()
 
-    @button(label="switch systems", style=Bstyle.red, row=0, emoji=PartialEmoji.from_str("⚙"), custom_id="edit_system")
+    @button(label="switch systems", style=Bstyle.gray, row=0, emoji=PartialEmoji.from_str("🗡"), custom_id="edit_system")
     async def switch_system_button(self, _: Button, interaction: Interaction):
         await switch_system(self, interaction)
 
