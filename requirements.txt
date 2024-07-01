@@ -2,7 +2,7 @@ python-dotenv
 py-cord
 pytest
 pytest-asyncio
-pillow
+pillow==10.3.0
 decohints
 requests
 aiohttp

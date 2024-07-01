@@ -29,6 +29,8 @@ def setup() -> tuple[CampaignCog, ApplicationContext]:
     delete_present_save_file()
     cog = setup_bot_and_cog_campaign()
     ctx = get_mocked_context(test_user_id_int)
+    print("cog", cog)
+    print("ctx", ctx)
     return cog, ctx
 
 
@@ -67,7 +69,9 @@ class TestCampaignCogInvalid:
     @pytest.fixture
     def create_cog_and_load(self):
         cog, ctx = setup()
-        asyncio.run(cog.load_command(ctx, unit_test_save_file_name))
+        print("1", cog)
+        print("2", ctx)
+        asyncio.run(cog.load_command(cog, ctx, unit_test_save_file_name))
         print("setup done")
         yield cog, ctx
         cleanup_template()
@@ -76,7 +80,7 @@ class TestCampaignCogInvalid:
     @pytest.fixture
     def create_char(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
-        asyncio.run(cog.add_c(ctx, test_char_tag, "test"))
+        asyncio.run(cog.add_c(ctx, test_char_tag, char_name="test"))
         yield cog, ctx
 
     @pytest.fixture
@@ -89,7 +93,7 @@ class TestCampaignCogInvalid:
     async def test_invalid_creation(self, create_cog_and_load: tuple[CampaignCog, ApplicationContext]):
         cog, ctx = create_cog_and_load
         assert str(ctx.author.id) == test_user_id
-        await assert_command(cog.add_c(ctx, test_char_tag, "testName"))
+        assert await cog.add_c(ctx, test_char_tag, "testName")
         assert len(Undo.get_action_queue(test_user_id)) == 2
 
         # repeated add
