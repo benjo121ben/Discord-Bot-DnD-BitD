@@ -37,6 +37,8 @@ async def channel_perm_check_interaction(interaction: Interaction):
             "Some stuff just doesn't work without it, so please make sure you give it access. :)",
             delay=40
         )
+        return False
+    return True
 
 
 # This will be deprecated in a future update of py-cord, which introduces interaction.respond and interaction.edit

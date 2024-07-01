@@ -28,7 +28,7 @@ class Clock:
         return self
 
     def __str__(self):
-        return f'**{self.name}**/Tag:_{self.tag}_: {{{self.ticks}/{self.size}}}'
+        return f'**{self.name}**: {{{self.ticks}/{self.size}}}'
 
 
 def get_clock_image(clock: Clock) -> File:
