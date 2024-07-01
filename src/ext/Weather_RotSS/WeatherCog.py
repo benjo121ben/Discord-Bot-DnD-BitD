@@ -5,7 +5,7 @@ from discord.ui import View, button, Button, Select
 from discord import ApplicationContext, PartialEmoji, ButtonStyle as Bstyle, Interaction, SelectOption
 
 from .weather import WeatherTracker, init_data, create_weather_tracker_from_fields, get_titles
-from ...command_helper_functions import bot_channel_permissions_check, edit_interaction_message
+from ...command_helper_functions import channel_perm_check, edit_interaction_message
 
 logger = logging.getLogger('bot')
 
@@ -14,7 +14,7 @@ class WeatherCog(commands.Cog):
 
     @commands.slash_command(name="weather", description="Start a new Weather track.")
     async def weather(self, ctx: ApplicationContext):
-        if not await bot_channel_permissions_check(ctx):
+        if not await channel_perm_check(ctx):
             return
 
         weather_tracker = WeatherTracker(False, 0, 0, 0)

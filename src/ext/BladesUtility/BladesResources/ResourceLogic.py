@@ -4,7 +4,7 @@ import os
 from discord import Embed, PartialEmoji, ButtonStyle as Bstyle, Interaction, File, SelectOption
 from discord.ui import View, button, Button, Select
 
-from .ResourceSpriteBuilding import build_stress_track_image
+from .ResourceSpriteBuilding import build_stress_track_image, delete_merged_image
 from .ResourceTracker import ResourceTracker
 from ....ContextInfo import ContextInfo
 from ....command_helper_functions import edit_interaction_message
@@ -44,28 +44,18 @@ class ResourceView(View):
     def update_resource_data(self, interaction: Interaction):
         self.resource_tracker = create_resource_tracker_from_fields(interaction.message.embeds[0])
 
-    @button(label="reduce", style=Bstyle.primary, row=0, emoji=PartialEmoji.from_str("◀"), custom_id="reduce")
+    @button(style=Bstyle.gray, row=0, emoji=PartialEmoji.from_str("◀"), custom_id="reduce")
     async def reduce(self, _: Button, interaction: Interaction):
         await self.change_value(False, interaction)
 
-    @button(label="increase", style=Bstyle.primary, row=0, emoji=PartialEmoji.from_str("▶"),
+    @button(style=Bstyle.gray, row=0, emoji=PartialEmoji.from_str("▶"),
             custom_id="increase")
     async def increase(self, _: Button, interaction: Interaction):
         await self.change_value(True, interaction)
 
-    @button(label="reduce max", style=Bstyle.gray, row=1, emoji=PartialEmoji.from_str("◀"), custom_id="reduce_max")
-    async def reduce_max(self, _: Button, interaction: Interaction):
-        await self.change_max(False, interaction)
-
-    @button(label="increase max", style=Bstyle.gray, row=1, emoji=PartialEmoji.from_str("▶"),
-            custom_id="increase_max")
-    async def increase_max(self, _: Button, interaction: Interaction):
-        await self.change_max(True, interaction)
-
-    @button(label="set stress", style=Bstyle.red, row=1, emoji=PartialEmoji.from_str("⚙"),
+    @button(label="set stress", style=Bstyle.grey, row=0, emoji=PartialEmoji.from_str("⚙"),
             custom_id="set_stress")
     async def set_stress(self, _: Button, interaction: Interaction):
-
 
         self.update_resource_data(interaction)
         embed, file_path = get_stress_tracker_embed(self.resource_tracker)
@@ -94,6 +84,7 @@ class ResourceView(View):
                     "file": File(file_path)
                 }
             )
+            delete_merged_image()
             self.stop()
 
         stress_select.callback = selection_made
@@ -106,7 +97,17 @@ class ResourceView(View):
                 "file": File(file_path)
             }
         )
+        delete_merged_image()
         self.stop()
+
+    @button(label="reduce max", style=Bstyle.gray, row=1, emoji=PartialEmoji.from_str("◀"), custom_id="reduce_max")
+    async def reduce_max(self, _: Button, interaction: Interaction):
+        await self.change_max(False, interaction)
+
+    @button(label="increase max", style=Bstyle.gray, row=1, emoji=PartialEmoji.from_str("▶"),
+            custom_id="increase_max")
+    async def increase_max(self, _: Button, interaction: Interaction):
+        await self.change_max(True, interaction)
 
     async def change_value(self, increase: bool, interaction: Interaction):
         self.update_resource_data(interaction)
@@ -120,6 +121,7 @@ class ResourceView(View):
                 "file": File(file_path)
             }
         )
+        delete_merged_image()
         self.stop()
 
     async def change_max(self, increase: bool, interaction: Interaction):
@@ -134,4 +136,5 @@ class ResourceView(View):
                 "file": File(file_path)
             }
         )
+        delete_merged_image()
         self.stop()

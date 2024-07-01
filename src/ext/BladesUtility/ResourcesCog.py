@@ -5,7 +5,7 @@ from discord import ApplicationContext, option
 from .BladesResources.ResourceLogic import ResourceView, send_stress_tracker
 from .BladesResources.ResourceTracker import ResourceTracker
 from ...ContextInfo import init_context
-from ...command_helper_functions import bot_channel_permissions_check
+from ...command_helper_functions import channel_perm_check
 
 logger = logging.getLogger('bot')
 
@@ -15,7 +15,7 @@ class ResourcesCog(commands.Cog):
     @option(name="start_stress", description="The amount of stress at the start")
     @option(name="max_stress", description="The length of the stress bar.")
     async def weather(self, ctx: ApplicationContext, start_stress: int = 0, max_stress: int = 9):
-        if not await bot_channel_permissions_check(ctx):
+        if not await channel_perm_check(ctx):
             return
 
         stress_tracker = ResourceTracker(start_stress, max_stress)

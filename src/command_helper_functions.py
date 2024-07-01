@@ -12,7 +12,7 @@ def check_admin(ctx: ApplicationContext) -> bool:
         return str(ctx.author.id) == str(GlobalVariables.admin_id)
 
 
-async def bot_channel_permissions_check(ctx: ApplicationContext):
+async def channel_perm_check(ctx: ApplicationContext):
     if ctx.guild is None:
         return True
 
@@ -26,7 +26,7 @@ async def bot_channel_permissions_check(ctx: ApplicationContext):
     return True
 
 
-async def bot_channel_permissions_check_interaction(interaction: Interaction):
+async def channel_perm_check_interaction(interaction: Interaction):
     if interaction.guild is None:
         return True
 

@@ -54,12 +54,20 @@ def get_asset_folder_filepath() -> str:
     return os.path.join(this_file_folder_path, os.sep.join(["Assets", ""]))
 
 
+def get_merged_filepath() -> str:
+    return get_asset_folder_filepath() + "merged.png"
+
+
 def build_stress_track_image(stress_tracker: ResourceTracker) -> str:
     spritesheet = image_open(get_blade_dice_spritesheet_filepath()).convert('RGBA')
     new_image = generate_end_image(stress_tracker.max_resource)
     fill_end_image(spritesheet, new_image, stress_tracker)
-    merged_file_path = get_asset_folder_filepath() + "merged.png"
+    merged_file_path = get_merged_filepath()
 
     new_image.resize((new_image.size[0] * 2, new_image.size[1] * 2), resample=Resampling.NEAREST).save(
         merged_file_path, "PNG")
     return merged_file_path
+
+
+def delete_merged_image():
+    os.remove(get_merged_filepath())

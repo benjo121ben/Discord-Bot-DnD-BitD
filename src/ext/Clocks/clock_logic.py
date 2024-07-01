@@ -3,7 +3,7 @@ import logging
 from .MessageContent.AbstractMessageContent import AbstractMessageContent
 from .MessageContent.ClockMessageContent import ClockMessageContent
 from .MessageContent.DictMessageContent import DictMessageContent
-from .clock_data import load_clocks, Clock, save_clocks
+from .clock_data import Clock
 
 logger = logging.getLogger('bot')
 
@@ -14,23 +14,9 @@ def clean_clock_tag(clock_tag: str) -> str:
     return clock_tag.replace("_", "").strip().lower()
 
 
-def add_clock_command_logic(clock_tag: str, clock_title: str, clock_size: int, executing_user: str,
-                            clock_ticks: int = 0) -> AbstractMessageContent:
-    if type(executing_user) != str:
-        logger.error(f"executing user is not a string")
-        raise Exception("show_clock, executing_user is not a string for some reason")
-    clock_tag = clean_clock_tag(clock_tag)
-    clock_dic = load_clocks(executing_user)
-    if len(clock_dic) == 40:
-        return DictMessageContent(content="You already have 40 clocks, please remove one.",
-                                  delay=MESSAGE_DELETION_DELAY)
-
-    if clock_tag in clock_dic:
-        return ClockMessageContent(clock_dic[clock_tag], executing_user, content="This clock already exists!")
-    else:
-        clock_dic[clock_tag] = Clock(clock_tag, clock_title, clock_size, clock_ticks)
-        save_clocks(executing_user, clock_dic)
-        return ClockMessageContent(clock_dic[clock_tag], executing_user)
+def create_clock_command_logic(clock_title: str, clock_size: int, clock_ticks: int = 0) -> AbstractMessageContent:
+    new_clock = Clock(clock_title, clock_size, clock_ticks)
+    return ClockMessageContent(new_clock)
 
 
 def remove_clock_logic(clock_tag: str, executing_user: str) -> AbstractMessageContent:
@@ -56,7 +42,7 @@ def show_clock_command_logic(clock_tag: str, executing_user: str) -> AbstractMes
     clock_tag = clean_clock_tag(clock_tag)
     clock_dic = load_clocks(executing_user)
     if clock_tag in clock_dic:
-        return ClockMessageContent(clock_dic[clock_tag], executing_user)
+        return ClockMessageContent(clock_dic[clock_tag])
     else:
         return DictMessageContent(content="This clock does not exist", delay=MESSAGE_DELETION_DELAY)
 

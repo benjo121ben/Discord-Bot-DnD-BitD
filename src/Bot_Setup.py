@@ -6,7 +6,6 @@ from discord import ApplicationContext
 from aiohttp import ClientConnectorError
 
 from .ext.Campaign import packg_variables as c_var
-from .ext.Clocks.ClockViews import LockedClockAdjustmentView
 from .extension_loading import load_extensions
 from . import GlobalVariables
 
@@ -33,7 +32,6 @@ async def start_bot(_command_prefix: str, _bot_token: str, modules_list: list[bo
     @GlobalVariables.bot.event
     async def on_ready():
         stop_retrying()
-        GlobalVariables.bot.add_view(LockedClockAdjustmentView())
         logger.info(f"Bot connection completed. We have logged in as {GlobalVariables.bot.user}")
 
     @GlobalVariables.bot.slash_command(name="ping", description="Tests whether the bot is active")
