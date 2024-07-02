@@ -245,6 +245,7 @@ Commands that are enabled with setting `BLADES=1`
 |    command name     |        parameters        | Use                                                                                                                                                                        |
 |:-------------------:|:------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |   devils_bargain    |           *nr            | The bot will send a devils bargain card.<br> nr specifies the amount of cards, up to a maximum of 10. <br>**Defaults to one card.**                                        |
+|       stress        |                       | Creates a stress track that can be adjusted by using Buttons                                                                                                               |
 |    entanglement     | number_rolled, crew_heat | The bot sends the entanglements related to the specified number rolled in the entanglement roll and the heat of the crew.                                                  |
 | entanglement_wanted | wanted_level, crew_heat  | The bot rolls for entanglement using the given wanted level and sends the entanglements related to the heat of the crew.                                                   |
 |        wiki         |        entry_name        | The bot looks for the wiki entry by that name, returning the one found, or the closest one to it. If multiple are found, it returns a list with a dropdown selection menu. |
@@ -252,11 +253,9 @@ Commands that are enabled with setting `BLADES=1`
 |        roll         |  dice_amount, dice_size  | Makes a roll using the dice size provided. 2d8 => amount=2 size=8                                                                                                          |
 
 #### Progress Clock Commands
-| command name  |                 parameters                 | Use                                                                                                                                                             |
-|:-------------:|:------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|     clock     |                 clock_tag                  | Sends all info of a saved clock, with picture if possible. The ticks can be increased via buttons.                                                              |
-|   clock_add   | clock_tag, clock_title, clock_size, *ticks | Adds a new clock with the given title, tag, size and starting ticks. The tag is used to adress the clock in all other commands. <br> **Default: 0 start ticks** |
-|   clock_all   |                     /                      | Prints out all saved clocks of a user.                                                                                                                          |
+| command name  | parameters  | Use                                                                                                                                                                                                            |
+|:-------------:|:-----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|     clock     | clock_title | Creates a new Clock in the Style of Blades in the Dark with the specified title. <br>All other adjustments to the clock (like size and ticks) are made via discord Buttons or the Pop-up window / Modal system |
 
 ---
 
