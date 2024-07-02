@@ -50,8 +50,8 @@ async def edit_interaction_message(interaction: Interaction, params: dict):
     try:
         if not interaction.response.is_done():
             await interaction.response.edit_message(**params)
-            return await interaction.original_response()
         else:
-            return await interaction.edit_original_response(**params)
+            await interaction.edit_original_response(**params)
     except InteractionResponded:
-        return await interaction.edit_original_response(**params)
+        await interaction.edit_original_response(**params)
+

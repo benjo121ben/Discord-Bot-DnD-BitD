@@ -31,7 +31,9 @@ def get_clock_response_params(clock: Clock) -> dict:
         embed.set_thumbnail(url=f'attachment://{image_file.filename}')
         params["file"] = image_file
     except NoClockImageException:
-        embed.set_footer(text="Clocks of this size don't have output images")
+        params["attachments"] = []
+        embed.description = f'**{embed.description}**'
+        embed.set_footer(text="Only Clocks of size (3,4,6,8,10) have output images.")
         logger.debug(
             f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
         )
