@@ -34,9 +34,9 @@ def get_clock_response_params(clock: Clock) -> dict:
         params["attachments"] = []
         embed.description = f'**{embed.description}**'
         embed.set_footer(text="Only Clocks of size (3,4,6,8,10) have output images.")
-        logger.debug(
-            f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
-        )
+        # logger.debug(
+        #     f"clock of size {clock.size} was printed without image, make sure images are included for all sizes needed."
+        # )
     no_none_params = {k: v for k, v in params.items() if v is not None}  # removes all parameters that are none
 
     return no_none_params
@@ -52,6 +52,7 @@ class ClockAdjustmentView(View):
         embed = interaction.message.embeds[0]
         cleaned_description = (embed.description
                                .replace("_", "")
+                               .replace("*", "")
                                .replace("{", "")
                                .replace("}", "")
                                .strip())
@@ -85,6 +86,7 @@ class ClockAdjustmentView(View):
 
     @button(label="edit", style=Bstyle.primary, row=1, custom_id="clock_custom")
     async def clock_custom(self, _: Button, interaction: Interaction):
+        self.refresh_clock_data(interaction)
         custom_clock_modal = CustomClockModal(self.clock, title="Custom Clock")
         await interaction.response.send_modal(custom_clock_modal)
 
@@ -131,15 +133,18 @@ class CustomClockModal(Modal):
         if(failed):
             self.title = "Input valid numbers for a new Clock"
         self.clock_name = clock.name
+        self.add_item(InputText(label="Name", value=clock.name))
         self.add_item(InputText(label="size (> 0)", value=str(clock.size)))
         self.add_item(InputText(label="ticks (>= 0)", value=str(clock.ticks)))
         self.children[0].required = True
         self.children[1].required = True
+        self.children[2].required = True
 
     async def callback(self, interaction: Interaction):
         try:
-            size = int(self.children[0].value)
-            ticks = int(self.children[1].value)
+            self.clock_name = self.children[0].value
+            size = int(self.children[1].value)
+            ticks = int(self.children[2].value)
             if ticks < 0 or size <= 0:
                 await self.send_failed_modal(interaction)
             else:
