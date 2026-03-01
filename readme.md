@@ -18,7 +18,7 @@ Bot in the Dark is designed for tracking multiple player characters and their ch
 
 Bot in the Dark should be able to keep tabs of players in a persistent manner.
 
-Users can claim and manage their own characters, while the GM can manage crew stats and track overall progress.
+Users can claim the playable character of their choosing one at a time and have it binded to their User ID provided that character is unowned.
 
 ## Dice
 Bot in the Dark has built-in d20, d12, d8, d6, and d4. The graphics and results are procedurally generated.
