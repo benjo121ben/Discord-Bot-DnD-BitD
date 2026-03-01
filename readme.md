@@ -52,6 +52,8 @@ For a full guide on setting up the Discord application, configuring the `.env` f
 
 The active bot runtime is built on modern `discord.py` 2.x slash command patterns (`app_commands`) and does not require privileged Message Content intent unless you explicitly add message-based commands.
 
+To avoid Python interpreter mismatch, run the bot with the workspace virtual environment path: `/workspaces/blades-in-the-bot/.venv/bin/python main.py`.
+
 ## Disclaimers and Credits
 
 **Disclaimer:** I am not associated with Evil Hat or John Harper in any way, I only love John Harper's games. I own no copyright for any of the images used for playbooks.

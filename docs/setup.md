@@ -41,11 +41,11 @@ Make sure you have Python 3.10+ installed.
 
 1. Install the required dependencies from the root directory:
    ```bash
-   pip install -r requirements.txt
+   /workspaces/blades-in-the-bot/.venv/bin/python -m pip install -r requirements.txt
    ```
 2. Start the bot:
    ```bash
-   python main.py
+   /workspaces/blades-in-the-bot/.venv/bin/python main.py
    ```
 You should see a message indicating the bot has logged in and synced its slash commands.
 
@@ -66,10 +66,10 @@ You can develop and run this bot entirely in your browser using GitHub Codespace
 5. Follow **Step 2 (Setting up the Environment)** to create your `.env` file and add your `DISCORD_TOKEN` in the Codespaces editor.
 6. Install dependencies in the terminal:
    ```bash
-   pip install -r requirements.txt
+   /workspaces/blades-in-the-bot/.venv/bin/python -m pip install -r requirements.txt
    ```
 7. Start the bot in the Codespaces terminal:
    ```bash
-   python main.py
+   /workspaces/blades-in-the-bot/.venv/bin/python main.py
    ```
 Your bot is now running from the cloud! You can type `/ping` in your Discord test server to verify it's working.

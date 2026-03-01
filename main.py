@@ -1,5 +1,6 @@
 import os
 import logging
+import importlib
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -13,6 +14,33 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("bot-in-the-dark")
+
+
+def _is_modern_discord_py() -> bool:
+    try:
+        major_version = int(getattr(discord, "__version__", "0").split(".")[0])
+    except (ValueError, TypeError, AttributeError):
+        major_version = 0
+
+    if major_version >= 2:
+        return True
+
+    try:
+        importlib.import_module("discord.app_commands")
+    except Exception:
+        return False
+    return True
+
+
+def _ensure_compatibility() -> None:
+    if _is_modern_discord_py():
+        return
+    version = getattr(discord, "__version__", "unknown")
+    raise RuntimeError(
+        "This bot requires discord.py 2.x (app_commands support). "
+        f"Detected discord version: {version}. "
+        "Install requirements and run using the workspace virtual environment."
+    )
 
 
 def _get_bool_env(var_name: str, default: bool = False) -> bool:
@@ -44,6 +72,15 @@ class BotInTheDark(commands.Bot):
             intents=intents,
             allowed_mentions=discord.AllowedMentions.none(),
         )
+        if not hasattr(self, "tree"):
+            if _is_modern_discord_py():
+                self.tree = discord.app_commands.CommandTree(self)
+                logger.warning(
+                    "commands.Bot did not initialize command tree automatically; "
+                    "initialized fallback tree. Verify interpreter/package consistency."
+                )
+            else:
+                _ensure_compatibility()
         self.dev_guild_id = dev_guild_id
         self.sync_commands = sync_commands
 
@@ -77,6 +114,8 @@ async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("Pong!")
 
 if __name__ == "__main__":
+    _ensure_compatibility()
+
     token = os.getenv("DISCORD_TOKEN")
     if not token:
         logger.error("DISCORD_TOKEN not found in environment variables.")

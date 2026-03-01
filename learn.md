@@ -229,11 +229,17 @@ If you want to perform this modernization on another bot project:
 
 ```bash
 pip install -r requirements.txt
-python main.py
+/workspaces/blades-in-the-bot/.venv/bin/python main.py
 ```
 
 5. In Discord, run `/ping`.
 6. Confirm startup logs report command sync mode (guild or global).
+
+### Why this run command matters
+
+The error encountered in this repository (`AttributeError: 'BotInTheDark' object has no attribute 'tree'`) is commonly caused by using a different interpreter than the one where dependencies were installed.
+
+Using the explicit `.venv` Python path prevents interpreter drift.
 
 ---
 
@@ -269,3 +275,92 @@ These changes were necessary to align with modern Discord bot architecture:
 - and synchronized runtime + documentation.
 
 That combination reduces operational risk, improves iteration speed, and keeps the bot aligned with current Python Discord standards.
+
+---
+
+## 10) Incident Report: startup failed even on modern `discord.py`
+
+This section documents the exact issue reported from terminal and how it was resolved.
+
+### Observed errors
+
+Startup failed with:
+
+```text
+AttributeError: 'BotInTheDark' object has no attribute 'tree'
+```
+
+The failure occurred at the slash command decorator line:
+
+```python
+@bot.tree.command(...)
+```
+
+Later, startup also failed with a false compatibility error:
+
+```text
+RuntimeError: This bot requires discord.py 2.x ... Detected discord version: 2.7.1
+```
+
+### Root cause
+
+There were two separate problems:
+
+1. Intermittent command tree initialization mismatch at runtime (`.tree` missing).
+2. A buggy compatibility check in `main.py` used `hasattr(discord, "app_commands")`, which can return `False` even on modern `discord.py` because module attributes are not guaranteed to be eagerly exposed that way.
+
+That second issue created a false failure path even when `discord.py` was already up to date.
+
+After that fix, a third issue surfaced:
+
+3. `UnboundLocalError` from `import discord.app_commands` inside `_is_modern_discord_py()`.
+
+In Python, `import discord.app_commands` inside a function makes `discord` a local variable in that function scope, which breaks earlier references like `getattr(discord, "__version__", ...)`.
+
+### What was changed to fix it
+
+1. Replaced the fragile compatibility check with a reliable one:
+  - Parse major version from `discord.__version__` (`>= 2` passes).
+  - Fallback check tries importing `discord.app_commands` directly.
+2. Kept a safety fallback in `BotInTheDark.__init__`:
+  - If `.tree` is missing but app commands are supported, initialize `discord.app_commands.CommandTree(self)`.
+3. Removed hard interpreter gating that could block valid setups and create unnecessary startup friction.
+4. Kept docs recommending the workspace `.venv` as the default run path for consistency.
+5. Replaced `import discord.app_commands` with `importlib.import_module("discord.app_commands")` to avoid local name shadowing and remove the `UnboundLocalError` crash.
+
+### Why these steps were required
+
+- The compatibility check had to be corrected to avoid false negatives on current Discord API libraries.
+- The command tree fallback prevents a hard crash if initialization order/packaging quirks occur.
+- Removing strict interpreter hard-fail keeps the app runnable while still preserving modern API guarantees.
+- Using `importlib.import_module` avoids Python scope shadowing bugs from nested `import` statements.
+
+### Step-by-step tutorial (what to do in your terminal)
+
+1. Install dependencies in your workspace environment:
+
+```bash
+/workspaces/blades-in-the-bot/.venv/bin/python -m pip install -r requirements.txt
+```
+
+2. Verify Discord library version:
+
+```bash
+/workspaces/blades-in-the-bot/.venv/bin/python -c "import discord; print(discord.__version__)"
+```
+
+3. Start the bot:
+
+```bash
+/workspaces/blades-in-the-bot/.venv/bin/python main.py
+```
+
+4. In Discord, test slash command registration with `/ping`.
+
+5. If `/ping` does not appear quickly, set `DEV_GUILD_ID` in `.env` and restart to force fast guild sync.
+
+### Prevention policy for this repository
+
+- Keep `discord.py` pinned to supported 2.x range in `requirements.txt`.
+- Use robust capability checks (version/import), not only `hasattr` on top-level modules.
+- Keep slash command registration in `setup_hook()` and validate with `/ping` after startup.
