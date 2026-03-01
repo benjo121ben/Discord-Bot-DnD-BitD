@@ -47,6 +47,9 @@ The entries are fully customizable. These entries are for:
 - Custom Entries (NPC Cards)
 Entries can be added either via commands and dashboard (simple items) or injected as files (NPC cards from markdown)
 
+## Setup and Installation
+For a full guide on setting up the Discord application, configuring the `.env` file, and running the bot (including testing with GitHub Codespaces), see the **[Setup Guide](docs/setup.md)**.
+
 ## Disclaimers and Credits
 
 **Disclaimer:** I am not associated with Evil Hat or John Harper in any way, I only love John Harper's games. I own no copyright for any of the images used for playbooks.
