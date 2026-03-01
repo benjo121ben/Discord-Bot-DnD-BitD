@@ -10,7 +10,7 @@ Before you can run the code, you need a Bot Token from Discord:
 2. Click **New Application** and give it a name.
 3. Navigate to the **Bot** tab on the left menu.
 4. Click **Reset Token** (or **Add Bot** if you haven't) to generate your `DISCORD_TOKEN`. **Keep this secret!**
-5. Under **Privileged Gateway Intents**, turn on **Message Content Intent**.
+5. Under **Privileged Gateway Intents**, leave **Message Content Intent** off unless you explicitly add classic prefix/message commands.
 6. Go to the **OAuth2 -> URL Generator** tab.
 7. Check the `bot` and `applications.commands` scopes.
 8. Check necessary permissions (e.g., Send Messages, Read Message History).
@@ -27,7 +27,13 @@ The project requires environment variables to run.
 2. Open the `.env` file and replace the `DISCORD_TOKEN=""` line with the token you generated in step 1:
    ```env
    DISCORD_TOKEN="your-secret-bot-token-here"
+   SYNC_COMMANDS=1
+   DEV_GUILD_ID=
+   ENABLE_MESSAGE_CONTENT_INTENT=0
    ```
+   - `SYNC_COMMANDS=1` syncs slash commands at startup.
+   - Set `DEV_GUILD_ID` to your test server ID for faster guild-only sync during development.
+   - Keep `ENABLE_MESSAGE_CONTENT_INTENT=0` unless you need message content events.
 
 ## 3. Running Locally
 
@@ -42,6 +48,12 @@ Make sure you have Python 3.10+ installed.
    python main.py
    ```
 You should see a message indicating the bot has logged in and synced its slash commands.
+
+### Command Sync Notes
+
+- With `DEV_GUILD_ID` set, commands sync to that guild immediately (best for development).
+- Without `DEV_GUILD_ID`, commands sync globally (can take longer to propagate).
+- Set `SYNC_COMMANDS=0` to skip syncing on startup.
 
 ## 4. Testing with GitHub Codespaces
 

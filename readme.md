@@ -50,6 +50,8 @@ Entries can be added either via commands and dashboard (simple items) or injecte
 ## Setup and Installation
 For a full guide on setting up the Discord application, configuring the `.env` file, and running the bot (including testing with GitHub Codespaces), see the **[Setup Guide](docs/setup.md)**.
 
+The active bot runtime is built on modern `discord.py` 2.x slash command patterns (`app_commands`) and does not require privileged Message Content intent unless you explicitly add message-based commands.
+
 ## Disclaimers and Credits
 
 **Disclaimer:** I am not associated with Evil Hat or John Harper in any way, I only love John Harper's games. I own no copyright for any of the images used for playbooks.
