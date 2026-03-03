@@ -1,6 +1,6 @@
-## Bot in the Dark
+## BladesBot
 
-> NOTE: Renamed from “Blades in the Bot” to “Bot in the Dark”
+> NOTE: Renamed from “Blades in the Bot” to “BladesBot”
 
 Discord bot for tracking stats in Blades in the Dark and commands for the game.
 
@@ -14,14 +14,14 @@ This bot is a fork of Benji’s RPG Campaign Utility Discord Bot and rewritten e
 - **Wiki**: a mini wiki accessible via commands
 
 ## Player and Crew Stats
-Bot in the Dark is designed for tracking multiple player characters and their character sheet stats and crew stats for quick lookups.
+BladesBot is designed for tracking multiple player characters and their character sheet stats and crew stats for quick lookups.
 
-Bot in the Dark should be able to keep tabs of players in a persistent manner.
+BladesBot should be able to keep tabs of players in a persistent manner.
 
 Users can claim the playable character of their choosing one at a time and have it binded to their User ID provided that character is unowned.
 
 ## Dice
-Bot in the Dark has built-in d20, d12, d8, d6, and d4. The graphics and results are procedurally generated.
+BladesBot has built-in d20, d12, d8, d6, and d4. The graphics and results are procedurally generated.
 
 The underlying code was actually inspired by `/bladesroll` command by Benji—which should factor in the special dice system used by Blades in the Dark.
 
@@ -31,7 +31,7 @@ The Blades in the Dark dice system can recognize success, partials, fails, crits
 Using a command, the bot sends a random Devil’s Bargain Card, allowing the GM to have some inspirations and ideas.
 
 ## Progress Clocks
-Bot in the Dark allows for the creation of clocks, as well as tick them, and output them.
+BladesBot allows for the creation of clocks, as well as tick them, and output them.
 
 The clocks themselves are procedurally generated and can dynamically adjust with code.
 
@@ -49,10 +49,6 @@ Entries can be added either via commands and dashboard (simple items) or injecte
 
 ## Setup and Installation
 For a full guide on setting up the Discord application, configuring the `.env` file, and running the bot (including testing with GitHub Codespaces), see the **[Setup Guide](docs/setup.md)**.
-
-The active bot runtime is built on modern `discord.py` 2.x slash command patterns (`app_commands`) and does not require privileged Message Content intent unless you explicitly add message-based commands.
-
-To avoid Python interpreter mismatch, run the bot with the workspace virtual environment path: `/workspaces/blades-in-the-bot/.venv/bin/python main.py`.
 
 ## Disclaimers and Credits
 
