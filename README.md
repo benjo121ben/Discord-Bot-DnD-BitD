@@ -146,14 +146,14 @@ This is a step by step process of how you can run the bot on your own pc. I've t
 1. All discord bots require a unique BOT-Token, which you get when you create a Discord bot on the [Discord Developer Website][discord_dev].
 2. Once you are logged in, create a `new Application`
 3. Within the application, enter the `Bot` tab and choose `Add Bot`
-4. Still in the `Bot` tab under the bot's username is your bot's token. Copy that token and store it safely for later. We will use it in the [.ENV](#####.ENV) process. 
+4. Still in the `Bot` tab under the bot's username is your bot's token. Copy that token and store it safely for later. We will use it in the [.ENV](#.ENV) process. 
 Keep this token secret, do not publish this token anywhere. It can be misused by malicious third parties.
 5. Download the discord bot as a zip file using the green source button at the top and unzip it into a folder somewhere  
 6. Install the python programming language from the [official python website][python] or by other means. I can confirm that it works on python 3.10 but do not know if it is compatible with later versions
 7. open cmd on windows, or a terminal on linux and navigate into the bot's folder (use the command `cd _insert folder path here_`, on windows you might have to use `cd /D _insert folder path here_`) 
 8. install the packages outlined in requirements.txt by using the command `pip install -r requirements.txt`. If this step fails, you might not have installed python correctly. Make sure it is added to your PATH variable during the install process 
 9. **Important**: Configure the .ENV process outlined below, otherwise the bot will not start
-10. Generate an invite link following the instructions outlined below in [Permissions](####permissions) and invite the bot to your discord server
+10. Generate an invite link following the instructions outlined below in [Permissions](#permissions) and invite the bot to your discord server
 
 **Once you have gone through these steps, run the command `python main.py` still inside cmd or your linuix terminal to start the bot.** On windows you might be able to just double click the main.py file inside the folder
 
