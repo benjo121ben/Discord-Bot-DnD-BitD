@@ -137,20 +137,25 @@ The images for playbooks are official material from Evil Hat and John Harper
 
 ---
 
-## How it works 
-The bot **auto saves** all changes inside dedicated save files inside the *./saves* folder, so it is not required for you to run
-any sort of save command. The saves folder and according file is created when you add your first character.
-Save files are saved in the standardized json format, which makes the data easily transferable.
+## How to install 
+
+This is a step by step process of how you can run the bot on your own pc. I've tried to make it as detailed as possible to enable users that have no programming experience.
 
 
 ### Setup 
 1. All discord bots require a unique BOT-Token, which you get when you create a Discord bot on the [Discord Developer Website][discord_dev].
 2. Once you are logged in, create a `new Application`
 3. Within the application, enter the `Bot` tab and choose `Add Bot`
-4. Still in the `Bot` tab under the bot's username is your bot's token. Copy that token and store it safely. 
-Keep this token secret, do not publish this token anywhere. It can be misused by malicious third parties.  
-5. Install python and the necessary packages outlined in requirements.txt
-6. Continue the .ENV process outlined below
+4. Still in the `Bot` tab under the bot's username is your bot's token. Copy that token and store it safely for later. We will use it in the [.ENV](#####.ENV) process. 
+Keep this token secret, do not publish this token anywhere. It can be misused by malicious third parties.
+5. Download the discord bot as a zip file using the green source button at the top and unzip it into a folder somewhere  
+6. Install the python programming language from the [official python website][python] or by other means. I can confirm that it works on python 3.10 but do not know if it is compatible with later versions
+7. open cmd on windows, or a terminal on linux and navigate into the bot's folder (use the command `cd _insert folder path here_`, on windows you might have to use `cd /D _insert folder path here_`) 
+8. install the packages outlined in requirements.txt by using the command `pip install -r requirements.txt`. If this step fails, you might not have installed python correctly. Make sure it is added to your PATH variable during the install process 
+9. **Important**: Configure the .ENV process outlined below, otherwise the bot will not start
+10. Generate an invite link following the instructions outlined below in [Permissions](####permissions) and invite the bot to your discord server
+
+**Once you have gone through these steps, run the command `python main.py` still inside cmd or your linuix terminal to start the bot.** On windows you might be able to just double click the main.py file inside the folder
 
 ##### .ENV
 
@@ -171,16 +176,14 @@ KANKA=1
 ```
 
 
-In order to get the bot running, follow these steps:  
+Follow these steps:  
 1. rename the `.env_example` file to `.env` and open the `.env` file.  
 2. Paste the token you got from the Discord bots developer page in between the 
 " " of the *DISCORD_TOKEN* variable 
-3. Set your own [discord id][discord_id] as the ADMIN_ID in order to ensure certain commands are locked for 
-your own use alone.  
-4. If you wish to be able to save your save files into a predetermined discord channel via the `/cache` command, 
-you can copy the channels discord id into the `CLOUD_SAVE_CHANNEL` variable. 
-Just make sure the bot has access to the channel and authorization to post there.  
-5. Set DND, BLADES and KANKA flags to 1 individually if you wish to enable their respective commands, otherwise set them to 0.
+3. Set your own [discord user id][discord_id] as the ADMIN_ID in order to ensure certain commands are locked for 
+your own use alone. 
+4. Set the DND, BLADES, KANKA or WEATHER flags to 1 individually if you wish to enable their respective commands, otherwise set them to 0. You can see more details on the commands below
+5. all other variables can be left as they are. They are not required to run the bot. If you want more details see below
 
 At the end of this process your .env file should look something like this (values are just examples):
 ```
@@ -218,10 +221,6 @@ To work properly, the bot requires these permissions, some of them are not yet u
 3. Save this url somewhere. People will be able to invite your discord bot into their server, by using this url.
 4. Enter the url into your browser and invite the bot to your discord server. 
 5. Run `main.py`
-
-
-### Offline Mode
-Local Run is not working at the moment and is disabled for now.
 
 ---
 
@@ -319,5 +318,6 @@ Commands that are enabled with setting `KANKA=1`
 [db_reddit]: https://www.reddit.com/r/bladesinthedark/comments/qh43y6/devils_bargains_card_deck/
 [db_drive]: https://drive.google.com/drive/folders/14vCEjWrja7fE4dtpP89vS6RZpcdGjmpH?usp=sharing
 [discord_dev]: https://discord.com/developers/applications
+[python]: https://www.python.org/
 [discord_setup]: https://www.upwork.com/resources/how-to-make-discord-bot
 [discord_id]: https://www.remote.tools/remote-work/how-to-find-discord-id
