@@ -148,19 +148,19 @@ This is a step by step process of how you can run the bot on your own pc. I've t
 3. Within the application, enter the `Bot` tab and choose `Add Bot`
 4. Still in the `Bot` tab under the bot's username is your bot's token. Copy that token and store it safely for later. We will use it in the [ENV](#ENV) process. 
 Keep this token secret, do not publish this token anywhere. It can be misused by malicious third parties.
-5. Download the discord bot as a zip file using the green source button at the top and unzip it into a folder somewhere  
-6. Install the python programming language from the [official python website][python] or by other means. I can confirm that it works on python 3.10 but do not know if it is compatible with later versions
-7. open cmd on windows, or a terminal on linux and navigate into the bot's folder (use the command `cd _insert folder path here_`, on windows you might have to use `cd /D _insert folder path here_`) 
-8. install the packages outlined in requirements.txt by using the command `pip install -r requirements.txt`. If this step fails, you might not have installed python correctly. Make sure it is added to your PATH variable during the install process 
-9. **Important**: Configure the ENV process outlined below, otherwise the bot will not start
-10. Generate an invite link following the instructions outlined below in [Permissions](#permissions) and invite the bot to your discord server
-
-**Once you have gone through these steps, run the command `python main.py` still inside cmd or your linuix terminal to start the bot.** On windows you might be able to just double click the main.py file inside the folder
+5. Download the discord bot as a zip file using the green source button at the top and unzip it into a folder somewhere
+6. **Important**: Configure the bot following the [ENV](#ENV) process outlined below, otherwise the bot will not start
+7. Install the python programming language from the [official python website][python] or by other means. I can confirm that it works on python 3.10 but do not know if it is compatible with later versions
+8. open cmd on windows, or a terminal on linux and navigate into the bot's folder (use the command `cd _insert folder path here_`, on windows you might have to use `cd /D _insert folder path here_`) 
+9. install the packages outlined in requirements.txt by using the command `pip install -r requirements.txt`. If this step fails, you might not have installed python correctly. Make sure it is added to your PATH variable during the install process
+10. run the command `python main.py` still inside cmd or your linuix terminal to start the bot. On windows you might be able to just double click the main.py file inside the folder
+11. Generate an invite link following the instructions outlined below in [Permissions](#permissions) and invite the bot to your discord server
+12. Use the /ping command and see if the bot works. If you followed these instructions correctly and have 
 
 ##### ENV
 
 After you have set up your discord bot and have your token, open the `.env_example` file inside the Bots root folder.
-(if you cannot see the file, enable file attachments in your explorer).  
+(if you cannot see the file, yuo might need to enable file attachments in your explorer).  
 It will look something like this:
 
 ```
@@ -184,6 +184,7 @@ Follow these steps:
 your own use alone. 
 4. Set the DND, BLADES, KANKA or WEATHER flags to 1 individually if you wish to enable their respective commands, otherwise set them to 0. You can see more details on the commands below
 5. all other variables can be left as they are. They are not required to run the bot. If you want more details see below
+6. Continue the installation process as outlined above
 
 At the end of this process your .env file should look something like this (values are just examples):
 ```
@@ -214,13 +215,12 @@ These are the variables that can be assigned in the .env file.
 
 
 #### Permissions
-To work properly, the bot requires these permissions, some of them are not yet used, but may be used in future versions. 
+To work properly, the bot requires certain permissions to be set. 
 1. Once you are done with the setup above, enter into the OAuth tab on the Discord Developer page and select the URL generator.
 2. Here you will need to select the permissions ticked in the image below and copy the URL at the bottom
 ![test](Assets/readme_images/OAuthGenerator.png)
-3. Save this url somewhere. People will be able to invite your discord bot into their server, by using this url.
+3. Your can set this URL inside the installation tab as a custom install link. If you do this, people will be able to invite your bot to their server by pressing a button in its profile.  
 4. Enter the url into your browser and invite the bot to your discord server. 
-5. Run `main.py`
 
 ---
 
