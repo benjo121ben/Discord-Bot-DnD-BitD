@@ -24,7 +24,7 @@ as well as helping to run a game of "Blades in the Dark"
   * [Playbook images](#playbook-images)
 
 
-* [How it works](#how-it-works)
+* [How to install](#how-to-install)
   * [Setup](#setup)
     * [.ENV](#.ENV)
     * [Permissions](#permissions)
