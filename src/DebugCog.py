@@ -13,7 +13,7 @@ class DebugCog(commands.Cog):
     @commands.slash_command(name="help", description="receive help with this bot")
     async def help(self, ctx: ApplicationContext):
         await ctx.respond(f"Any bugs, issues or ideas for improvements? Contact my creator on the support discord or via email\n"
-                          f"Discord: https://discord.gg/Ancdcj5U7 \n" + \
+                          f"Discord: https://discord.gg/XvQpyMYUMN \n" + \
                           (f"Email of bot-host: **{GlobalVariables.bot_host_email}**\n" if GlobalVariables.bot_host_email is not None else "") + \
                           f"Buy my creator a coffee: https://ko-fi.com/benjiwenger\n")
 
